@@ -14,7 +14,7 @@
         },
         {
             "label": "kill",
-            "command": "killall",
+            "command": "killall", // 即执行 killall -9 x-terminal-emulator 杀死进程
             "args": [
                 "-9",
                 "x-terminal-emulator"
