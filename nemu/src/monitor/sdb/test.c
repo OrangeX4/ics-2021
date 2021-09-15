@@ -51,7 +51,7 @@ void RandomTest_eval() {
     printf("Random Test [eval]\n");
 
     char data[512];
-    FILE *fp = fopen("./tools/gen-expr/input", "r");
+    FILE *fp = fopen("../tools/gen-expr/input", "r");
     assert(fp != NULL);
 
     // Get the number of lines
