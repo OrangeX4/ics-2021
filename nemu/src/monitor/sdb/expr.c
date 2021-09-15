@@ -79,6 +79,8 @@ static bool make_token(char *e) {
 
     while (e[position] != '\0') {
         if (position == 75) {
+            position++;
+            position--;
             printf("position: %d\n", position);
         }
         /* Try all rules one by one. */
