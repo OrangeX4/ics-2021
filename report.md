@@ -125,3 +125,128 @@ STFW 的意思是用好网页搜索 (Search The Friendly Web). 我们生活在�
 
 
 ## PA 1
+
+### 1. RTFSC
+
+#### 1.1 从状态机视角理解程序运行
+
+![](images/statemachine.png)
+
+#### 1.2 尝试使用 vscode + gdb 进行调试并完善相关配置
+
+直接使用 gdb 还是感觉太麻烦了, 执行需要各种各样的命令, 而且代码查看和跳转也不方便.
+
+这种时候还是要有像正常 IDE 那样的调试界面才快乐啊. 所以我把目光投向了 VSCode 的调试功能. VSCode 既有 IDE 的强大, 有着可以媲美 Vim 的强大功能, 又有着对命令行功能的良好适配. 其中 VSCode 对 C 和 C++ 语言的调试功能正是通过 gdb 实现的, 所以我们可以很容易地进行一些配置, 使得 VSCode 的调试功能适配 NEMU 项目.
+
+我们只需要添加两个文件, 第一个是 `tasks.json`:
+
+``` json
+{
+    "version": "2.0.0",
+    "options": {
+        "cwd": "${workspaceRoot}/nemu"
+    },
+    "tasks": [
+        {
+            "label": "make", // 任务名称，与launch.json的preLaunchTask相对应
+            "command": "make", // 在shell中使用命令，如需加参数，可再添加args属性
+            "args": [
+                "ISA=riscv32",
+                "vscode"
+            ],
+            "type":"shell"
+        }
+    ]
+}
+```
+
+其对应着命令 `make ISA=riscv32 vscode`, 即在执行前, 重新生成可执行程序.
+
+这里是我修改过的 Makefile, 以便能正常地跟踪我的 VSCode 调试, 其中 `Makefile` 的修改为:
+
+``` makefile
+--- .PHONY: app run gdb clean run-env $(DIFF_REF_SO)
++++ .PHONY: app run gdb clean vscode run-env $(DIFF_REF_SO)
+
++++ vscode: run-env
++++ 	$(call git_commit, "gdb")
+```
+
+第二个是 `launch.json`:
+
+``` json
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Run riscv32",// 配置名称，将会在启动配置的下拉菜单中显示
+            "type": "cppdbg",// 配置类型，这里只能为cppdbg
+            "request": "launch",// 请求配置类型，可以为launch（启动）或attach（附加）
+            "program": "${workspaceRoot}/nemu/build/riscv32-nemu-interpreter",// 将要进行调试的程序的路径
+            "stopAtEntry": false, // 设为true时程序将暂停在程序入口处，我一般设置为true
+            "cwd": "${workspaceRoot}/nemu",// 调试程序时的工作目录
+            "environment": [],// （环境变量？）
+            "externalConsole": true,// 调试时是否显示控制台窗口，一般设置为true显示控制台
+            "MIMode": "gdb",// 指定连接的调试器，可以为gdb或lldb。
+            "preLaunchTask": "make" // 调试会话开始前执行的任务，一般为编译程序。与tasks.json的taskName相对应，可根据需求选择是否使用
+        }
+    ]
+}
+```
+
+<!-- $ -->
+
+这个是使用 VSCode 进行调试的关键, 它先使用 `preLaunchTask` 执行了可执行程序的生成指令 `make`, 然后再使用 gdb 运行并附加到 `/nemu/build/riscv32-nemu-interpreter` 这个文件.
+
+相当于命令 `gdb /nemu/build/riscv32-nemu-interpreter`.
+
+这样就配置完成了, 我们可以很简单地在 VSCode 中配置断点, 并按下 F5 运行程序开始调试.
+
+#### 1.3 一个程序从哪里开始执行呢?
+
+> **Question:** 一个程序从哪里开始执行呢?
+>
+> **Answer:** 如果只是按照我们在程序设计中学过的课程来说, 似乎就是从 `main()` 函数开始执行. 但实际上, 就算只是用我们已经学过的知识, 都可以知道不可能是从 `main()` 函数开始执行. 例如, **全局变量的初始化**应该放在什么地方呢? 一个程序从哪里开始执行, 我也许得等到学完了编译原理才能知道.
+
+#### 1.4 为什么全都是函数?
+
+> **Question:** 阅读 `init_monitor()` 函数的代码, 你会发现里面全部都是函数调用. 按道理, 把相应的函数体在 `init_monitor()` 中展开也不影响代码的正确性. 相比之下, 在这里使用函数有什么好处呢?
+>
+> **Answer:** 好处是可读性更强, 并且可以将不同功能的代码分散到不同的文件中, 这样便更有条理, 不至于导致一个文件上千上万行的惨状.
+
+#### 1.5 参数的处理过程
+
+> **Question:** `parse_args()` 的参数是从哪里来的呢?
+> 
+> **Answer:** 从启动该程序时附带的参数中来. 例如我们常见的命令 `man xxx`, 其中 `man` 其实是一个程序, 我们要求其中这个叫 `man` 的程序, 而后面紧跟的 `xxx` 便是参数. 类似的, `parse_args()` 的参数就是从这里来的.
+
+#### 1.6 "reg_test()" 是如何测试你的实现的?
+
+> **Question:** 阅读 `reg_test()` 的代码, 思考代码中的 `assert()` 条件是根据什么写出来的.
+> 
+> **Answer:** `sample[R_EAX] & 0xff` 这种写法, 是取出 EAX 寄存器中的低 8 位, 于是 `assert(reg_b(R_AL) == (sample[R_EAX] & 0xff));` 就是判断两者是否一致, 其他的也类似.
+
+#### 1.7 究竟要执行多久?
+
+> **Question:** 在 `cmd_c()` 函数中, 调用 `cpu_exec()` 的时候传入了参数 `-1`, 你知道这是什么意思吗?
+> 
+> **Answer:** 仔细观察代码不难发现, `cpu_exec()` 定义为 `void cpu_exec(uint64_t)`, 即参数是无符号的. 于是我们传入的 `-1`, 实际上是变成了一个最大的数, 这样就能让程序一直运行, 直到退出为止.
+
+#### 1.8 潜在的威胁
+
+> **Question:** "调用 `cpu_exec()` 的时候传入了参数-1", 这一做法属于未定义行为吗? 请查阅 C99 手册确认你的想法.
+> 
+> **Answer:** 并不属于. `-1` 是有符号数, 有符号数转为无符号数的时候, 均为直接转换, 并不属于未定义行为.
+
+#### 1.9 谁来指示程序的结束?
+
+> **Question:** 在程序设计课上老师告诉你, 当程序执行到 `main()` 函数返回处的时候, 程序就退出了, 你对此深信不疑. 但你是否怀疑过, 凭什么程序执行到 `main()` 函数的返回处就结束了? 如果有人告诉你, 程序设计课上老师的说法是错的, 你有办法来证明/反驳吗? 如果你对此感兴趣, 请在互联网上搜索相关内容.
+> 
+> **Answer:** 并没有直接退出, 还需要释放各种资源, 如全局变量, 打开的文件, 设备等. 
+
+#### 1.10 NEMU 是如何支持多种客户 ISA 的?
+
+> **Question:** NEMU是如何支持多种客户ISA的?
+>
+> **Answer:** Makefile 中有一个名为 `ISA` 的变量, 后续在 `CFLAGS` 使用到, 并且 `isa.h` 中也有提到 `The macro `__ISA__` is defined in $(CFLAGS).`, 也就是说, 是通过 Makefile 和 C 语言中的宏来实现的.

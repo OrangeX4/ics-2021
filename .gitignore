@@ -10,6 +10,8 @@
 !.gitignore
 !init.sh
 /fceux-am
+/am-kernels
 
 !*.md
-!*.pdf/am-kernels
+!*.pdf
+!images/*
