@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "options": {
+        "cwd": "${workspaceRoot}/nemu"
+    },
+    "tasks": [
+        {
+            "label": "make", // 任务名称，与launch.json的preLaunchTask相对应
+            "command": "make", // 在shell中使用命令，如需加参数，可再添加args属性
+            "args": [
+                "ISA=riscv32",
+                "vscode"
+            ],
+            "type":"shell"
+        }
+    ]
+}
