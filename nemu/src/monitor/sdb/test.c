@@ -51,14 +51,14 @@ void UnitTest() {
 void RandomTest_eval() {
     printf("Random Test [eval]\n");
 
-    char path[] = "./nemu/tools/gen-expr/input.txt";
+    char path[] = "./tools/gen-expr/input.txt";
 
     char data[512];
 
     errno = 0;
     FILE *fp = fopen(path, "r");
     if (fp == NULL) {
-        printf("Error %d \n", errno);
+        printf("Failed to open file. Error Code: %d\n", errno);
         return;
     }
 
