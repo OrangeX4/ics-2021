@@ -50,8 +50,10 @@ void UnitTest() {
 void RandomTest_eval() {
     printf("Random Test [eval]\n");
 
+    char path[] = "tools/gen-expr/input";
+
     char data[512];
-    FILE *fp = fopen("./tools/gen-expr/input", "r");
+    FILE *fp = fopen(path, "r");
     assert(fp != NULL);
 
     // Get the number of lines
@@ -62,7 +64,7 @@ void RandomTest_eval() {
     }
     pclose(fp);
 
-    fp = fopen("./tools/gen-expr/input", "r");
+    fp = fopen(path, "r");
     assert(fp != NULL);
 
     int i = 0, j = 1, k, p;
