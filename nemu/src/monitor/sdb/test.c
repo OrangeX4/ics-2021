@@ -40,7 +40,7 @@ void UnitTest() {
     Test("--1 == 1", eval_test("--1", 1));
     Test("---1 == -1", eval_test("---1", -1));
     Test("1 + 3 + 2 == 6", eval_test("1 + 3 + 2", 6));
-    // Test("( 93  )  -36 == 57", eval_test("( 93  )  -36", 57));
+    Test("( 93  )  -36 == 57", eval_test("( 93  )  -36", 57));
     Test("1 + 3 * 2 == 7", eval_test("1 + 3 * 2", 7));
     Test("4 + 3 * ( 2 - 1 ) == 7", eval_test("4 + 3 * ( 2 - 1 )", 7));
 }
