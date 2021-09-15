@@ -290,8 +290,8 @@ Build Options
 > 
 > **Answer:** 并没有直接退出, 还需要释放各种资源, 如全局变量, 打开的文件, 设备等. 
 
-#### 1.11 NEMU 是如何支持多种客户 ISA 的?
+#### 1.11 优美地退出
 
-> **Question:** NEMU是如何支持多种客户ISA的?
+> **Question:** 之间键入 `q` 后退出, 会发现终端出现了错误信息 `make: *** [/home/orangex4/ics2021/nemu/scripts/native.mk:23：run] 错误 1`, 该怎么解决这个问题?
 >
 > **Answer:** Makefile 中有一个名为 `ISA` 的变量, 后续在 `CFLAGS` 使用到, 并且 `isa.h` 中也有提到 `The macro `__ISA__` is defined in $(CFLAGS).`, 也就是说, 是通过 Makefile 和 C 语言中的宏来实现的.
