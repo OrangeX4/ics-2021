@@ -191,6 +191,56 @@ bool check_parentheses_test(char *e) {
     }
 }
 
+int get_op(int p, int q) {
+    int bracket_count = 0;
+    // multiply and divide operators position, begin from the right
+    int md_pos = 0;
+
+    while (p != q) {
+        switch (tokens[q].type) {
+            case ')':
+                ++bracket_count;
+                break;
+            case '(':
+                --bracket_count;
+                break;
+            case '+':
+            case '-':
+                if (!bracket_count) {
+                    return q;
+                }
+                break;
+            case '*':
+            case '/':
+                if (!bracket_count && !md_pos) {
+                    md_pos = q;
+                }
+                break;
+            default:
+                break;
+        }
+        --q;
+    }
+    // There are no plus and minus
+    if (tokens[p].type == TK_NEGATIVE) {
+        // Negative
+        return p;
+    } else {
+        return md_pos;
+    }
+}
+
+bool get_op_test(char *e, int op) {
+    if (make_token(e)) {
+        int result_op = get_op(0, nr_token - 1);
+        Log("The operator of [%s] is [%d:%c]\n", e, result_op,
+            tokens[result_op].type);
+        return result_op == op;
+    } else {
+        return false;
+    }
+}
+
 word_t expr(char *e, bool *success) {
     if (!make_token(e)) {
         *success = false;
