@@ -53,6 +53,24 @@ static int cmd_si(char *args) {
     return 0;
 }
 
+static int cmd_info(char *args) {
+    if (!args) {
+        printf("Arguments are necessary.\nThe args are supposed to be r or w.\n");
+        return 0;
+    }
+
+    if (*args == 'r') {
+        isa_reg_display();
+        return 0;
+    } else if (*args == 'w') {
+        TODO();
+        return -1;
+    } else {
+        printf("The args are supposed to be r or w.\n");
+        return 0;
+    }
+}
+
 
 static struct {
   const char *name;
@@ -63,6 +81,7 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
   {"si", "Step through [N] instructions", cmd_si},
+  {"info", "Info SUBCMD", cmd_info},
 
   /* TODO: Add more commands */
 
