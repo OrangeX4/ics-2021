@@ -84,7 +84,6 @@ static struct {
   {"info", "Info SUBCMD", cmd_info},
 
   /* TODO: Add more commands */
-
 };
 
 #define NR_CMD ARRLEN(cmd_table)
