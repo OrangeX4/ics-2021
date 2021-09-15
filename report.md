@@ -294,4 +294,4 @@ Build Options
 
 > **Question:** 之间键入 `q` 后退出, 会发现终端出现了错误信息 `make: *** [/home/orangex4/ics2021/nemu/scripts/native.mk:23：run] 错误 1`, 该怎么解决这个问题?
 >
-> **Answer:** Makefile 中有一个名为 `ISA` 的变量, 后续在 `CFLAGS` 使用到, 并且 `isa.h` 中也有提到 `The macro `__ISA__` is defined in $(CFLAGS).`, 也就是说, 是通过 Makefile 和 C 语言中的宏来实现的.
+> **Answer:** 经过调试发现, 是最后 `main()` 调用 `is_exit_status_bad()` 的时候, `utils/state.c` 中的代码 `NEMUState nemu_state = { .state = NEMU_STOP };` 出现了错误, 这里应该是 "退出" 而不是 "停止", 因此, 修改为 `NEMUState nemu_state = { .state = NEMU_QUIT };` 之后, 代码就恢复了正常, 退出时也就不会报错了.
