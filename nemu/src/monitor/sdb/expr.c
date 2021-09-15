@@ -78,11 +78,7 @@ static bool make_token(char *e) {
     nr_token = 0;
 
     while (e[position] != '\0') {
-        if (position == 75) {
-            position++;
-            position--;
-            printf("position: %d\n", position);
-        }
+        printf("position: %d\n", position);
         /* Try all rules one by one. */
         for (i = 0; i < NR_REGEX; i++) {
             if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 &&
