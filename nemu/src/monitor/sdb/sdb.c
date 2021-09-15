@@ -6,6 +6,8 @@
 
 #include <memory/vaddr.h>
 
+#include "common.h"
+
 static int is_batch_mode = false;
 
 void init_regex();
