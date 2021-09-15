@@ -11,6 +11,7 @@ void Test(char *str, bool cond) {
 }
 
 void UnitTest() {
+    
     printf("Function [check_parentheses]\n");
     Test("(2 - 1) == true", check_parentheses_test("(2 - 1)") == true);
     Test("(2 - 11 == false", check_parentheses_test("(2 - 11") == false);
