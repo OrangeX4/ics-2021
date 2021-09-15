@@ -158,6 +158,39 @@ static bool make_token(char *e) {
     return true;
 }
 
+bool check_parentheses(int p, int q) {
+    if (tokens[p].type != '(') {
+        return false;
+    }
+    int count = 1;
+    ++p;
+
+    while (count != 0) {
+        if (p > q) {
+            return false;
+        }
+        if (tokens[p].type == '(') {
+            ++count;
+        } else if (tokens[p].type == ')') {
+            --count;
+        }
+        ++p;
+    }
+    if (p < q) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+bool check_parentheses_test(char *e) {
+    if (make_token(e)) {
+        return check_parentheses(0, nr_token - 1);
+    } else {
+        return false;
+    }
+}
+
 word_t expr(char *e, bool *success) {
     if (!make_token(e)) {
         *success = false;

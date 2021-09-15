@@ -6,6 +6,9 @@
 
 #include <memory/vaddr.h>
 
+#include "expr.h"
+#include "test.h"
+
 static int is_batch_mode = false;
 
 void init_regex();
@@ -115,6 +118,15 @@ static int cmd_p(char *args) {
     return 0;
 }
 
+static int cmd_test(char *args) {
+    if (args && *args == 'r') {
+        // RandomTest_eval();
+    } else {
+        UnitTest();
+    }
+    return 0;
+};
+
 
 static struct {
   const char *name;
@@ -128,6 +140,7 @@ static struct {
   {"info", "Info SUBCMD", cmd_info},
   {"x", "Read memory data", cmd_x},
   {"p", "Execute expression", cmd_p},
+  {"test", "Execute unit test", cmd_test},
 
   /* TODO: Add more commands */
 };
