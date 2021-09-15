@@ -1,15 +1,14 @@
 {
     "version": "2.0.0",
     "options": {
-        "cwd": "${workspaceRoot}/nemu"
+        "cwd": "${workspaceRoot}/nemu" // $ nemu 路径
     },
     "tasks": [
         {
-            "label": "make", // 任务名称，与launch.json的preLaunchTask相对应
-            "command": "make", // 在shell中使用命令，如需加参数，可再添加args属性
+            "label": "make", // 任务名称, 与 launch.json 的 preLaunchTask 相对应
+            "command": "make",
             "args": [
-                "ISA=riscv32",
-                "vscode"
+                "vscode" // 对应 `make vscode`, 类似于 `make gdb`, 但实际上用的是 vscode 的调试功能
             ],
             "type":"shell"
         }

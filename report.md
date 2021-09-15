@@ -144,15 +144,14 @@ STFW 的意思是用好网页搜索 (Search The Friendly Web). 我们生活在�
 {
     "version": "2.0.0",
     "options": {
-        "cwd": "${workspaceRoot}/nemu"
+        "cwd": "${workspaceRoot}/nemu" // $ nemu 路径
     },
     "tasks": [
         {
-            "label": "make", // 任务名称，与launch.json的preLaunchTask相对应
-            "command": "make", // 在shell中使用命令，如需加参数，可再添加args属性
+            "label": "make", // 任务名称, 与 launch.json 的 preLaunchTask 相对应
+            "command": "make",
             "args": [
-                "ISA=riscv32",
-                "vscode"
+                "vscode" // 对应 `make vscode`, 类似于 `make gdb`, 但实际上用的是 vscode 的调试功能
             ],
             "type":"shell"
         }
@@ -160,13 +159,13 @@ STFW 的意思是用好网页搜索 (Search The Friendly Web). 我们生活在�
 }
 ```
 
-其对应着命令 `make ISA=riscv32 vscode`, 即在执行前, 重新生成可执行程序.
+其对应着命令 `make vscode`, 即在执行前, 重新生成可执行程序, 然后使用 VSCode 调试.
 
-这里是我修改过的 Makefile, 以便能正常地跟踪我的 VSCode 调试, 其中 `Makefile` 的修改为:
+这里是我修改过的 Makefile (修改 `native.mk` 文件), 以便能正常地跟踪我的 VSCode 调试, 其中 `script/native.mk` 的修改为 (即去除默认的调试, 使用 VSCode 的调试功能进行调试运行):
 
 ``` makefile
---- .PHONY: app run gdb clean run-env $(DIFF_REF_SO)
-+++ .PHONY: app run gdb clean vscode run-env $(DIFF_REF_SO)
+--- .PHONY: run gdb run-env clean-tools clean-all $(clean-tools)
++++ .PHONY: run gdb vscode run-env clean-tools clean-all $(clean-tools)
 
 +++ vscode: run-env
 +++ 	$(call git_commit, "gdb")
@@ -178,18 +177,17 @@ STFW 的意思是用好网页搜索 (Search The Friendly Web). 我们生活在�
 {
     "version": "0.2.0",
     "configurations": [
-
         {
-            "name": "Run riscv32",// 配置名称，将会在启动配置的下拉菜单中显示
-            "type": "cppdbg",// 配置类型，这里只能为cppdbg
-            "request": "launch",// 请求配置类型，可以为launch（启动）或attach（附加）
-            "program": "${workspaceRoot}/nemu/build/riscv32-nemu-interpreter",// 将要进行调试的程序的路径
-            "stopAtEntry": false, // 设为true时程序将暂停在程序入口处，我一般设置为true
-            "cwd": "${workspaceRoot}/nemu",// 调试程序时的工作目录
-            "environment": [],// （环境变量？）
-            "externalConsole": true,// 调试时是否显示控制台窗口，一般设置为true显示控制台
-            "MIMode": "gdb",// 指定连接的调试器，可以为gdb或lldb。
-            "preLaunchTask": "make" // 调试会话开始前执行的任务，一般为编译程序。与tasks.json的taskName相对应，可根据需求选择是否使用
+            "name": "Debug nemu", // 配置名称, 将会在启动配置的下拉菜单中显示
+            "type": "cppdbg", // 配置类型, 这里只能为cppdbg
+            "request": "launch", // 请求配置类型, 可以为 launch (启动) 或 attach (附加) 
+            "program": "${workspaceRoot}/nemu/build/riscv32-nemu-interpreter", // 将要进行调试的程序的路径
+            "stopAtEntry": false, // 设为 true 时程序将暂停在程序入口处
+            "cwd": "${workspaceRoot}/nemu", // 调试程序时的工作目录
+            "environment": [], // 环境变量 
+            "externalConsole": true, // 调试时是否显示控制台窗口, 一般设置为 true 显示控制台
+            "MIMode": "gdb", // 指定连接的调试器, 可以为 gdb 或 lldb
+            "preLaunchTask": "make" // 调试会话开始前执行的任务, 一般为编译程序. 与 tasks.json 的 taskName 相对应，可根据需求选择是否使用
         }
     ]
 }
@@ -197,7 +195,7 @@ STFW 的意思是用好网页搜索 (Search The Friendly Web). 我们生活在�
 
 <!-- $ -->
 
-这个是使用 VSCode 进行调试的关键, 它先使用 `preLaunchTask` 执行了可执行程序的生成指令 `make`, 然后再使用 gdb 运行并附加到 `/nemu/build/riscv32-nemu-interpreter` 这个文件.
+这个是使用 VSCode 进行调试的关键, 它先使用 `preLaunchTask` 执行了可执行程序的生成指令 `make vscode`, 然后再使用 gdb 运行并附加到 `/nemu/build/riscv32-nemu-interpreter` 这个编译生成的文件.
 
 相当于命令 `gdb /nemu/build/riscv32-nemu-interpreter`.
 
