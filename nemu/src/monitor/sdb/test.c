@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <errno.h>
 
 #include "expr.h"
 
@@ -53,8 +54,13 @@ void RandomTest_eval() {
     char path[] = "/home/orangex4/ics2021/nemu/tools/gen-expr/input.txt";
 
     char data[512];
+
+    errno = 0;
     FILE *fp = fopen(path, "r");
-    assert(fp != NULL);
+    if (fp == NULL) {
+        printf("Error %d \n", errno);
+        return;
+    }
 
     // Get the number of lines
     int max = 0;
