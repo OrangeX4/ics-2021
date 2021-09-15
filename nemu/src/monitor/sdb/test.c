@@ -75,7 +75,7 @@ void RandomTest_eval() {
 
     int i = 0, j = 1, k, p;
     char buf[51] = "#";
-    while (j <= max) {
+    while (j < max) {
         i = j * 50 / max;
         if (!fgets(data, 512, fp)) break;
         for (k = 0; data[k] != ' '; ++k);
