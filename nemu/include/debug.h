@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <utils.h>
 
-#define LOG
+// #define LOG
 #ifdef LOG
 #define Log(format, ...) \
     _Log(ASNI_FMT("[%s:%d %s] " format, ASNI_FG_BLUE) "\n", \
