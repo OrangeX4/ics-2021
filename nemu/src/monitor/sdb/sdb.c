@@ -53,6 +53,7 @@ static int cmd_si(char *args) {
     return 0;
 }
 
+
 static struct {
   const char *name;
   const char *description;
