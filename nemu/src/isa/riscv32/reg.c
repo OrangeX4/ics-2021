@@ -9,6 +9,20 @@ const char *regs[] = {
 };
 
 void isa_reg_display() {
+    // riscv32
+    for (int i = 0; i < 32; ++i) {
+        if (cpu.gpr[i]._32) {
+            printf("%-16s%-#16x%-16o\n", regs[i], cpu.gpr[i]._32, cpu.gpr[i]._32);
+        }
+    }
+    printf("%-16s%-#16x%-16o\n", "pc", cpu.pc, cpu.pc);
+    printf("\nRegisters equal to zero have been omitted. They are");
+    for (int i = 0; i < 32; ++i) {
+        if (!cpu.gpr[i]._32) {
+            printf(" %s", regs[i]);
+        }
+    }
+    printf(".\n\n");
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
