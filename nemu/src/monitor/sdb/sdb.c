@@ -120,7 +120,7 @@ static int cmd_p(char *args) {
 
 static int cmd_test(char *args) {
     if (args && *args == 'r') {
-        // RandomTest_eval();
+        RandomTest_eval();
     } else {
         UnitTest();
     }
