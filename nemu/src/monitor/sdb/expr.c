@@ -310,8 +310,8 @@ word_t eval(int p, int q) {
 
 bool eval_test(char *e, int result) {
     if (make_token(e)) {
-        int _result = eval(0, nr_token - 1);
-        Log("The result of [%s] is [%d]\n", e, _result);
+        word_t _result = eval(0, nr_token - 1);
+        Log("The result of [%s] is [%u]\n", e, _result);
         return _result == result;
     } else {
         return false;

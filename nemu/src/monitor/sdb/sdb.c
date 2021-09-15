@@ -111,7 +111,7 @@ static int cmd_p(char *args) {
     bool success = false;
     word_t result = expr(args, &success);
     if (success) {
-        printf("%d\n", result);
+        printf("%u\n", result);
     } else {
         printf("Failed to execute expression.\n");
     }
@@ -136,11 +136,11 @@ static struct {
   { "help", "Display informations about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-  {"si", "Step through [N] instructions", cmd_si},
-  {"info", "Info SUBCMD", cmd_info},
-  {"x", "Read memory data", cmd_x},
-  {"p", "Execute expression", cmd_p},
-  {"test", "Execute unit test", cmd_test},
+  { "si", "Step through [N] instructions", cmd_si},
+  { "info", "Info SUBCMD", cmd_info},
+  { "x", "Read memory data", cmd_x},
+  { "p", "Execute expression", cmd_p},
+  { "test", "Execute unit test", cmd_test},
 
   /* TODO: Add more commands */
 };
