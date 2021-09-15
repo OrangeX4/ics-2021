@@ -50,7 +50,7 @@ void UnitTest() {
 void RandomTest_eval() {
     printf("Random Test [eval]\n");
 
-    char path[] = "./nemu/tools/gen-expr/input";
+    char path[] = "~/ics2021/nemu/tools/gen-expr/input";
 
     char data[512];
     FILE *fp = fopen(path, "r");
