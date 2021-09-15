@@ -99,6 +99,22 @@ static int cmd_x(char *args) {
     return 0;
 }
 
+static int cmd_p(char *args) {
+    if (!args) {
+        printf("Expression are necessary.\n");
+        return 0;
+    }
+
+    bool success = false;
+    word_t result = expr(args, &success);
+    if (success) {
+        printf("%d\n", result);
+    } else {
+        printf("Failed to execute expression.\n");
+    }
+    return 0;
+}
+
 
 static struct {
   const char *name;
@@ -111,6 +127,7 @@ static struct {
   {"si", "Step through [N] instructions", cmd_si},
   {"info", "Info SUBCMD", cmd_info},
   {"x", "Read memory data", cmd_x},
+  {"p", "Execute expression", cmd_p},
 
   /* TODO: Add more commands */
 };
