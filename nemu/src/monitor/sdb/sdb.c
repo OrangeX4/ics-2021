@@ -140,7 +140,7 @@ static struct {
   { "info", "Info SUBCMD", cmd_info},
   { "x", "Read memory data", cmd_x},
   { "p", "Execute expression", cmd_p},
-  { "test", "Execute unit test", cmd_test},
+  { "test", "Execute 'test' for unit test and 'test r' for random test", cmd_test},
 
   /* TODO: Add more commands */
 };
