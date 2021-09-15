@@ -51,7 +51,7 @@ void UnitTest() {
 void RandomTest_eval() {
     printf("Random Test [eval]\n");
 
-    char path[] = "/home/orangex4/ics2021/nemu/tools/gen-expr/input.txt";
+    char path[] = "./nemu/tools/gen-expr/input.txt";
 
     char data[512];
 
