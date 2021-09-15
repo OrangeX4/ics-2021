@@ -241,14 +241,89 @@ bool get_op_test(char *e, int op) {
     }
 }
 
+word_t eval(int p, int q) {
+    if (p > q) {
+        panic("Bad expression");
+        return 0;
+    } else if (p == q) {
+        if (tokens[p].type == TK_NUMBER) {
+            /* Single token.
+             * For now this token should be a number.
+             * Return the value of the number.
+             */
+            return atoi(tokens[p].str);
+        } else {
+            panic("Bad expression");
+            return 0;
+        }
+    } else if (check_parentheses(p, q) == true) {
+        /* The expression is surrounded by a matched pair of parentheses.
+         * If that is the case, just throw away the parentheses.
+         */
+        return eval(p + 1, q - 1);
+    } else {
+        // Get the position of main operator in the token expression.
+        int op = get_op(p, q);
+        if (p == op) {
+            // Unary operator
+            int val = eval(op + 1, q);
+
+            switch (tokens[op].type) {
+                case TK_NEGATIVE:
+                    return -val;
+                    break;
+
+                default:
+                    assert(0);
+            }
+
+        } else {
+            // Binocular operator
+            int val1 = eval(p, op - 1);
+            int val2 = eval(op + 1, q);
+
+            switch (tokens[op].type) {
+                case '+':
+                    return val1 + val2;
+                    break;
+                case '-':
+                    return val1 - val2;
+                    break;
+                case '*':
+                    return val1 * val2;
+                    break;
+                case '/':
+                    if (val2) {
+                        return val1 / val2;
+                    } else {
+                        panic("Divisor cannot be zero.\n");
+                        return 0;
+                    }
+                    break;
+
+                default:
+                    assert(0);
+            }
+        }
+    }
+}
+
+bool eval_test(char *e, int result) {
+    if (make_token(e)) {
+        int _result = eval(0, nr_token - 1);
+        Log("The result of [%s] is [%d]\n", e, _result);
+        return _result == result;
+    } else {
+        return false;
+    }
+}
+
 word_t expr(char *e, bool *success) {
     if (!make_token(e)) {
         *success = false;
         return 0;
     }
 
-    /* TODO: Insert codes to evaluate the expression. */
-    TODO();
-
-    return 0;
+    *success = true;
+    return eval(0, nr_token - 1);
 }
