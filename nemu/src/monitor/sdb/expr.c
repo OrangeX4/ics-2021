@@ -131,7 +131,7 @@ static bool make_token(char *e) {
                             strncpy(tokens[nr_token].str, substr_start,
                                     substr_len);
                             tokens[nr_token].str[substr_len] = '\0';
-                            Log("Match number [%s].", tokens[nr_token].str);
+                            // Log("Match number [%s].", tokens[nr_token].str);
                         } else {
                             printf("The number is too big.\n");
                             return false;
