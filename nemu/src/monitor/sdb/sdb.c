@@ -4,6 +4,8 @@
 #include <readline/history.h>
 #include "sdb.h"
 
+#include <memory/vaddr.h>
+
 static int is_batch_mode = false;
 
 void init_regex();
@@ -71,6 +73,32 @@ static int cmd_info(char *args) {
     }
 }
 
+static int cmd_x(char *args) {
+    if (!args) {
+        printf("Arguments are necessary.\n");
+        return 0;
+    }
+
+    unsigned int n;
+    vaddr_t addr;
+    sscanf(args, "%d %x", &n, &addr);
+
+    if (n <= 0) {
+        printf("N must be a valid integer.\n");
+        return 0;
+    }
+
+    // Scan memory in a loop
+    for (; n > 0; --n) {
+        word_t ch = vaddr_read(addr, 1);
+        printf("%02x ", ch);
+        ++addr;
+    }
+    printf("\n");
+
+    return 0;
+}
+
 
 static struct {
   const char *name;
@@ -82,6 +110,7 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
   {"si", "Step through [N] instructions", cmd_si},
   {"info", "Info SUBCMD", cmd_info},
+  {"x", "Read memory data", cmd_x},
 
   /* TODO: Add more commands */
 };
