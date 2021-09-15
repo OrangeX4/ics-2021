@@ -84,6 +84,7 @@ void RandomTest_eval() {
         data[p] = '\0';
         
         
+        printf("\n\033[31m[%s] was supposed to be [%s].\033[0m\n", data + k + 1, data);
         if (!eval_test(data + k + 1, atoi(data))) {
             printf("\n\033[31m[%s] was supposed to be [%s].\033[0m\n", data + k + 1, data);
             return;
