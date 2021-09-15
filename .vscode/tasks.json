@@ -11,6 +11,14 @@
                 "vscode" // 对应 `make vscode`, 类似于 `make gdb`, 但实际上用的是 vscode 的调试功能
             ],
             "type":"shell"
+        },
+        {
+            "label": "kill",
+            "command": "make",
+            "args": [
+                "vscode" // 对应 `make vscode`, 类似于 `make gdb`, 但实际上用的是 vscode 的调试功能
+            ],
+            "type":"shell"
         }
     ]
 }
