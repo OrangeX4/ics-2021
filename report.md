@@ -367,6 +367,8 @@ Build Options
 
 并且, 做好了随机测试算法, 生成了数千个样本, 在改了几个 bugs 之后, 全部样本都通过了.
 
+![](images/2021-09-16-17-17-29.png)
+
 (样本保存在 `nemu/tools/gen-expr/input.txt` 中.)
 
 #### 3.4 为什么 "printf()" 的输出要换行?
