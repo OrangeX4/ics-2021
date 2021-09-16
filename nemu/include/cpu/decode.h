@@ -55,7 +55,7 @@ typedef struct Decode {
   print_asm(str(instr) "%c %s,%s,%s", suffix_char(id_dest->width), id_dest->str, id_src1->str, id_src2->str)
 
 
-// --- container for all instrucitons ---
+// --- container for all instructions ---
 #define INSTR_LIST(f) INSTR_NULLARY(f) INSTR_UNARY(f) INSTR_BINARY(f) INSTR_TERNARY(f)
 
 #define def_EXEC_ID(name) \
