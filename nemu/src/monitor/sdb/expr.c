@@ -333,7 +333,7 @@ bool eval_test(char *e, word_t result) {
 }
 
 // Consume the current expression from stacks
-bool eval_op(Stack *operand_stack, Stack *operator_stack) {
+bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
     Token token = tokens[stack_pop(operator_stack)];
     int op = token.type;
     if (token.type == '(') {
@@ -421,7 +421,7 @@ word_t eval_s(bool *success) {
             }
         }
     }
-
+    consume_stacks(&operand_stack, &operator_stack);
     if (operand_stack.length == 1 && operator_stack.length == 0) {
         *success = true;
         return stack_pop(&operand_stack);
