@@ -11,6 +11,7 @@ enum {
     TK_NOTYPE = 256,
     TK_EQ,
     TK_NUMBER,
+    TK_HEX,
     TK_NEGATIVE,
     /* Add more token types */
 };
@@ -24,15 +25,16 @@ static struct rule {
      * Pay attention to the precedence level of different rules.
      */
 
-    {" +", TK_NOTYPE},      // spaces
-    {"[0-9]+", TK_NUMBER},  // number
-    {"\\+", '+'},           // plus
-    {"-", '-'},             // minus or negative
-    {"\\*", '*'},           // multiply
-    {"\\/", '/'},           // divide
-    {"\\(", '('},           // left bracket
-    {"\\)", ')'},           // right bracket
-    {"==", TK_EQ},          // equal
+    {" +", TK_NOTYPE},              // spaces
+    {"[0-9]+", TK_NUMBER},          // number
+    {"0[xX][0-9a-fA-F]+", TK_HEX},  // hex number
+    {"\\+", '+'},                   // plus
+    {"-", '-'},                     // minus or negative
+    {"\\*", '*'},                   // multiply
+    {"\\/", '/'},                   // divide
+    {"\\(", '('},                   // left bracket
+    {"\\)", ')'},                   // right bracket
+    {"==", TK_EQ},                  // equal
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -136,8 +138,9 @@ static bool make_token(char *e) {
                         check_expression_length();
                         break;
                     case TK_NUMBER:
+                    case TK_HEX:
                         // Number
-                        tokens[nr_token].type = TK_NUMBER;
+                        tokens[nr_token].type = rules[i].token_type;
                         if (substr_len < 32) {
                             strncpy(tokens[nr_token].str, substr_start,
                                     substr_len);
@@ -237,6 +240,8 @@ word_t eval(bool *success) {
         if (tokens[i].type == TK_NUMBER) {
             // Push number
             stack_push(&operand_stack, atoi(tokens[i].str));
+        } else if (tokens[i].type == TK_HEX) {
+            stack_push(&operand_stack, strtol(tokens[i].str, NULL, 16));
         } else {
             // Push tokens index
             if (operator_stack.length == 0) {

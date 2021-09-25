@@ -62,10 +62,6 @@ void UnitTest() {
     Test("1 + 3 * 2 == 7", eval_test("1 + 3 * 2", 7));
     Test("4 + 3 * ( 2 - 1 ) == 7", eval_test("4 + 3 * ( 2 - 1 )", 7));
     Test("(4 - 3) + 3 * ( 2 - (1*1) ) == 4", eval_test("(4 - 3) + 3 * ( 2 - (1*1) )", 4));
-
-    printf("----------\n");
-
-    printf("%ld\n", strtol("fff", NULL, 16));
 }
 
 // command: test r
