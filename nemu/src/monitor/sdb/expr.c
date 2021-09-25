@@ -422,6 +422,9 @@ word_t eval_s(bool *success) {
                         break;
                     }
                 }
+                if (operator_stack.length != 0) {
+                    consume_stacks(&operand_stack, &operator_stack);
+                }
             }
         }
 
