@@ -8,7 +8,7 @@ void stack_push(Stack* s, int value) {
     if (s->length >= 64) {
         panic("Stack Overflow.");
     }
-    s->arr[s->length++] = value; 
+    s->arr[s->length++] = value;
 }
 
 int stack_pop(Stack* s) {
