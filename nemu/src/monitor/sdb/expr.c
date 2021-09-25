@@ -323,6 +323,22 @@ bool eval_test(char *e, word_t result) {
     }
 }
 
+word_t eval_s() {
+    // Initial two stacks
+    Stack operand_stack;
+    stack_init(&operand_stack);
+    Stack operator_stack;
+    stack_init(&operator_stack);
+
+    // Initial token to priority map
+    Map priorities;
+    pair data[] = {{}, {0, 0}};
+    map_init(&priorities, data);
+    
+    tokens;
+    nr_token;
+}
+
 word_t expr(char *e, bool *success) {
     if (!make_token(e)) {
         *success = false;
