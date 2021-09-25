@@ -418,8 +418,11 @@ word_t eval_s(bool *success) {
             }
         }
     }
-    consume_stacks(&operand_stack, &operator_stack);
-    if (operand_stack.length == 1 && operator_stack.length == 0) {
+    // Consume all remaining operators
+    while(operator_stack.length != 0) {
+        consume_stacks(&operand_stack, &operator_stack);
+    }
+    if (operand_stack.length == 1) {
         *success = true;
         return stack_pop(&operand_stack);
     } else {
