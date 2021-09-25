@@ -65,7 +65,7 @@ void UnitTest() {
 
     printf("----------\n");
 
-    printf("%ld\n", strtol("0xfff", NULL, 16));
+    printf("%ld\n", strtol("fff", NULL, 16));
 }
 
 // command: test r
