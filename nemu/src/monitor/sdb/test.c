@@ -25,6 +25,7 @@ void StructTest() {
     map_init(&m, data);
     Test("m.data[1] == 2", m.data[1] == 2);
     Test("m.data[3] == 4", m.data[3] == 4);
+    Test("m.data[2] == 4", m.data[2] == 4);
     
 }
 
