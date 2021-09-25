@@ -8,10 +8,10 @@ typedef struct stack {
     int p;
 } Stack;
 
-void stack_init(Stack s);
+void stack_init(Stack* s);
 
-void stack_push(Stack s, int value);
+void stack_push(Stack* s, int value);
 
-int stack_pop(Stack s);
+int stack_pop(Stack* s);
 
 #endif

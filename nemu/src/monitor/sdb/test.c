@@ -14,11 +14,11 @@ void Test(char *str, bool cond) {
 
 void StructTest() {
     Stack s;
-    stack_init(s);
-    stack_push(s, 5);
-    stack_push(s, 3);
-    Test("pop() == 3", stack_pop(s) == 3);
-    Test("pop() == 5", stack_pop(s) == 5);
+    stack_init(&s);
+    stack_push(&s, 5);
+    stack_push(&s, 3);
+    Test("pop() == 3", stack_pop(&s) == 3);
+    Test("pop() == 5", stack_pop(&s) == 5);
 }
 
 void UnitTest() {
