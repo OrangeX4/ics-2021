@@ -405,6 +405,7 @@ word_t eval_s(bool *success) {
             // Push tokens index
             if (operator_stack.length == 0) {
                 stack_push(&operator_stack, i);
+                continue;
             }
             int top_operator_priority =
                 priorities.data[tokens[stack_top(&operator_stack)].type];
