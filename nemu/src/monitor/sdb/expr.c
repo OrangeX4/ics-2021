@@ -322,15 +322,6 @@ word_t eval(int p, int q) {
     }
 }
 
-bool eval_test(char *e, word_t result) {
-    if (make_token(e)) {
-        word_t _result = eval(0, nr_token - 1);
-        Log("The result of [%s] is [%u]\n", e, _result);
-        return _result == result;
-    } else {
-        return false;
-    }
-}
 
 // Consume the current expression from stacks
 bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
@@ -428,6 +419,17 @@ word_t eval_s(bool *success) {
     } else {
         *success = false;
         return 0;
+    }
+}
+
+bool eval_test(char *e, word_t result) {
+    if (make_token(e)) {
+        bool success;
+        word_t _result = eval_s(&success);
+        Log("The result of [%s] is [%u]\n", e, _result);
+        return _result == result;
+    } else {
+        return false;
     }
 }
 
