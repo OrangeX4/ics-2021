@@ -28,7 +28,7 @@ int stack_top(Stack* s) {
 void map_init(Map* m, pair* data) {
     for (int p = 0, key; data[p][0] != 0; ++p) {
         key = data[p][0];
-        printf("%d: (%d, %d)\n", p, key, data[p][1]);
+        // printf("%d: (%d, %d)\n", p, key, data[p][1]);
         if (key <= 0 || key >= 512) {
             panic("Key over 512.");
         }
