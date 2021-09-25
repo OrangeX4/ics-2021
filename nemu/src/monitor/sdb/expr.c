@@ -395,7 +395,6 @@ word_t eval_s(bool *success) {
             // Push tokens index
             if (operator_stack.length == 0) {
                 stack_push(&operator_stack, i);
-                printf("Initiate operator_stack\n");
                 continue;
             }
             int top_operator_priority =
@@ -405,7 +404,6 @@ word_t eval_s(bool *success) {
             // printf("current_token_priority: %d\n", current_token_priority);
             while (current_token_priority >= top_operator_priority) {
                 // stack_pop(&operator_stack);
-                printf("Consume stacks\n");
                 consume_stacks(&operand_stack, &operator_stack);
                 if (operator_stack.length == 0) {
                     break;
