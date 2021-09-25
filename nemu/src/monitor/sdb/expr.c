@@ -402,7 +402,8 @@ word_t eval_s(bool *success) {
             // printf("top_operator_priority: %d\n", top_operator_priority);
             // printf("current_token_priority: %d\n", current_token_priority);
             while (current_token_priority >= top_operator_priority &&
-                   tokens[stack_top(&operator_stack)].type != '(') {
+                   tokens[stack_top(&operator_stack)].type != '(' &&
+                   top_operator_priority != 2) {
                 // stack_pop(&operator_stack);
                 consume_stacks(&operand_stack, &operator_stack);
                 if (operator_stack.length == 0) {
