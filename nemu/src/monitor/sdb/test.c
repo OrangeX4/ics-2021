@@ -29,27 +29,27 @@ void StructTest() {
 
 void UnitTest() {
 
-    printf("Function [check_parentheses]\n");
-    Test("(2 - 1) == true", check_parentheses_test("(2 - 1)") == true);
-    Test("(2 - 11 == false", check_parentheses_test("(2 - 11") == false);
-    Test("(4 + 3 * (2 - 1)) == true",
-         check_parentheses_test("(4 + 3 * (2 - 1))") == true);
-    Test("(4 + 3 * (2 - 1) == false",
-         check_parentheses_test("(4 + 3 * (2 - 1)") == false);
-    Test("4 + 3 * (2 - 1) == false",
-         check_parentheses_test("4 + 3 * (2 - 1)") == false);
-    Test("(4 + 3)) * ((2 - 1) == false",
-         check_parentheses_test("(4 + 3)) * ((2 - 1)") == false);
-    Test("(4 + 3) * (2 - 1) == false",
-         check_parentheses_test("(4 + 3) * (2 - 1)") == false);
+    // printf("Function [check_parentheses]\n");
+    // Test("(2 - 1) == true", check_parentheses_test("(2 - 1)") == true);
+    // Test("(2 - 11 == false", check_parentheses_test("(2 - 11") == false);
+    // Test("(4 + 3 * (2 - 1)) == true",
+    //      check_parentheses_test("(4 + 3 * (2 - 1))") == true);
+    // Test("(4 + 3 * (2 - 1) == false",
+    //      check_parentheses_test("(4 + 3 * (2 - 1)") == false);
+    // Test("4 + 3 * (2 - 1) == false",
+    //      check_parentheses_test("4 + 3 * (2 - 1)") == false);
+    // Test("(4 + 3)) * ((2 - 1) == false",
+    //      check_parentheses_test("(4 + 3)) * ((2 - 1)") == false);
+    // Test("(4 + 3) * (2 - 1) == false",
+    //      check_parentheses_test("(4 + 3) * (2 - 1)") == false);
 
-    printf("Function [get_op]\n");
-    Test("4 + 3 * ( 2 - 1 ) == 1", get_op_test("4 + 3 * ( 2 - 1 )", 1));
-    Test("4 + 3 * 2 - 1 == 5", get_op_test("4 + 3 * 2 - 1", 5));
-    Test("1 - 1 + 1 == 3", get_op_test("1 - 1 + 1", 3));
-    Test("1 * 1 * 1 == 3", get_op_test("1 * 1 * 1", 3));
-    Test("( 93  )  -36 == 3", get_op_test("( 93  )  -36", 3));
-    Test("1 + ((2 + 3) / 4) * 2 == 1", get_op_test("1 + ((2 + 3) / 4) * 2", 1));
+    // printf("Function [get_op]\n");
+    // Test("4 + 3 * ( 2 - 1 ) == 1", get_op_test("4 + 3 * ( 2 - 1 )", 1));
+    // Test("4 + 3 * 2 - 1 == 5", get_op_test("4 + 3 * 2 - 1", 5));
+    // Test("1 - 1 + 1 == 3", get_op_test("1 - 1 + 1", 3));
+    // Test("1 * 1 * 1 == 3", get_op_test("1 * 1 * 1", 3));
+    // Test("( 93  )  -36 == 3", get_op_test("( 93  )  -36", 3));
+    // Test("1 + ((2 + 3) / 4) * 2 == 1", get_op_test("1 + ((2 + 3) / 4) * 2", 1));
 
     printf("Function [eval]\n");
     Test("-1 == 4294967295", eval_test("-1", 4294967295));
