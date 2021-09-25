@@ -220,7 +220,7 @@ bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
     return false;
 }
 
-word_t eval_s(bool *success) {
+word_t eval(bool *success) {
     // Initial two stacks
     Stack operand_stack;
     stack_init(&operand_stack);
@@ -303,7 +303,7 @@ word_t eval_s(bool *success) {
 bool eval_test(char *e, word_t result) {
     if (make_token(e)) {
         bool success;
-        word_t _result = eval_s(&success);
+        word_t _result = eval(&success);
         Log("The result of [%s] is [%u]\n", e, _result);
         return _result == result;
     } else {
@@ -319,5 +319,5 @@ word_t expr(char *e, bool *success) {
 
     *success = true;
     // return eval(0, nr_token - 1);
-    return eval_s(success);
+    return eval(success);
 }
