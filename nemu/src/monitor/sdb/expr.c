@@ -272,6 +272,9 @@ word_t eval(int p, int q) {
                 case TK_NEGATIVE:
                     return -val;
                     break;
+                case '+':
+                    return val;
+                    break;
 
                 default:
                     assert(0);
