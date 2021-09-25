@@ -5,6 +5,7 @@
 
 void Test(char *str, bool cond);
 
+void StructTest();
 void UnitTest();
 void RandomTest_eval();
 

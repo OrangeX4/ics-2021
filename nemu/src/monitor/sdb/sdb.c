@@ -119,8 +119,12 @@ static int cmd_p(char *args) {
 }
 
 static int cmd_test(char *args) {
-    if (args && *args == 'r') {
-        RandomTest_eval();
+    if (args) {
+        if (*args == 'r') {
+            RandomTest_eval();
+        } else if (*args == 's') {
+            StructTest();
+        }
     } else {
         UnitTest();
     }

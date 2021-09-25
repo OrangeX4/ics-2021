@@ -5,6 +5,8 @@
  */
 #include <regex.h>
 
+#include "struct.h"
+
 enum {
     TK_NOTYPE = 256,
     TK_EQ,

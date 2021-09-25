@@ -2,6 +2,7 @@
 #include <errno.h>
 
 #include "expr.h"
+#include "struct.h"
 
 void Test(char *str, bool cond) {
     if (cond) {
@@ -9,6 +10,15 @@ void Test(char *str, bool cond) {
     } else {
         printf("\033[31m%-32s failed\33[0m\n", str);
     }
+}
+
+void StructTest() {
+    Stack s;
+    stack_init(s);
+    stack_push(s, 5);
+    stack_push(s, 3);
+    Test("pop() == 3", stack_pop(s) == 3);
+    Test("pop() == 5", stack_pop(s) == 5);
 }
 
 void UnitTest() {
