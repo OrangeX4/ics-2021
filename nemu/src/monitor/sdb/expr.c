@@ -275,6 +275,7 @@ word_t eval(bool *success) {
             }
         }
 
+
         // printf("Operand [%d]: ", operand_stack.length);
         // for (int j = 0; j < operand_stack.length; ++j) {
         //     printf("%d ", operand_stack.arr[j]);
