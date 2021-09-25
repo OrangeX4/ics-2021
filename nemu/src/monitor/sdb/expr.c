@@ -102,14 +102,20 @@ static bool make_token(char *e) {
                     case TK_NOTYPE:
                         // Skip spaces
                         break;
-                    case '+':
-                    case '*':
-                    case '/':
                     case TK_EQ:
                     case '(':
                     case ')':
                         // Operator
                         tokens[nr_token].type = rules[i].token_type;
+                        ++nr_token;
+                        check_expression_length();
+                        break;
+                    case '+':
+                    case '*':
+                    case '/':
+                        // Binary infix operator
+                        tokens[nr_token].type = rules[i].token_type;
+                        *(tokens[nr_token].str) = 'B';
                         ++nr_token;
                         check_expression_length();
                         break;
@@ -119,9 +125,12 @@ static bool make_token(char *e) {
                              tokens[nr_token - 1].type == ')')) {
                             // Minus
                             tokens[nr_token].type = '-';
+                            *(tokens[nr_token].str) = 'i';
                         } else {
                             // Negative
                             tokens[nr_token].type = TK_NEGATIVE;
+                            // Unary prEfix operator
+                            *(tokens[nr_token].str) = 'U';
                         }
                         ++nr_token;
                         check_expression_length();
@@ -323,7 +332,59 @@ bool eval_test(char *e, word_t result) {
     }
 }
 
-word_t eval_s() {
+// Consume the current expression from stacks
+bool eval_op(Stack *operand_stack, Stack *operator_stack) {
+    Token token = tokens[stack_pop(operator_stack)];
+    int op = token.type;
+    if (token.type == '(') {
+        stack_pop(operator_stack);
+        // Do nothing
+        return true;
+    }
+    if (*(token.str) == 'B') {
+        // Binary infix operator
+        int b = stack_pop(operand_stack);
+        int a = stack_pop(operand_stack);
+        switch (op) {
+            case '+':
+                stack_push(operand_stack, a + b);
+                return true;
+                break;
+            case '-':
+                stack_push(operand_stack, a - b);
+                return true;
+                break;
+            case '*':
+                stack_push(operand_stack, a * b);
+                return true;
+                break;
+            case '/':
+                stack_push(operand_stack, a / b);
+                return true;
+                break;
+
+            default:
+                return false;
+                break;
+        }
+    } else if (*(token.str) == 'U') {
+        // Unary prefix operator
+        int operand = stack_pop(operand_stack);
+        switch (op) {
+            case TK_NEGATIVE:
+                stack_push(operand_stack, -operand);
+                return true;
+                break;
+
+            default:
+                return false;
+                break;
+        }
+    }
+    return false;
+}
+
+word_t eval_s(bool *success) {
     // Initial two stacks
     Stack operand_stack;
     stack_init(&operand_stack);
@@ -332,11 +393,41 @@ word_t eval_s() {
 
     // Initial token to priority map
     Map priorities;
-    pair data[] = {{}, {0, 0}};
+    pair data[] = {{'(', 1}, {')', 1}, {'*', 3},   {'/', 3},
+                   {'+', 4}, {'-', 4}, {TK_EQ, 7}, {0, 0}};
     map_init(&priorities, data);
-    
-    tokens;
-    nr_token;
+
+    for (int i = 0; i < nr_token; ++i) {
+        if (tokens[i].type == TK_NUMBER) {
+            // Push number
+            stack_push(&operand_stack, atoi(tokens[i].str));
+        } else {
+            // Push tokens index
+            if (operator_stack.length == 0) {
+                stack_push(&operator_stack, i);
+            }
+            int top_operator_priority =
+                priorities.data[tokens[stack_top(&operator_stack)].type];
+            int current_token_priority = priorities.data[tokens[i].type];
+            while (operator_stack.length != 0 &&
+                   current_token_priority >= top_operator_priority) {
+                stack_pop(&operator_stack);
+                top_operator_priority =
+                    priorities.data[tokens[stack_top(&operator_stack)].type];
+            }
+            if (tokens[i].type != ')') {
+                stack_push(&operator_stack, i);
+            }
+        }
+    }
+
+    if (operand_stack.length == 1 && operator_stack.length == 0) {
+        *success = true;
+        return stack_pop(&operand_stack);
+    } else {
+        *success = false;
+        return 0;
+    }
 }
 
 word_t expr(char *e, bool *success) {
@@ -346,5 +437,6 @@ word_t expr(char *e, bool *success) {
     }
 
     *success = true;
-    return eval(0, nr_token - 1);
+    // return eval(0, nr_token - 1);
+    return eval_s(success);
 }

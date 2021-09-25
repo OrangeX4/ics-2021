@@ -1,21 +1,28 @@
 #include "struct.h"
 
 void stack_init(Stack* s) {
-    s->p = 0;
+    s->length = 0;
 }
 
 void stack_push(Stack* s, int value) {
-    if (s->p >= 64) {
+    if (s->length >= 64) {
         panic("Stack Overflow.");
     }
-    s->arr[s->p++] = value; 
+    s->arr[s->length++] = value; 
 }
 
 int stack_pop(Stack* s) {
-    if (s->p <= 0) {
+    if (s->length <= 0) {
         panic("Stack Overflow.");
     }
-    return s->arr[--s->p]; 
+    return s->arr[--s->length]; 
+}
+
+int stack_top(Stack* s) {
+    if (s->length <= 0) {
+        panic("Stack Overflow.");
+    }
+    return s->arr[s->length - 1]; 
 }
 
 void map_init(Map* m, pair* data) {
