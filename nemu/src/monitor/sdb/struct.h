@@ -19,7 +19,7 @@ int stack_pop(Stack* s);
 int stack_top(Stack* s);
 
 typedef struct map {
-    int data[256];
+    int data[512];
     int p;
 } Map;
 
