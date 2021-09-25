@@ -385,7 +385,7 @@ word_t eval_s(bool *success) {
     // Initial token to priority map
     Map priorities;
     pair data[] = {{'(', 1}, {')', 1}, {'*', 3},   {'/', 3},
-                   {'+', 4}, {'-', 4}, {TK_EQ, 7}, {0, 0}};
+                   {'+', 4}, {'-', 4}, {TK_NEGATIVE, 4}, {TK_EQ, 7}, {0, 0}};
     map_init(&priorities, data);
 
     for (int i = 0; i < nr_token; ++i) {
