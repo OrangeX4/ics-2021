@@ -414,15 +414,12 @@ word_t eval_s(bool *success) {
             if (tokens[i].type != ')') {
                 stack_push(&operator_stack, i);
             } else {
-                while (current_token_priority >= top_operator_priority) {
+                while (tokens[stack_top(&operator_stack)].type != '(') {
                     // stack_pop(&operator_stack);
                     consume_stacks(&operand_stack, &operator_stack);
                     if (operator_stack.length == 0) {
                         break;
                     }
-                    top_operator_priority =
-                        priorities
-                            .data[tokens[stack_top(&operator_stack)].type];
                 }
             }
         }
