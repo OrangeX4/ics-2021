@@ -54,7 +54,7 @@ void UnitTest() {
     printf("Function [eval]\n");
     Test("-1 == 4294967295", eval_test("-1", 4294967295));
     Test("1 + 1 == 2", eval_test("1 + 1", 2));
-    Test("1 + -1 == 0", eval_test("1 + -1", 0));
+    // Test("1 + -1 == 0", eval_test("1 + -1", 0));
     // Test("--1 == 1", eval_test("--1", 1));
     // Test("---1 == 4294967295", eval_test("---1", 4294967295));
     Test("1 + 3 + 2 == 6", eval_test("1 + 3 + 2", 6));
