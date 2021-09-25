@@ -19,6 +19,13 @@ void StructTest() {
     stack_push(&s, 3);
     Test("pop() == 3", stack_pop(&s) == 3);
     Test("pop() == 5", stack_pop(&s) == 5);
+
+    Map m;
+    pair data[] = {{1, 2}, {3, 4}, {0, 0}};
+    map_init(&m, data);
+    Test("m.data[1] == 2", m.data[1] == 2);
+    Test("m.data[3] == 4", m.data[3] == 4);
+    
 }
 
 void UnitTest() {
