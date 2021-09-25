@@ -125,7 +125,7 @@ static bool make_token(char *e) {
                              tokens[nr_token - 1].type == ')')) {
                             // Minus
                             tokens[nr_token].type = '-';
-                            *(tokens[nr_token].str) = 'i';
+                            *(tokens[nr_token].str) = 'B';
                         } else {
                             // Negative
                             tokens[nr_token].type = TK_NEGATIVE;
