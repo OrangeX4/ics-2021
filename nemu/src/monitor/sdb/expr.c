@@ -401,8 +401,8 @@ word_t eval_s(bool *success) {
             int top_operator_priority =
                 priorities.data[tokens[stack_top(&operator_stack)].type];
             int current_token_priority = priorities.data[tokens[i].type];
-            printf("top_operator_priority: %d\n", top_operator_priority);
-            printf("current_token_priority: %d\n", current_token_priority);
+            // printf("top_operator_priority: %d\n", top_operator_priority);
+            // printf("current_token_priority: %d\n", current_token_priority);
             while (operator_stack.length != 0 &&
                    current_token_priority >= top_operator_priority) {
                 // stack_pop(&operator_stack);
