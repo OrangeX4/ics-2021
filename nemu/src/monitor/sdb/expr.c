@@ -50,6 +50,7 @@ static struct rule {
     {"-", '-'},                     // minus or negative
     {"\\*", '*'},                   // multiply
     {"\\/", '/'},                   // divide
+    {"\\%%", '%'},                  // mod
     {"\\(", '('},                   // left bracket
     {"\\)", ')'},                   // right bracket
     {"<<", TK_LS},                  // left shift
@@ -143,6 +144,7 @@ static bool make_token(char *e) {
                         break;
                     case '+':
                     case '/':
+                    case '%':
                     case TK_LS:
                     case TK_RS:
                     case TK_GTE:
@@ -267,6 +269,10 @@ bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
                 stack_push(operand_stack, a / b);
                 return true;
                 break;
+            case '%':
+                stack_push(operand_stack, a % b);
+                return true;
+                break;
             case TK_LS:
                 stack_push(operand_stack, a << b);
                 return true;
@@ -344,7 +350,7 @@ bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
                 stack_push(operand_stack, ~operand);
                 return true;
                 break;
-                
+
             default:
                 return false;
                 break;
@@ -362,12 +368,13 @@ word_t eval(bool *success) {
 
     // Initial token to priority map
     Map priorities;
-    pair data[] = {{'(', 1},     {')', 1},     {TK_NEGATIVE, 2}, {TK_DEREF, 2},
-                   {'!', 2},     {'~', 2},     {'*', 3},         {'/', 3},
-                   {'+', 4},     {'-', 4},     {TK_LS, 5},       {TK_RS, 5},
-                   {TK_GTE, 6},  {TK_LTE, 6},  {TK_GT, 6},       {TK_LT, 6},
-                   {TK_EQ, 7},   {TK_NEQ, 7},  {TK_BAND, 8},     {TK_BOR, 9},
-                   {TK_XOR, 10}, {TK_AND, 11}, {TK_OR, 12},      {0, 0}};
+    pair data[] = {{'(', 1},    {')', 1},     {TK_NEGATIVE, 2}, {TK_DEREF, 2},
+                   {'!', 2},    {'~', 2},     {'*', 3},         {'/', 3},
+                   {'%', 3},    {'+', 4},     {'-', 4},         {TK_LS, 5},
+                   {TK_RS, 5},  {TK_GTE, 6},  {TK_LTE, 6},      {TK_GT, 6},
+                   {TK_LT, 6},  {TK_EQ, 7},   {TK_NEQ, 7},      {TK_BAND, 8},
+                   {TK_BOR, 9}, {TK_XOR, 10}, {TK_AND, 11},     {TK_OR, 12},
+                   {0, 0}};
     map_init(&priorities, data);
 
     for (int i = 0; i < nr_token; ++i) {
