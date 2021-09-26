@@ -72,10 +72,10 @@ void wp_show() {
     }
     printf("\n");
 
-    printf("%-8s%-8s%-32s%-16s\n", "No", "Enable", "Expr", "Last Value");
+    printf("%-8s%-8s%-16s%-16s\n", "No", "Enable", "Expr", "Last Value");
     current = &head;
     while (current->next != NULL) {
-        printf("%-8d%-8s%-32s%-16u\n", current->next->NO,
+        printf("%-8d%-8s%-16s%-16u\n", current->next->NO,
                current->next->is_enable ? "yes" : "no", current->next->expr,
                current->next->value);
         current = current->next;
