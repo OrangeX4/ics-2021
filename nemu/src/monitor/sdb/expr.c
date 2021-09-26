@@ -136,6 +136,8 @@ static bool make_token(char *e) {
                     case TK_LT:
                     case TK_EQ:
                     case TK_NEQ:
+                    case TK_AND:
+                    case TK_OR:
                         // Binary infix operator
                         tokens[nr_token].type = rules[i].token_type;
                         *(tokens[nr_token].str) = 'B';
