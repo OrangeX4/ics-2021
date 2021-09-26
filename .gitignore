@@ -16,6 +16,7 @@
 # Report
 !*.md
 !*.pdf
+!count.sh
 !images/*
 
 # VSCode

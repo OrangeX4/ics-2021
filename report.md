@@ -544,19 +544,22 @@ $\therefore$ 一共要在调试上花费 $400\times 20\times 0.5=4000$ 分钟, �
 
 `nemu/` 目录下总共有 24167 行代码. 使用的命令是 `find ./nemu | grep '\.c$\|\.h$' | xargs wc -l | grep 'total' | awk '{print substr($1, 1)}'`. 
 
-<!-- $ -->
-
 如果要实现与 `pa0` 进行对比, 我们需要用 `git checkout pa0` 切换到 `pa0` 中, 然后在用上述命令统计出行数, 最后进行一个减法, 再切换回 `pa1` 即可.
 
 对应的 sh 命令文件如下:
 
 ``` sh
 lines_count_pa1=`find ./nemu | grep '\.c$\|\.h$' | xargs wc -l | grep 'total' | awk '{print substr($1, 1)}'`
-git checkout pa0 > /dev/null
+git checkout pa0 >/dev/null 2>/dev/null
 lines_count_pa0=`find ./nemu | grep '\.c$\|\.h$' | xargs wc -l | grep 'total' | awk '{print substr($1, 1)}'`
-git checkout pa1 > /dev/null
-echo `expr $lines_count_pa1-$lines_count_pa0`
+git checkout pa1 >/dev/null 2>/dev/null
+expr="$lines_count_pa1 - $lines_count_pa0"
+echo New lines: `expr $expr`
 ```
+
+输出格式为: `New lines: 1008`
+
+这说明, 我在 pa1 中共写了 1008 行代码.
 
 
 #### 5.5 RTFM
