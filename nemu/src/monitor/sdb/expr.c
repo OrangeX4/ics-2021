@@ -50,7 +50,7 @@ static struct rule {
     {"-", '-'},                     // minus or negative
     {"\\*", '*'},                   // multiply
     {"\\/", '/'},                   // divide
-    {"\\%%", '%'},                  // mod
+    {"\\\%", '%'},                  // mod
     {"\\(", '('},                   // left bracket
     {"\\)", ')'},                   // right bracket
     {"<<", TK_LS},                  // left shift
