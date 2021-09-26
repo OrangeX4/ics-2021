@@ -5,7 +5,7 @@
 
 void wp_show();
 
-bool new_wp(char* expr);
+bool new_wp(char* expr, word_t value);
 
 bool free_wp(int NO);
 

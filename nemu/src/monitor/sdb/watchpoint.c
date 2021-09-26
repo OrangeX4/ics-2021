@@ -83,7 +83,7 @@ void wp_show() {
     printf("\n");
 }
 
-bool new_wp(char* expr) {
+bool new_wp(char* expr, word_t value) {
     int len = strlen(expr);
     if (len > 128) {
         return false;
@@ -95,6 +95,7 @@ bool new_wp(char* expr) {
     strcpy(wp->expr, expr);
     wp->expr[len] = '\0';
     wp->is_enable = true;
+    wp->value = value;
     list_add(&head, wp);
     return true;
 }

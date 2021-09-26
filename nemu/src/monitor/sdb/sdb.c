@@ -125,7 +125,10 @@ static int cmd_w(char *args) {
         return 0;
     }
 
-    if (new_wp(args)) {
+    bool success = false;
+    word_t result = expr(args, &success);
+
+    if (success && new_wp(args, result)) {
         printf("Success to add watchpoint.\n");
     } else {
         printf("Failed to add watchpoint.\n");
