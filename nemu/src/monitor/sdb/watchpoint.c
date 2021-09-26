@@ -4,6 +4,7 @@
 
 typedef struct watchpoint {
     int NO;
+    bool is_enable;
     char expr[128];
     word_t value;
     struct watchpoint *next;
