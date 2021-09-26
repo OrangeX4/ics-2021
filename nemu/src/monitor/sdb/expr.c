@@ -1,5 +1,7 @@
 #include <isa.h>
 
+#include <arpa/inet.h>
+
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
@@ -339,7 +341,7 @@ bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
                 return true;
                 break;
             case TK_DEREF:
-                stack_push(operand_stack, vaddr_read(operand, 4));
+                stack_push(operand_stack, htonl(vaddr_read(operand, 4)));
                 return true;
                 break;
             case '!':
