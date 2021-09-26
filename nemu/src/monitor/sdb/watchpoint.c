@@ -134,7 +134,7 @@ bool is_stop() {
         if (success) {
             if (current->next->value != value) {
                 result = true;
-                printf("Value of expr [%s] changed from %d to %d.\n",
+                printf("Value of expr [%s] changed from %d to %d.\n\n",
                        current->next->expr, current->next->value, value);
                 current->next->value = value;
             }
