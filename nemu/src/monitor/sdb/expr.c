@@ -235,6 +235,14 @@ bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
                 stack_push(operand_stack, a < b);
                 return true;
                 break;
+            case TK_EQ:
+                stack_push(operand_stack, a == b);
+                return true;
+                break;
+            case TK_NEQ:
+                stack_push(operand_stack, a != b);
+                return true;
+                break;
 
             default:
                 return false;
