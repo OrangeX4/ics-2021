@@ -380,7 +380,6 @@ word_t eval(bool *success) {
     Stack operator_stack;
     stack_init(&operator_stack);
 
-
     for (int i = 0; i < nr_token; ++i) {
         if (tokens[i].type == TK_NUMBER) {
             // Push number
