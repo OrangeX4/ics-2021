@@ -394,3 +394,66 @@ Build Options
 > **Question:** 如果生成的表达式有除0行为, 你编写的表达式生成器的行为又会怎么样呢?
 >
 > **Answer:** 如果有明显的除零行为, 例如 `1 / 0`, 编译器编译的时候就会报错, 即 `ret = system("gcc /tmp/.code.c -o /tmp/.expr")` 执行后 `ret` 就不等于零了. 但是对于复杂一点的除零行为, 例如 `1 / ( 0 / 1 )`, 编译器是检测不出来的, 这时候只能等到运行时才能报错, 即使用 `ret = pclose(fp)` 获取退出码, `ret` 不等于零, 代表未正常退出, 就说明表达式除零了, 得舍去.
+
+
+### 4. 阶段三: 监视点
+
+#### 4.1 扩展表达式求值的功能: 用栈 (Stack) 计算表达式
+
+如果我还是沿用阶段二的那种递归式求表达式的值的方法的话, `get_op()` 操作符优先级的问题会弄得我焦头烂额, 根本无从下手.
+
+所以我决定用栈 (Stack) 重构表达式求值的部分, 这样在后续添加新的操作符会非常方便.
+
+用栈计算表达式部分的思想参考了这篇文章: [Infix to Postfix/Prefix converter](https://www.web4college.com/converters/infix-to-postfix-prefix.php).
+
+大概思路如下:
+
+1. Scan input string from left to right character by character.
+2. If the character is an operand, put it into output stack.
+If the character is an operator and operator's stack is empty, push operator into operators' stack.
+3. If the operator's stack is not empty, there may be following possibilities.
+4. If the precedence of scanned operator is greater than the top most operator of operator's stack, push this operator into operand's stack.
+5. If the precedence of scanned operator is less than or equal to the top most operator of operator's stack, pop the operators from operand's stack until we find a low precedence operator than the scanned character. Never pop out ( '(' ) or ( ')' ) whatever may be the precedence level of scanned character.
+6. If the character is opening round bracket ( '(' ), push it into operator's stack.
+7. If the character is closing round bracket ( ')' ), pop out operators from operator's stack until we find an opening bracket ('(' ).
+8. Now pop out all the remaining operators from the operator's stack and push into output stack.
+
+我实现了两个数据结构: `Stack` 和 `Map`, 存放在 `struct.c` 中. 使用这种方法重构之后, 我就可以很方便地添加各种操作符了.
+
+最终, 我实现的表达式求值的功能如下:
+
+``` c
+static struct rule {
+    char *regex;
+    int token_type;
+} rules[] = {
+
+    {" +", TK_NOTYPE},              // spaces
+    {"\\$[a-z]*[0-9]*", TK_REG},    // reg
+    {"0[xX][0-9a-fA-F]+", TK_HEX},  // hex number
+    {"[0-9]+", TK_NUMBER},          // number
+    {"\\!", '!'},                   // not
+    {"\\~", '~'},                   // bitwise not
+    {"\\+", '+'},                   // plus
+    {"-", '-'},                     // minus or negative
+    {"\\*", '*'},                   // multiply
+    {"\\/", '/'},                   // divide
+    {"\\\%", '%'},                  // mod
+    {"\\(", '('},                   // left bracket
+    {"\\)", ')'},                   // right bracket
+    {"<<", TK_LS},                  // left shift
+    {">>", TK_RS},                  // right shift
+    {">=", TK_GTE},                 // greater than or equal to
+    {"<=", TK_LTE},                 // less than or equal to
+    {">", TK_GT},                   // greater than
+    {"<", TK_LT},                   // less than
+    {"==", TK_EQ},                  // equal
+    {"!=", TK_NEQ},                 // not equal
+    {"&&", TK_AND},                 // and
+    {"\\|\\|", TK_OR},              // or
+    {"&", TK_BAND},                 // bitwise and
+    {"\\|", TK_BOR},                // bitwise or
+    {"\\^", TK_XOR},                // bitwise xor
+};
+```
+
