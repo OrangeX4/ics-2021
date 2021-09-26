@@ -344,7 +344,7 @@ bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
                 stack_push(operand_stack, ~operand);
                 return true;
                 break;
-
+                
             default:
                 return false;
                 break;
