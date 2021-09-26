@@ -411,12 +411,12 @@ Build Options
 1. Scan input string from left to right character by character.
 2. If the character is an operand, put it into output stack.
 If the character is an operator and operator's stack is empty, push operator into operators' stack.
-3. If the operator's stack is not empty, there may be following possibilities.
-4. If the precedence of scanned operator is greater than the top most operator of operator's stack, push this operator into operand's stack.
-5. If the precedence of scanned operator is less than or equal to the top most operator of operator's stack, pop the operators from operand's stack until we find a low precedence operator than the scanned character. Never pop out ( '(' ) or ( ')' ) whatever may be the precedence level of scanned character.
-6. If the character is opening round bracket ( '(' ), push it into operator's stack.
-7. If the character is closing round bracket ( ')' ), pop out operators from operator's stack until we find an opening bracket ('(' ).
-8. Now pop out all the remaining operators from the operator's stack and push into output stack.
+1. If the operator's stack is not empty, there may be following possibilities.
+2. If the precedence of scanned operator is greater than the top most operator of operator's stack, push this operator into operand's stack.
+3. If the precedence of scanned operator is less than or equal to the top most operator of operator's stack, pop the operators from operand's stack until we find a low precedence operator than the scanned character. Never pop out ( '(' ) or ( ')' ) whatever may be the precedence level of scanned character.
+4. If the character is opening round bracket ( '(' ), push it into operator's stack.
+5. If the character is closing round bracket ( ')' ), pop out operators from operator's stack until we find an opening bracket ('(' ).
+6. Now pop out all the remaining operators from the operator's stack and push into output stack.
 
 我实现了两个数据结构: `Stack` 和 `Map`, 存放在 `struct.c` 中. 使用这种方法重构之后, 我就可以很方便地添加各种操作符了.
 
@@ -457,3 +457,8 @@ static struct rule {
 };
 ```
 
+#### 4.2 温故而知新: static 的含义
+
+> **Question:** 框架代码中定义 `wp_pool` 等变量的时候使用了关键字 `static`, `static` 在此处的含义是什么? 为什么要在此处使用它?
+>
+> **Answer:** `static` 是 "静态" 的意思, 在此处指静态全局变量. 静态全局变量与全局变量的区别在于, 如果程序包含多个文件的话, 它作用于定义它的文件里, 不能作用到其它文件里, 即被 `static` 关键字修饰过的变量具有文件作用域. 这样即使两个不同的源文件都定义了相同名字的静态全局变量, 它们也是不同的变量.
