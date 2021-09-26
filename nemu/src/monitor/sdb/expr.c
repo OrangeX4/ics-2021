@@ -23,6 +23,9 @@ enum {
     TK_LT,
     TK_EQ,
     TK_NEQ,
+    TK_BAND,
+    TK_BOR,
+    TK_XOR,
     TK_AND,
     TK_OR,
     /* Add more token types */
@@ -57,6 +60,9 @@ static struct rule {
     {"!=", TK_NEQ},                 // not equal
     {"&&", TK_AND},                 // and
     {"\\|\\|", TK_OR},              // or
+    {"&", TK_BAND},                 // bitwise and
+    {"\\|", TK_BOR},                // bitwise or
+    {"\\^", TK_XOR},                // bitwise xor
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -143,6 +149,9 @@ static bool make_token(char *e) {
                     case TK_LT:
                     case TK_EQ:
                     case TK_NEQ:
+                    case TK_BAND:
+                    case TK_BOR:
+                    case TK_XOR:
                     case TK_AND:
                     case TK_OR:
                         // Binary infix operator
@@ -280,6 +289,18 @@ bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
                 stack_push(operand_stack, a != b);
                 return true;
                 break;
+            case TK_BAND:
+                stack_push(operand_stack, a & b);
+                return true;
+                break;
+            case TK_BOR:
+                stack_push(operand_stack, a | b);
+                return true;
+                break;
+            case TK_XOR:
+                stack_push(operand_stack, a ^ b);
+                return true;
+                break;
             case TK_AND:
                 stack_push(operand_stack, a && b);
                 return true;
@@ -323,11 +344,12 @@ word_t eval(bool *success) {
 
     // Initial token to priority map
     Map priorities;
-    pair data[] = {
-        {'(', 1},    {')', 1},     {TK_NEGATIVE, 2}, {TK_DEREF, 2}, {'*', 3},
-        {'/', 3},    {'+', 4},     {'-', 4},         {TK_LS, 5},    {TK_RS, 5},
-        {TK_GTE, 6}, {TK_LTE, 6},  {TK_GT, 6},       {TK_LT, 6},    {TK_EQ, 7},
-        {TK_NEQ, 7}, {TK_AND, 11}, {TK_OR, 12},      {0, 0}};
+    pair data[] = {{'(', 1},     {')', 1},    {TK_NEGATIVE, 2}, {TK_DEREF, 2},
+                   {'*', 3},     {'/', 3},    {'+', 4},         {'-', 4},
+                   {TK_LS, 5},   {TK_RS, 5},  {TK_GTE, 6},      {TK_LTE, 6},
+                   {TK_GT, 6},   {TK_LT, 6},  {TK_EQ, 7},       {TK_NEQ, 7},
+                   {TK_BAND, 8}, {TK_BOR, 9}, {TK_XOR, 10},     {TK_AND, 11},
+                   {TK_OR, 12},  {0, 0}};
     map_init(&priorities, data);
 
     for (int i = 0; i < nr_token; ++i) {
