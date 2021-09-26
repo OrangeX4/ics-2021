@@ -4,10 +4,9 @@
 
 typedef struct watchpoint {
     int NO;
+    char expr[128];
+    word_t value;
     struct watchpoint *next;
-
-    /* TODO: Add more members if necessary */
-
 } WP;
 
 static WP wp_pool[NR_WP] = {};

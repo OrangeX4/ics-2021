@@ -220,6 +220,9 @@ void init_sdb() {
   /* Compile the regular expressions. */
   init_regex();
 
+  /* Initialize the priorities of tokens. */
+  init_priorities();
+
   /* Initialize the watchpoint pool. */
   init_wp_pool();
 }

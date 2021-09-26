@@ -359,15 +359,10 @@ bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
     return false;
 }
 
-word_t eval(bool *success) {
-    // Initial two stacks
-    Stack operand_stack;
-    stack_init(&operand_stack);
-    Stack operator_stack;
-    stack_init(&operator_stack);
+static Map priorities;
 
-    // Initial token to priority map
-    Map priorities;
+// Initiate token to priority map
+void init_priorities() {
     pair data[] = {{'(', 1},    {')', 1},     {TK_NEGATIVE, 2}, {TK_DEREF, 2},
                    {'!', 2},    {'~', 2},     {'*', 3},         {'/', 3},
                    {'%', 3},    {'+', 4},     {'-', 4},         {TK_LS, 5},
@@ -376,6 +371,15 @@ word_t eval(bool *success) {
                    {TK_BOR, 9}, {TK_XOR, 10}, {TK_AND, 11},     {TK_OR, 12},
                    {0, 0}};
     map_init(&priorities, data);
+}
+
+word_t eval(bool *success) {
+    // Initial two stacks
+    Stack operand_stack;
+    stack_init(&operand_stack);
+    Stack operator_stack;
+    stack_init(&operator_stack);
+
 
     for (int i = 0; i < nr_token; ++i) {
         if (tokens[i].type == TK_NUMBER) {
