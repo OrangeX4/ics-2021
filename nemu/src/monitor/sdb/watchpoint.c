@@ -142,6 +142,7 @@ bool is_stop() {
             result = true;
             printf("Eval [%s] failed. Please check it.", current->next->expr);
         }
+        current = current->next; 
     }
     return result;
 }
