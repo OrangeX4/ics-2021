@@ -44,6 +44,8 @@ static struct rule {
     {"\\$[a-z]*[0-9]*", TK_REG},    // reg
     {"0[xX][0-9a-fA-F]+", TK_HEX},  // hex number
     {"[0-9]+", TK_NUMBER},          // number
+    {"\\!", '!'},                   // not
+    {"\\~", '~'},                   // bitwise not
     {"\\+", '+'},                   // plus
     {"-", '-'},                     // minus or negative
     {"\\*", '*'},                   // multiply
@@ -157,6 +159,14 @@ static bool make_token(char *e) {
                         // Binary infix operator
                         tokens[nr_token].type = rules[i].token_type;
                         *(tokens[nr_token].str) = 'B';
+                        ++nr_token;
+                        check_expression_length();
+                        break;
+                    case '!':
+                    case '~':
+                        // Unary prefix operator
+                        tokens[nr_token].type = rules[i].token_type;
+                        *(tokens[nr_token].str) = 'U';
                         ++nr_token;
                         check_expression_length();
                         break;
@@ -326,6 +336,14 @@ bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
                 stack_push(operand_stack, vaddr_read(operand, 4));
                 return true;
                 break;
+            case '!':
+                stack_push(operand_stack, !operand);
+                return true;
+                break;
+            case '~':
+                stack_push(operand_stack, ~operand);
+                return true;
+                break;
 
             default:
                 return false;
@@ -344,12 +362,12 @@ word_t eval(bool *success) {
 
     // Initial token to priority map
     Map priorities;
-    pair data[] = {{'(', 1},     {')', 1},    {TK_NEGATIVE, 2}, {TK_DEREF, 2},
-                   {'*', 3},     {'/', 3},    {'+', 4},         {'-', 4},
-                   {TK_LS, 5},   {TK_RS, 5},  {TK_GTE, 6},      {TK_LTE, 6},
-                   {TK_GT, 6},   {TK_LT, 6},  {TK_EQ, 7},       {TK_NEQ, 7},
-                   {TK_BAND, 8}, {TK_BOR, 9}, {TK_XOR, 10},     {TK_AND, 11},
-                   {TK_OR, 12},  {0, 0}};
+    pair data[] = {{'(', 1},     {')', 1},     {TK_NEGATIVE, 2}, {TK_DEREF, 2},
+                   {'!', 2},     {'~', 2},     {'*', 3},         {'/', 3},
+                   {'+', 4},     {'-', 4},     {TK_LS, 5},       {TK_RS, 5},
+                   {TK_GTE, 6},  {TK_LTE, 6},  {TK_GT, 6},       {TK_LT, 6},
+                   {TK_EQ, 7},   {TK_NEQ, 7},  {TK_BAND, 8},     {TK_BOR, 9},
+                   {TK_XOR, 10}, {TK_AND, 11}, {TK_OR, 12},      {0, 0}};
     map_init(&priorities, data);
 
     for (int i = 0; i < nr_token; ++i) {
