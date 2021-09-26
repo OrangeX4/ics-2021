@@ -507,5 +507,63 @@ static struct rule {
 
 ![](images/statemachine.png)
 
+
 #### 5.2 理解基础设施
 
+$\because$ 编译 $500$ 次 NEMU 才能完成 PA, 其中 $90\%$ 的次数是用来调试
+
+$\therefore$ 调试的次数为 $500\times 90 \% = 400$ 次
+
+$\because$ 假设每一次调试是为了解决一个 bug, 每个 bug 要分析 $20$ 个信息, 分析一个信息要 $30$ 秒, 即 $0.5$ 分钟 
+
+$\therefore$ 一共要在调试上花费 $400\times 20\times 0.5=4000$ 分钟, 即 $4000 / 60 = 66.7$ 个小时
+
+如果实现了简易调试器, 所用调试时间就降为了原来的 $\displaystyle \frac{1}{3}$, 即节省了 $\displaystyle (1-\frac{1}{3})\times 66.7=44.4$ 个小时
+
+
+#### 5.3 RTFM
+
+**(a)** riscv32 有哪几种指令格式?
+
+基本上有这六种指令格式.
+
+![](images/2021-09-26-20-00-44.png)
+
+**(b)** LUI 指令的行为是什么?
+
+![](images/2021-09-26-20-12-33.png)
+
+将符号位扩展的 20 位立即数 `immediate` 左移 12 位, 并将低 12 位置零, 写入 `x[rd]` 中.
+
+**(c)** mstatus 寄存器的结构是怎么样的?
+
+![](images/2021-09-26-20-13-33.png)
+
+
+#### 5.4 shell 命令
+
+`nemu/` 目录下总共有 24167 行代码. 使用的命令是 `find ./nemu | grep '\.c$\|\.h$' | xargs wc -l | grep 'total' | awk '{print substr($1, 1)}'`. 
+
+<!-- $ -->
+
+如果要实现与 `pa0` 进行对比, 我们需要用 `git checkout pa0` 切换到 `pa0` 中, 然后在用上述命令统计出行数, 最后进行一个减法, 再切换回 `pa1` 即可.
+
+对应的 sh 命令文件如下:
+
+``` sh
+lines_count_pa1=`find ./nemu | grep '\.c$\|\.h$' | xargs wc -l | grep 'total' | awk '{print substr($1, 1)}'`
+git checkout pa0 > /dev/null
+lines_count_pa0=`find ./nemu | grep '\.c$\|\.h$' | xargs wc -l | grep 'total' | awk '{print substr($1, 1)}'`
+git checkout pa1 > /dev/null
+echo `expr $lines_count_pa1-$lines_count_pa0`
+```
+
+
+#### 5.5 RTFM
+
+> -Wall: enable a set of warning, actually not all.
+> -Werror: every warning is treated as an error.
+
+`-Wall` 编译选项是指, 开启一系列的警告 (绝大部分的警告).
+
+`-Werror` 编译选项是指, 将每个警告都视作错误, 在编译时就使其无法编译通过.
