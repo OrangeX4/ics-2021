@@ -1,4 +1,4 @@
-#include "sdb.h"
+#include "watchpoint.h"
 
 #define NR_WP 32
 
@@ -7,22 +7,100 @@ typedef struct watchpoint {
     bool is_enable;
     char expr[128];
     word_t value;
-    struct watchpoint *next;
+    struct watchpoint* next;
 } WP;
 
 static WP wp_pool[NR_WP] = {};
-static WP *head = NULL, *free_ = NULL;
+static WP head, free_;
 
 void init_wp_pool() {
     int i;
-    for (i = 0; i < NR_WP; i++) {
+    for (i = 0; i < NR_WP - 1; i++) {
         wp_pool[i].NO = i;
+        wp_pool[i].is_enable = false;
         wp_pool[i].next = &wp_pool[i + 1];
     }
+    wp_pool[NR_WP - 1].NO = NR_WP - 1;
+    wp_pool[NR_WP - 1].is_enable = false;
     wp_pool[NR_WP - 1].next = NULL;
 
-    head = NULL;
-    free_ = wp_pool;
+    head.NO = -1;
+    head.next = NULL;
+    free_.NO = -1;
+    free_.next = wp_pool;
 }
 
-/* TODO: Implement the functionality of watchpoint */
+void list_add(WP* head_p, WP* wp) {
+    WP* current = head_p;
+    while (wp->NO <= current->NO ||
+           (current->next != NULL && wp->NO >= current->next->NO)) {
+        current = current->next;
+    }
+    wp->next = current->next;
+    current->next = wp;
+}
+
+WP* list_remove(WP* head_p, int NO) {
+    WP* current = head_p;
+    while (current->next != NULL &&
+           (current->next == NULL || current->next->NO != NO)) {
+        current = current->next;
+    }
+    if (current->next == NULL) {
+        return NULL;
+    }
+    WP* return_wp = current->next;
+    current->next = return_wp->next;
+    return return_wp;
+}
+
+WP* list_pop(WP* head_p) {
+    if (head_p->next == NULL) {
+        return NULL;
+    }
+    WP* return_wp = head_p->next;
+    head_p->next = return_wp->next;
+    return return_wp;
+}
+
+void wp_show() {
+    printf("head: ");
+    WP* current = &head;
+    while (current->next != NULL) {
+        printf("%d ", current->next->NO);
+        current = current->next;
+    }
+    printf("\n");
+    printf("free: ");
+    current = &free_;
+    while (current->next != NULL) {
+        printf("%d ", current->next->NO);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+bool new_wp(char* expr) {
+    int len = strlen(expr);
+    if (len > 128) {
+        return false;
+    }
+    WP* wp = list_pop(&free_);
+    if (wp == NULL) {
+        return false;
+    }
+    strcpy(wp->expr, expr);
+    wp->expr[len] = '\0';
+    wp->is_enable = true;
+    list_add(&head, wp);
+    return true;
+}
+
+bool free_wp(int NO) {
+    WP* wp = list_remove(&head, NO);
+    if (wp == NULL) {
+        return false;
+    }
+    list_add(&free_, wp);
+    return true;
+}

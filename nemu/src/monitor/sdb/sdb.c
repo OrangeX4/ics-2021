@@ -7,6 +7,7 @@
 #include <memory/vaddr.h>
 
 #include "expr.h"
+#include "watchpoint.h"
 #include "test.h"
 
 static bool is_batch_mode = false;
@@ -68,8 +69,8 @@ static int cmd_info(char *args) {
         isa_reg_display();
         return 0;
     } else if (*args == 'w') {
-        TODO();
-        return -1;
+        wp_show();
+        return 0;
     } else {
         printf("The args are supposed to be r or w.\n");
         return 0;
@@ -118,6 +119,34 @@ static int cmd_p(char *args) {
     return 0;
 }
 
+static int cmd_w(char *args) {
+    if (!args) {
+        printf("Expression are necessary.\n");
+        return 0;
+    }
+
+    if (new_wp(args)) {
+        printf("Success to add watchpoint.");
+    } else {
+        printf("Failed to add watchpoint.\n");
+    }
+    return 0;
+}
+
+static int cmd_d(char *args) {
+    if (!args) {
+        printf("Argument are necessary.\n");
+        return 0;
+    }
+
+    if (free_wp(atoi(args))) {
+        printf("Success to delete watchpoint.");
+    } else {
+        printf("Failed to delete watchpoint.\n");
+    }
+    return 0;
+}
+
 static int cmd_test(char *args) {
     if (args) {
         if (*args == 'r') {
@@ -144,6 +173,8 @@ static struct {
   { "info", "Info SUBCMD", cmd_info},
   { "x", "Read memory data", cmd_x},
   { "p", "Execute expression", cmd_p},
+  { "w", "Set watchpoint", cmd_w},
+  { "d", "Delete watchpoint", cmd_d},
   { "test", "Execute 'test' for unit test and 'test r' for random test", cmd_test},
 
   /* TODO: Add more commands */

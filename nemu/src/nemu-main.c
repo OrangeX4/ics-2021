@@ -13,10 +13,6 @@ int main(int argc, char *argv[]) {
     init_monitor(argc, argv);
 #endif
 
-    int i = 1;
-    ++i;
-    ++i;
-
     /* Start engine. */
     engine_start();
 
