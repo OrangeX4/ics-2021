@@ -126,7 +126,7 @@ static int cmd_w(char *args) {
     }
 
     if (new_wp(args)) {
-        printf("Success to add watchpoint.");
+        printf("Success to add watchpoint.\n");
     } else {
         printf("Failed to add watchpoint.\n");
     }
@@ -140,7 +140,7 @@ static int cmd_d(char *args) {
     }
 
     if (free_wp(atoi(args))) {
-        printf("Success to delete watchpoint.");
+        printf("Success to delete watchpoint.\n");
     } else {
         printf("Failed to delete watchpoint.\n");
     }
