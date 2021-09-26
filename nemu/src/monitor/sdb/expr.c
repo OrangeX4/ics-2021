@@ -5,6 +5,8 @@
  */
 #include <regex.h>
 
+#include <memory/vaddr.h>
+
 #include "struct.h"
 
 enum {
@@ -13,6 +15,7 @@ enum {
     TK_HEX,
     TK_NUMBER,
     TK_NEGATIVE,
+    TK_DEREF,
     TK_GTE,
     TK_LTE,
     TK_GT,
@@ -128,7 +131,6 @@ static bool make_token(char *e) {
                         check_expression_length();
                         break;
                     case '+':
-                    case '*':
                     case '/':
                     case TK_GTE:
                     case TK_LTE:
@@ -144,6 +146,22 @@ static bool make_token(char *e) {
                         ++nr_token;
                         check_expression_length();
                         break;
+                    case '*':
+                        if (nr_token - 1 >= 0 &&
+                            (tokens[nr_token - 1].type == TK_NUMBER ||
+                             tokens[nr_token - 1].type == ')')) {
+                            // Multiply
+                            tokens[nr_token].type = '*';
+                            *(tokens[nr_token].str) = 'B';
+                        } else {
+                            // Deref
+                            tokens[nr_token].type = TK_DEREF;
+                            // Unary prefix operator
+                            *(tokens[nr_token].str) = 'U';
+                        }
+                        ++nr_token;
+                        check_expression_length();
+                        break;
                     case '-':
                         if (nr_token - 1 >= 0 &&
                             (tokens[nr_token - 1].type == TK_NUMBER ||
@@ -154,7 +172,7 @@ static bool make_token(char *e) {
                         } else {
                             // Negative
                             tokens[nr_token].type = TK_NEGATIVE;
-                            // Unary prEfix operator
+                            // Unary prefix operator
                             *(tokens[nr_token].str) = 'U';
                         }
                         ++nr_token;
@@ -270,6 +288,10 @@ bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
                 stack_push(operand_stack, -operand);
                 return true;
                 break;
+            case TK_DEREF:
+                stack_push(operand_stack, vaddr_read(operand, 4));
+                return true;
+                break;
 
             default:
                 return false;
@@ -288,10 +310,11 @@ word_t eval(bool *success) {
 
     // Initial token to priority map
     Map priorities;
-    pair data[] = {{'(', 1},    {')', 1},     {TK_NEGATIVE, 2}, {'*', 3},
-                   {'/', 3},    {'+', 4},     {'-', 4},         {TK_GTE, 6},
-                   {TK_LTE, 6}, {TK_GT, 6},   {TK_LT, 6},       {TK_EQ, 7},
-                   {TK_NEQ, 7}, {TK_AND, 11}, {TK_OR, 12},      {0, 0}};
+    pair data[] = {{'(', 1},    {')', 1},    {TK_NEGATIVE, 2}, {TK_DEREF, 2},
+                   {'*', 3},    {'/', 3},    {'+', 4},         {'-', 4},
+                   {TK_GTE, 6}, {TK_LTE, 6}, {TK_GT, 6},       {TK_LT, 6},
+                   {TK_EQ, 7},  {TK_NEQ, 7}, {TK_AND, 11},     {TK_OR, 12},
+                   {0, 0}};
     map_init(&priorities, data);
 
     for (int i = 0; i < nr_token; ++i) {
