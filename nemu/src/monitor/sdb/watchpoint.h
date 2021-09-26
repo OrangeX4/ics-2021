@@ -11,4 +11,6 @@ bool wp_enable(int NO, bool value);
 
 bool free_wp(int NO);
 
+bool is_stop();
+
 #endif

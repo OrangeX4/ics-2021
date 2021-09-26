@@ -1,5 +1,7 @@
 #include "watchpoint.h"
 
+#include "expr.h"
+
 #define NR_WP 32
 
 typedef struct watchpoint {
@@ -121,4 +123,25 @@ bool free_wp(int NO) {
     wp->is_enable = false;
     list_add(&free_, wp);
     return true;
+}
+
+bool is_stop() {
+    WP* current = &head;
+    bool result = false;
+    while (current->next != NULL) {
+        bool success = false;
+        word_t value = expr(current->next->expr, &success);
+        if (success) {
+            if (current->next->value != value) {
+                result = true;
+                printf("Value of expr [%s] changed from %d to %d.",
+                       current->next->expr, current->next->value, value);
+                current->next->value = value;
+            }
+        } else {
+            result = true;
+            printf("Eval [%s] failed. Please check it.", current->next->expr);
+        }
+    }
+    return result;
 }
