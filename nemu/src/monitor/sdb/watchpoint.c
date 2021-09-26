@@ -133,16 +133,18 @@ bool is_stop() {
         word_t value = expr(current->next->expr, &success);
         if (success) {
             if (current->next->value != value) {
-                result = true;
-                printf("Value of expr [%s] changed from %d to %d.\n\n",
-                       current->next->expr, current->next->value, value);
+                if (current->next->is_enable) {
+                    result = true;
+                    printf("Value of expr [%s] changed from %d to %d.\n\n",
+                           current->next->expr, current->next->value, value);
+                }
                 current->next->value = value;
             }
         } else {
             result = true;
             printf("Eval [%s] failed. Please check it.\n", current->next->expr);
         }
-        current = current->next; 
+        current = current->next;
     }
     return result;
 }
