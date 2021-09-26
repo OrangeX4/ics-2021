@@ -198,7 +198,7 @@ bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
         // Do nothing
         return true;
     }
-    if (*(token.str) == 'B') {
+    if (token.str[0] == 'B') {
         // Binary infix operator
         int b = stack_pop(operand_stack);
         int a = stack_pop(operand_stack);
