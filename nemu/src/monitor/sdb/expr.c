@@ -19,6 +19,8 @@ enum {
     TK_LT,
     TK_EQ,
     TK_NEQ,
+    TK_AND,
+    TK_OR,
     /* Add more token types */
 };
 
@@ -47,6 +49,8 @@ static struct rule {
     {"<", TK_LT},                   // less than
     {"==", TK_EQ},                  // equal
     {"!=", TK_NEQ},                 // not equal
+    {"&&", TK_AND},                 // and
+    {"||", TK_OR},                  // or
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -243,6 +247,14 @@ bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
                 stack_push(operand_stack, a != b);
                 return true;
                 break;
+            case TK_AND:
+                stack_push(operand_stack, a && b);
+                return true;
+                break;
+            case TK_OR:
+                stack_push(operand_stack, a || b);
+                return true;
+                break;
 
             default:
                 return false;
@@ -274,10 +286,10 @@ word_t eval(bool *success) {
 
     // Initial token to priority map
     Map priorities;
-    pair data[] = {{'(', 1},    {')', 1},   {TK_NEGATIVE, 2}, {'*', 3},
-                   {'/', 3},    {'+', 4},   {'-', 4},         {TK_GTE, 6},
-                   {TK_LTE, 6}, {TK_GT, 6}, {TK_LT, 6},       {TK_EQ, 7},
-                   {TK_NEQ, 7}, {0, 0}};
+    pair data[] = {{'(', 1},    {')', 1},     {TK_NEGATIVE, 2}, {'*', 3},
+                   {'/', 3},    {'+', 4},     {'-', 4},         {TK_GTE, 6},
+                   {TK_LTE, 6}, {TK_GT, 6},   {TK_LT, 6},       {TK_EQ, 7},
+                   {TK_NEQ, 7}, {TK_AND, 11}, {TK_OR, 12},      {0, 0}};
     map_init(&priorities, data);
 
     for (int i = 0; i < nr_token; ++i) {
