@@ -3,9 +3,8 @@
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
-#include <regex.h>
-
 #include <memory/vaddr.h>
+#include <regex.h>
 
 #include "struct.h"
 
@@ -16,6 +15,8 @@ enum {
     TK_NUMBER,
     TK_NEGATIVE,
     TK_DEREF,
+    TK_LS,
+    TK_RS,
     TK_GTE,
     TK_LTE,
     TK_GT,
@@ -46,6 +47,8 @@ static struct rule {
     {"\\/", '/'},                   // divide
     {"\\(", '('},                   // left bracket
     {"\\)", ')'},                   // right bracket
+    {"<<", TK_LS},                  // left shift
+    {">>", TK_RS},                  // right shift
     {">=", TK_GTE},                 // greater than or equal to
     {"<=", TK_LTE},                 // less than or equal to
     {">", TK_GT},                   // greater than
@@ -132,6 +135,8 @@ static bool make_token(char *e) {
                         break;
                     case '+':
                     case '/':
+                    case TK_LS:
+                    case TK_RS:
                     case TK_GTE:
                     case TK_LTE:
                     case TK_GT:
@@ -243,6 +248,14 @@ bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
                 stack_push(operand_stack, a / b);
                 return true;
                 break;
+            case TK_LS:
+                stack_push(operand_stack, a << b);
+                return true;
+                break;
+            case TK_RS:
+                stack_push(operand_stack, a >> b);
+                return true;
+                break;
             case TK_GTE:
                 stack_push(operand_stack, a >= b);
                 return true;
@@ -310,11 +323,11 @@ word_t eval(bool *success) {
 
     // Initial token to priority map
     Map priorities;
-    pair data[] = {{'(', 1},    {')', 1},    {TK_NEGATIVE, 2}, {TK_DEREF, 2},
-                   {'*', 3},    {'/', 3},    {'+', 4},         {'-', 4},
-                   {TK_GTE, 6}, {TK_LTE, 6}, {TK_GT, 6},       {TK_LT, 6},
-                   {TK_EQ, 7},  {TK_NEQ, 7}, {TK_AND, 11},     {TK_OR, 12},
-                   {0, 0}};
+    pair data[] = {
+        {'(', 1},    {')', 1},     {TK_NEGATIVE, 2}, {TK_DEREF, 2}, {'*', 3},
+        {'/', 3},    {'+', 4},     {'-', 4},         {TK_LS, 5},    {TK_RS, 5},
+        {TK_GTE, 6}, {TK_LTE, 6},  {TK_GT, 6},       {TK_LT, 6},    {TK_EQ, 7},
+        {TK_NEQ, 7}, {TK_AND, 11}, {TK_OR, 12},      {0, 0}};
     map_init(&priorities, data);
 
     for (int i = 0; i < nr_token; ++i) {
