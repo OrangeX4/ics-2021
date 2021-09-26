@@ -9,11 +9,16 @@
 
 enum {
     TK_NOTYPE = 256,
-    TK_EQ,
     TK_REG,
     TK_HEX,
     TK_NUMBER,
     TK_NEGATIVE,
+    TK_GTE,
+    TK_LTE,
+    TK_GT,
+    TK_LT,
+    TK_EQ,
+    TK_NEQ,
     /* Add more token types */
 };
 
@@ -36,7 +41,12 @@ static struct rule {
     {"\\/", '/'},                   // divide
     {"\\(", '('},                   // left bracket
     {"\\)", ')'},                   // right bracket
+    {">=", TK_GTE},                 // greater than or equal to
+    {"<=", TK_LTE},                 // less than or equal to
+    {">", TK_GT},                   // greater than
+    {"<", TK_LT},                   // less than
     {"==", TK_EQ},                  // equal
+    {"!=", TK_NEQ},                 // not equal
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -106,7 +116,6 @@ static bool make_token(char *e) {
                     case TK_NOTYPE:
                         // Skip spaces
                         break;
-                    case TK_EQ:
                     case '(':
                     case ')':
                         // Operator
@@ -117,6 +126,12 @@ static bool make_token(char *e) {
                     case '+':
                     case '*':
                     case '/':
+                    case TK_GTE:
+                    case TK_LTE:
+                    case TK_GT:
+                    case TK_LT:
+                    case TK_EQ:
+                    case TK_NEQ:
                         // Binary infix operator
                         tokens[nr_token].type = rules[i].token_type;
                         *(tokens[nr_token].str) = 'B';
@@ -204,6 +219,22 @@ bool consume_stacks(Stack *operand_stack, Stack *operator_stack) {
                 stack_push(operand_stack, a / b);
                 return true;
                 break;
+            case TK_GTE:
+                stack_push(operand_stack, a >= b);
+                return true;
+                break;
+            case TK_LTE:
+                stack_push(operand_stack, a <= b);
+                return true;
+                break;
+            case TK_GT:
+                stack_push(operand_stack, a > b);
+                return true;
+                break;
+            case TK_LT:
+                stack_push(operand_stack, a < b);
+                return true;
+                break;
 
             default:
                 return false;
@@ -235,8 +266,10 @@ word_t eval(bool *success) {
 
     // Initial token to priority map
     Map priorities;
-    pair data[] = {{'(', 1}, {')', 1}, {TK_NEGATIVE, 2}, {'*', 3}, {'/', 3},
-                   {'+', 4}, {'-', 4}, {TK_EQ, 7},       {0, 0}};
+    pair data[] = {{'(', 1},    {')', 1},   {TK_NEGATIVE, 2}, {'*', 3},
+                   {'/', 3},    {'+', 4},   {'-', 4},         {TK_GTE, 6},
+                   {TK_LTE, 6}, {TK_GT, 6}, {TK_LT, 6},       {TK_EQ, 7},
+                   {TK_NEQ, 7}, {0, 0}};
     map_init(&priorities, data);
 
     for (int i = 0; i < nr_token; ++i) {
