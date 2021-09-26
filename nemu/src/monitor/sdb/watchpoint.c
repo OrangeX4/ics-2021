@@ -77,13 +77,13 @@ bool wp_enable(int NO, bool value) {
 }
 
 void wp_show() {
-    printf("free: ");
+    Log("free: ");
     WP* current = &free_;
     while (current->next != NULL) {
-        printf("%d ", current->next->NO);
+        Log("%d ", current->next->NO);
         current = current->next;
     }
-    printf("\n");
+    Log("\n");
 
     printf("%-4s%-8s%-32s%-16s\n", "No", "Enable", "Expr", "Last Value");
     current = &head;
