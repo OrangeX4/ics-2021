@@ -118,6 +118,7 @@ bool free_wp(int NO) {
     if (wp == NULL) {
         return false;
     }
+    wp->is_enable = false;
     list_add(&free_, wp);
     return true;
 }
