@@ -139,8 +139,9 @@ static bool make_token(char *e) {
                         ++nr_token;
                         check_expression_length();
                         break;
-                    case TK_NUMBER:
+                    case TK_REG:
                     case TK_HEX:
+                    case TK_NUMBER:
                         // Number
                         tokens[nr_token].type = rules[i].token_type;
                         if (substr_len < 32) {
@@ -149,7 +150,7 @@ static bool make_token(char *e) {
                             tokens[nr_token].str[substr_len] = '\0';
                             Log("Match number [%s].", tokens[nr_token].str);
                         } else {
-                            printf("The number is too big.\n");
+                            printf("The token is too big.\n");
                             return false;
                         }
                         ++nr_token;
