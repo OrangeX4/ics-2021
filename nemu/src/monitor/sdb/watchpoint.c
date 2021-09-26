@@ -63,6 +63,19 @@ WP* list_pop(WP* head_p) {
     return return_wp;
 }
 
+bool wp_enable(int NO, bool value) {
+    WP* current = &head;
+    while (current->next != NULL &&
+           (current->next == NULL || current->next->NO != NO)) {
+        current = current->next;
+    }
+    if (current->next == NULL) {
+        return false;
+    }
+    current->next->is_enable = value;
+    return true;
+}
+
 void wp_show() {
     printf("free: ");
     WP* current = &free_;

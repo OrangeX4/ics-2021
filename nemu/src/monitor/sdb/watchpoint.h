@@ -7,6 +7,8 @@ void wp_show();
 
 bool new_wp(char* expr, word_t value);
 
+bool wp_enable(int NO, bool value);
+
 bool free_wp(int NO);
 
 #endif

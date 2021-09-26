@@ -150,6 +150,34 @@ static int cmd_d(char *args) {
     return 0;
 }
 
+static int cmd_enable(char *args) {
+    if (!args) {
+        printf("Argument are necessary.\n");
+        return 0;
+    }
+
+    if (wp_enable(atoi(args), true)) {
+        printf("Success to enable watchpoint.\n");
+    } else {
+        printf("Failed to enable watchpoint.\n");
+    }
+    return 0;
+}
+
+static int cmd_disable(char *args) {
+    if (!args) {
+        printf("Argument are necessary.\n");
+        return 0;
+    }
+
+    if (wp_enable(atoi(args), false)) {
+        printf("Success to disable watchpoint.\n");
+    } else {
+        printf("Failed to disable watchpoint.\n");
+    }
+    return 0;
+}
+
 static int cmd_test(char *args) {
     if (args) {
         if (*args == 'r') {
@@ -178,6 +206,8 @@ static struct {
   { "p", "Execute expression", cmd_p},
   { "w", "Set watchpoint", cmd_w},
   { "d", "Delete watchpoint", cmd_d},
+  { "enable", "Enable watchpoint", cmd_enable},
+  { "disable", "Disable watchpoint", cmd_disable},
   { "test", "Execute 'test' for unit test and 'test r' for random test", cmd_test},
 
   /* TODO: Add more commands */
