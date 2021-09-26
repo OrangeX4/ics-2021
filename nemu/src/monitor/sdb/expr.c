@@ -10,8 +10,9 @@
 enum {
     TK_NOTYPE = 256,
     TK_EQ,
-    TK_NUMBER,
+    TK_REG,
     TK_HEX,
+    TK_NUMBER,
     TK_NEGATIVE,
     /* Add more token types */
 };
@@ -26,6 +27,7 @@ static struct rule {
      */
 
     {" +", TK_NOTYPE},              // spaces
+    {"\\$[a-z]*[0-9]*", TK_REG},    // reg
     {"0[xX][0-9a-fA-F]+", TK_HEX},  // hex number
     {"[0-9]+", TK_NUMBER},          // number
     {"\\+", '+'},                   // plus
@@ -241,7 +243,18 @@ word_t eval(bool *success) {
             // Push number
             stack_push(&operand_stack, atoi(tokens[i].str));
         } else if (tokens[i].type == TK_HEX) {
+            // Push hex number
             stack_push(&operand_stack, strtol(tokens[i].str, NULL, 16));
+        } else if (tokens[i].type == TK_REG) {
+            // Push reg
+            bool reg_success = false;
+            word_t value = isa_reg_str2val(tokens[i].str, &reg_success);
+            if (reg_success) {
+                stack_push(&operand_stack, value);
+            } else {
+                *success = false;
+                return 0;
+            }
         } else {
             // Push tokens index
             if (operator_stack.length == 0) {
