@@ -15,7 +15,7 @@ void isa_reg_display() {
                    cpu.gpr[i]._32);
         }
     }
-    printf("%-16s%-#16x%-16d\n", "pc", cpu.pc, cpu.pc);
+    printf("%-16s%-#16x%-16u\n", "pc", cpu.pc, cpu.pc);
     printf("\nRegisters equal to zero have been omitted. They are");
     for (int i = 0; i < 32; ++i) {
         if (!cpu.gpr[i]._32) {
