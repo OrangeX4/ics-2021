@@ -557,6 +557,8 @@ expr="$lines_count_pa1 - $lines_count_pa0"
 echo New lines: `expr $expr`
 ```
 
+最后, 我在 `native.mk` 文件中加入了命令 `sh count.sh`, 就可以成功地统计新增代码行数了.
+
 输出格式为: `New lines: 1008`
 
 这说明, 我在 pa1 中共写了 1008 行代码.
