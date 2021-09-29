@@ -549,15 +549,16 @@ $\therefore$ 一共要在调试上花费 $400\times 20\times 0.5=4000$ 分钟, �
 对应的 sh 命令文件如下:
 
 ``` sh
-lines_count_pa1=`find ./nemu | grep '\.c$\|\.h$' | xargs wc -l | grep 'total' | awk '{print substr($1, 1)}'`
+lines_count_pa1=`find . | grep '\.c$\|\.h$' | xargs wc -l | grep 'total' | awk '{print substr($1, 1)}'`
+pa=`git branch | grep '*' |  awk '{print substr($2, 1)}'`
 git checkout pa0 >/dev/null 2>/dev/null
-lines_count_pa0=`find ./nemu | grep '\.c$\|\.h$' | xargs wc -l | grep 'total' | awk '{print substr($1, 1)}'`
-git checkout pa1 >/dev/null 2>/dev/null
+lines_count_pa0=`find . | grep '\.c$\|\.h$' | xargs wc -l | grep 'total' | awk '{print substr($1, 1)}'`
+git checkout $pa >/dev/null 2>/dev/null
 expr="$lines_count_pa1 - $lines_count_pa0"
 echo New lines: `expr $expr`
 ```
 
-最后, 我在 `native.mk` 文件中加入了命令 `sh count.sh`, 就可以成功地统计新增代码行数了.
+最后, 我在 `native.mk` 文件中加入了命令 `sh ../count.sh`, 就可以成功地统计新增代码行数了.
 
 输出格式为: `New lines: 1008`
 
