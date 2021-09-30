@@ -439,17 +439,17 @@ word_t eval(bool *success) {
             }
         }
 
-        printf("Operand [%d]: ", operand_stack.length);
-        for (int j = 0; j < operand_stack.length; ++j) {
-            printf("%d ", operand_stack.arr[j]);
-        }
-        printf("\n");
-        printf("Operator [%d]: ", operator_stack.length);
-        for (int j = 0; j < operator_stack.length; ++j) {
-            printf("%c ", tokens[operator_stack.arr[j]].type);
-        }
-        printf("\n");
-        printf("---------------------\n");
+        // printf("Operand [%d]: ", operand_stack.length);
+        // for (int j = 0; j < operand_stack.length; ++j) {
+        //     printf("%d ", operand_stack.arr[j]);
+        // }
+        // printf("\n");
+        // printf("Operator [%d]: ", operator_stack.length);
+        // for (int j = 0; j < operator_stack.length; ++j) {
+        //     printf("%c ", tokens[operator_stack.arr[j]].type);
+        // }
+        // printf("\n");
+        // printf("---------------------\n");
     }
     // Consume all remaining operators
     while (operator_stack.length != 0) {
