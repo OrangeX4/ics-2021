@@ -175,6 +175,8 @@ static bool make_token(char *e) {
                     case '*':
                         if (nr_token - 1 >= 0 &&
                             (tokens[nr_token - 1].type == TK_NUMBER ||
+                             tokens[nr_token - 1].type == TK_HEX ||
+                             tokens[nr_token - 1].type == TK_REG ||
                              tokens[nr_token - 1].type == ')')) {
                             // Multiply
                             tokens[nr_token].type = '*';
@@ -191,6 +193,8 @@ static bool make_token(char *e) {
                     case '-':
                         if (nr_token - 1 >= 0 &&
                             (tokens[nr_token - 1].type == TK_NUMBER ||
+                             tokens[nr_token - 1].type == TK_HEX ||
+                             tokens[nr_token - 1].type == TK_REG ||
                              tokens[nr_token - 1].type == ')')) {
                             // Minus
                             tokens[nr_token].type = '-';
