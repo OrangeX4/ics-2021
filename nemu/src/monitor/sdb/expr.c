@@ -41,7 +41,7 @@ static struct rule {
      */
 
     {" +", TK_NOTYPE},              // spaces
-    {"\\$[a-z]*[0-9]*", TK_REG},    // reg
+    {"\\$$?[a-z]*[0-9]*", TK_REG},    // reg
     {"0[xX][0-9a-fA-F]+", TK_HEX},  // hex number
     {"[0-9]+", TK_NUMBER},          // number
     {"\\!", '!'},                   // not
