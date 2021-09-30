@@ -450,6 +450,7 @@ word_t eval(bool *success) {
         // }
         // printf("\n");
         // printf("---------------------\n");
+        
     }
     // Consume all remaining operators
     while (operator_stack.length != 0) {
