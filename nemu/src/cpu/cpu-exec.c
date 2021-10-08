@@ -37,6 +37,10 @@ void device_update();
 // #endif
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
+    // Watchpoint
+    if (is_stop()) {
+        nemu_state.state = NEMU_STOP;
+    }
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) log_write("%s\n", _this->logbuf);
 #endif
