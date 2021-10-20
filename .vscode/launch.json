@@ -6,6 +6,12 @@
             "type": "cppdbg", // 配置类型, 这里只能为cppdbg
             "request": "launch", // 请求配置类型, 可以为 launch (启动) 或 attach (附加) 
             "program": "${workspaceRoot}/nemu/build/riscv32-nemu-interpreter", // 将要进行调试的程序的路径
+            "args": [
+                "-b",
+                "-l",
+                "/home/orangex4/ics2021/am-kernels/tests/cpu-tests/build/nemu-log.txt",
+                "/home/orangex4/ics2021/am-kernels/tests/cpu-tests/build/dummy-riscv32-nemu.bin"
+            ],
             "stopAtEntry": false, // 设为 true 时程序将暂停在程序入口处
             "cwd": "${workspaceRoot}/nemu", // 调试程序时的工作目录
             "environment": [], // 环境变量 
