@@ -3,8 +3,7 @@ def_EHelper(lui) {
 }
 
 def_EHelper(auipc) {
-  rtl_li(s, ddest, id_src1->imm + s->pc);
-  printf("pc: %d\n", s->pc);
+  rtl_li(s, ddest, s->pc + (id_src1->imm << 12));
 }
 
 def_EHelper(addi) {
