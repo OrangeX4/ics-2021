@@ -7,7 +7,7 @@
             "request": "launch", // 请求配置类型, 可以为 launch (启动) 或 attach (附加) 
             "program": "${workspaceRoot}/nemu/build/riscv32-nemu-interpreter", // 将要进行调试的程序的路径
             "args": [
-                "-b",
+                // "-b", // 是否直接运行
                 "-l",
                 "/home/orangex4/ics2021/am-kernels/tests/cpu-tests/build/nemu-log.txt",
                 "/home/orangex4/ics2021/am-kernels/tests/cpu-tests/build/dummy-riscv32-nemu.bin"
