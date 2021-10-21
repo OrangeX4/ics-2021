@@ -6,6 +6,7 @@ def_EHelper(jal) {
 //   rtl_j(s, s->pc + id_src1->imm);
   rtl_li(s, s0, s->pc);
   rtl_addi(s, s0, s0, id_src1->imm);
+  rtl_jr(s, s0);
 }
 
 def_EHelper(jalr) {
