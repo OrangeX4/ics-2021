@@ -3,7 +3,8 @@ def_EHelper(lui) {
 }
 
 def_EHelper(auipc) {
-  rtl_li(s, ddest, s->pc + id_src1->imm);
+  rtl_li(s, ddest, s->pc);
+  rtl_addi(s, ddest, ddest, id_src1->imm);
 }
 
 def_EHelper(addi) {

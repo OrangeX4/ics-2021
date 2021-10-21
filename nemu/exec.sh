@@ -1,0 +1,1 @@
+./build/riscv32-nemu-interpreter -l /home/orangex4/ics2021/am-kernels/tests/cpu-tests/build/nemu-log.txt /home/orangex4/ics2021/am-kernels/tests/cpu-tests/build/dummy-riscv32-nemu.bin
