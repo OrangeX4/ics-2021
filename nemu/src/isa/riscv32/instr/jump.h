@@ -19,3 +19,13 @@ def_EHelper(jalr) {
     rtl_and(s, s0, s0, s1);
     rtl_jr(s, s0);
 }
+
+def_EHelper(beq) {
+    //   rtl_li(s, ddest, s->pc + 4);
+    //   rtl_j(s, s->pc + id_src1->imm);
+    if (*dsrc1 == *dsrc2) {
+        rtl_li(s, s0, s->pc);
+        rtl_addi(s, s0, s0, id_dest->imm);
+        rtl_jr(s, s0);
+    }
+}
