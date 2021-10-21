@@ -39,8 +39,8 @@ static def_DHelper(U) {
 
 static def_DHelper(J) {
     decode_op_i(s, id_src1,
-                (((s->isa.instr.j.imm10_1 << 1) + (s->isa.instr.j.imm11 << 11) +
-                    (s->isa.instr.j.imm19_12 << 12) +
+                (((s->isa.instr.j.imm10_1 << 1) | (s->isa.instr.j.imm11 << 11) |
+                    (s->isa.instr.j.imm19_12 << 12) |
                     (s->isa.instr.j.imm20 << 20)) << 11) >> 11,
                 true);
     decode_op_r(s, id_dest, s->isa.instr.u.rd, true);
@@ -70,6 +70,7 @@ def_THelper(comp) {
 
 def_THelper(compi) {
     def_INSTR_TAB("??????? ????? ????? 000 ????? ????? ??", addi);
+    def_INSTR_TAB("??????? ????? ????? 011 ????? ????? ??", sltiu);
     return EXEC_ID_inv;
 }
 
