@@ -29,9 +29,7 @@ static inline void jump_helper(Decode *s, uint32_t relop) {
 def_EHelper(beq) {
     // rtl_jrelop(s, RELOP_EQ, dsrc1, dsrc1, s->pc + id_dest->imm);
     // jump_helper(s, RELOP_EQ);
-    if (*dsrc1 == *dsrc2) {
-        rtl_j(s, s->pc + id_dest->imm);
-    }
+    rtl_j(s, (*dsrc1 == *dsrc2) ? (s->pc + id_dest->imm) : s->snpc);
 }
 
 // def_EHelper(bne) {
