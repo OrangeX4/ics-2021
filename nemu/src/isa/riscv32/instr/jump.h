@@ -30,9 +30,7 @@ def_EHelper(beq) {
     // rtl_jrelop(s, RELOP_EQ, dsrc1, dsrc1, s->pc + id_dest->imm);
     // jump_helper(s, RELOP_EQ);
     if (*dsrc1 == *dsrc2) {
-        rtl_li(s, s0, s->pc);
-        rtl_addi(s, s0, s0, id_dest->imm);
-        rtl_jr(s, s0);
+        rtl_j(s, s->pc + id_dest->imm);
     }
 }
 
