@@ -20,15 +20,11 @@ def_EHelper(jalr) {
     rtl_jr(s, s0);
 }
 
-static inline void jump_helper(Decode *s, uint32_t relop) {
+def_EHelper(beq) {
     rtl_li(s, s0, s->pc);
     rtl_addi(s, s0, s0, id_dest->imm);
     rtl_jr(s, s0);
-    rtl_jrelopr(s, relop, dsrc1, dsrc1, s0);
-}
-
-def_EHelper(beq) {
-    jump_helper(s, RELOP_EQ);
+    rtl_jrelopr(s, RELOP_EQ, dsrc1, dsrc1, s0);
 }
 
 // def_EHelper(bne) {
