@@ -23,14 +23,14 @@
         {
             "name": "Debug nemu", // 配置名称, 将会在启动配置的下拉菜单中显示
             "type": "cppdbg", // 配置类型, 这里只能为cppdbg
-            "request": "attach", // 请求配置类型, 可以为 launch (启动) 或 attach (附加) 
-            "program": "${workspaceRoot}/nemu/build/riscv32-nemu-interpreter", // 将要进行调试的程序的路径
-            "args": [
-                " --log",
-                "/home/orangex4/ics2021/nemu/build/nemu-log.txt",
-                "--diff",
-                "/home/orangex4/ics2021/nemu/tools/spike-diff/build/riscv32-spike-so"
-            ],
+            "request": "launch", // 请求配置类型, 可以为 launch (启动) 或 attach (附加) 
+            // "program": "${workspaceRoot}/nemu/build/riscv32-nemu-interpreter", // 将要进行调试的程序的路径
+            // "args": [
+            //     " --log",
+            //     "/home/orangex4/ics2021/nemu/build/nemu-log.txt",
+            //     "--diff",
+            //     "/home/orangex4/ics2021/nemu/tools/spike-diff/build/riscv32-spike-so"
+            // ],
             "stopAtEntry": false, // 设为 true 时程序将暂停在程序入口处
             "cwd": "${workspaceRoot}/nemu", // 调试程序时的工作目录
             "environment": [], // 环境变量 
