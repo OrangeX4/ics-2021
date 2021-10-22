@@ -33,3 +33,11 @@ def_EHelper(beq) {
 def_EHelper(bne) {
     jump_helper(s, RELOP_NE);
 }
+
+def_EHelper(bge) {
+    jump_helper(s, RELOP_GE);
+}
+
+def_EHelper(bgeu) {
+    jump_helper(s, RELOP_GEU);
+}
