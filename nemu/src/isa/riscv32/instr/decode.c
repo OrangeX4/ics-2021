@@ -22,7 +22,7 @@ static def_DopHelper(r) {
 
 static def_DHelper(I) {
     decode_op_r(s, id_src1, s->isa.instr.i.rs1, false);
-    decode_op_i(s, id_src2, s->isa.instr.i.imm11_0, false);
+    decode_op_i(s, id_src2, (int32_t)(s->isa.instr.i.imm11_0), false);
     decode_op_r(s, id_dest, s->isa.instr.i.rd, true);
 }
 
