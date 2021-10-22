@@ -20,6 +20,12 @@ static bool g_print_step = false;
 const rtlreg_t rzero = 0;
 rtlreg_t tmp_reg[4];
 
+// iringbuf
+#define MAX_IRINGBUF_LENGTH 8
+typedef char buf[128];
+buf iringbuf[MAX_IRINGBUF_LENGTH];
+uint32_t iringbuf_count = 0;
+
 void device_update();
 
 // #ifdef CONFIG_DEBUG
@@ -50,6 +56,10 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
         IFDEF(CONFIG_ITRACE, puts(_this->logbuf));
     }
     IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+    // iringbuf
+    strcpy(iringbuf[iringbuf_count % MAX_IRINGBUF_LENGTH], _this->logbuf);
+    iringbuf[iringbuf_count % MAX_IRINGBUF_LENGTH][strlen(_this->logbuf)] = '\0';
+    ++iringbuf_count;
 }
 
 #include <isa-exec.h>
@@ -155,6 +165,12 @@ void cpu_exec(uint64_t n) {
                             ? ASNI_FMT("HIT GOOD TRAP", ASNI_FG_GREEN)
                             : ASNI_FMT("HIT BAD TRAP", ASNI_FG_RED))),
                 nemu_state.halt_pc);
+
+            // iringbuf
+            for (int i = 0; i < MAX_IRINGBUF_LENGTH - 1; ++i) {
+                printf("    %s\n", iringbuf[(iringbuf_count + i) % MAX_IRINGBUF_LENGTH]);
+            }
+            printf("--> %s\n", iringbuf[(iringbuf_count + 7) % MAX_IRINGBUF_LENGTH]);
             // fall through
         case NEMU_QUIT:
             statistic();
