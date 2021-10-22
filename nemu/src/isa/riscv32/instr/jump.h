@@ -41,3 +41,11 @@ def_EHelper(bge) {
 def_EHelper(bgeu) {
     jump_helper(s, RELOP_GEU);
 }
+
+def_EHelper(blt) {
+    jump_helper(s, RELOP_LT);
+}
+
+def_EHelper(bltu) {
+    jump_helper(s, RELOP_LTU);
+}
