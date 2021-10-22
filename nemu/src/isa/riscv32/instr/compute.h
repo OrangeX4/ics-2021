@@ -16,6 +16,14 @@ def_EHelper(divu) {
   rtl_divu_q(s, ddest, dsrc1, dsrc2);
 }
 
+def_EHelper(rem) {
+  rtl_divs_r(s, ddest, dsrc1, dsrc2);
+}
+
+def_EHelper(remu) {
+  rtl_divu_r(s, ddest, dsrc1, dsrc2);
+}
+
 def_EHelper(addi) {
   rtl_addi(s, ddest, dsrc1, id_src2->imm);
 }
