@@ -85,7 +85,7 @@ def_EHelper(sll) {
 }
 
 def_EHelper(srai) {
-  rtl_srai(s, ddest, dsrc1, id_src2->imm);
+  rtl_srai(s, ddest, dsrc1, id_src2->imm & 0b000000011111);
 }
 
 def_EHelper(sra) {
