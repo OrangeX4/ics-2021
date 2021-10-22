@@ -8,6 +8,14 @@ def_EHelper(auipc) {
   rtl_addi(s, ddest, ddest, id_src1->imm);
 }
 
+def_EHelper(div) {
+  rtl_divs_q(s, ddest, dsrc1, dsrc2);
+}
+
+def_EHelper(divu) {
+  rtl_divu_q(s, ddest, dsrc1, dsrc2);
+}
+
 def_EHelper(addi) {
   rtl_addi(s, ddest, dsrc1, id_src2->imm);
 }
