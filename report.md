@@ -635,3 +635,26 @@ echo New lines: `expr $expr`
 
 为了运行 `dummy`, 我实现了 `auipc, addi, jal, jalr` 这四条指令.
 
+### 3. 阶段二: 基础设施与程序
+
+#### 3.1 DiffTest
+
+DiffTest 真是一个非常智慧的实现. 每个人在写代码的时候, 都会有意无意地使用 DiffTest 的思想: 我在实现自己的代码的过程中, 不断与一个正确的实现进行对比, 就能及早发现 Error.
+
+按照软件工程相关的概念, DiffTest 有助于我们在碰到 Error, 如寄存器状态和正确实现不符时, 直接转为 Failure 报错, 以达到尽快发现错误指令实现的 Fault 的效果.
+
+在按文档配置了 DiffTest 之后, 我在 `dut.c` 文件中实现了寄存器对比的函数:
+
+``` c
+bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
+    if (cpu.pc != ref_r->pc) return false;
+    for (int i = 0; i < 32; ++i) {
+        if (cpu.gpr[i]._32 != ref_r->gpr[i]._32) return false; 
+    }
+    return true;
+}
+```
+
+便能够使用 DiffTest 的强大功能了, 在实现过程中, 我也再次惊叹于 riscv 寄存器实现的简洁, 这大大减少了我的工作量.
+
+在这个过程中, 我还重新对 VSCode 的调试功能进行配置, 以让他能够继续调试添加了 DiffTest 功能的 NEMU 代码.
