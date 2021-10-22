@@ -27,8 +27,10 @@
             "program": "${workspaceRoot}/nemu/build/riscv32-nemu-interpreter", // 将要进行调试的程序的路径
             "args": [
                 // "-b", // 是否直接运行
-                " --log=/home/orangex4/ics2021/nemu/build/nemu-log.txt",
-                "--diff=/home/orangex4/ics2021/nemu/tools/spike-diff/build/riscv32-spike-so"
+                " --log",
+                "/home/orangex4/ics2021/nemu/build/nemu-log.txt",
+                "--diff",
+                "/home/orangex4/ics2021/nemu/tools/spike-diff/build/riscv32-spike-so"
             ],
             "stopAtEntry": false, // 设为 true 时程序将暂停在程序入口处
             "cwd": "${workspaceRoot}/nemu", // 调试程序时的工作目录
