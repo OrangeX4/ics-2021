@@ -45,7 +45,7 @@
             "program": "${workspaceRoot}/nemu/build/riscv32-nemu-interpreter", // 将要进行调试的程序的路径
             "args": [
                 // " --log",
-                "/home/orangex4/ics2021/nemu/build/nemu-log.txt",
+                // "/home/orangex4/ics2021/nemu/build/nemu-log.txt",
                 "--diff",
                 "/home/orangex4/ics2021/nemu/tools/spike-diff/build/riscv32-spike-so"
             ],
