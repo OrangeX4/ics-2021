@@ -30,6 +30,6 @@ def_EHelper(beq) {
     jump_helper(s, RELOP_EQ);
 }
 
-// def_EHelper(bne) {
-//     jump_helper(s, RELOP_NE);
-// }
+def_EHelper(bne) {
+    jump_helper(s, RELOP_NE);
+}
