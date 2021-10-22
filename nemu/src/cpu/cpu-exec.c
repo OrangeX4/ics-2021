@@ -167,6 +167,8 @@ void cpu_exec(uint64_t n) {
                 nemu_state.halt_pc);
 
             // iringbuf
+            printf("--------------------------\n");
+            printf("[iringbuf]:");
             for (int i = 0; i < MAX_IRINGBUF_LENGTH - 1; ++i) {
                 printf("    %s\n", iringbuf[(iringbuf_count + i) % MAX_IRINGBUF_LENGTH]);
             }
