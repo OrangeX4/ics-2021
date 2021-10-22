@@ -658,3 +658,37 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 便能够使用 DiffTest 的强大功能了, 在实现过程中, 我也再次惊叹于 riscv 寄存器实现的简洁, 这大大减少了我的工作量.
 
 在这个过程中, 我还重新对 VSCode 的调试功能进行配置, 以让他能够继续调试添加了 DiffTest 功能的 NEMU 代码.
+
+#### 3.2 指令环形缓冲区 - iringbuf
+
+为了快速定位出错指令位置, 及其对应上下文指令, 我实现了 iringbuf 功能.
+
+大概过程, 就是在 `cpu-exec.c` 文件内, 加入了以下代码:
+
+``` c
+// iringbuf
+#define MAX_IRINGBUF_LENGTH 8
+typedef char buf[128];
+buf iringbuf[MAX_IRINGBUF_LENGTH];
+uint32_t iringbuf_count = 0;
+
+static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
+    // iringbuf
+    strcpy(iringbuf[iringbuf_count % MAX_IRINGBUF_LENGTH], _this->logbuf);
+    iringbuf[iringbuf_count % MAX_IRINGBUF_LENGTH][strlen(_this->logbuf)] = '\0';
+    ++iringbuf_count;
+}
+
+void cpu_exec(uint64_t n) {
+    switch (nemu_state.state) {
+        case NEMU_ABORT:
+            // iringbuf
+            printf("--------------------------\n");
+            printf("[iringbuf]:\n");
+            for (int i = 0; i < MAX_IRINGBUF_LENGTH - 1; ++i) {
+                printf("    %s\n", iringbuf[(iringbuf_count + i) % MAX_IRINGBUF_LENGTH]);
+            }
+            printf("--> %s\n\n\n", iringbuf[(iringbuf_count + 7) % MAX_IRINGBUF_LENGTH]);
+    }
+}
+```
