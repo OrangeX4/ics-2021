@@ -68,6 +68,14 @@ def_EHelper(sra) {
   rtl_sra(s, ddest, dsrc1, dsrc2);
 }
 
+def_EHelper(slt) {
+  rtl_setrelop(s, RELOP_LT, ddest, dsrc1, dsrc2);
+}
+
+def_EHelper(slti) {
+  rtl_setrelopi(s, RELOP_LT, ddest, dsrc1, id_src2->imm);
+}
+
 def_EHelper(sltu) {
   rtl_setrelop(s, RELOP_LTU, ddest, dsrc1, dsrc2);
 }
