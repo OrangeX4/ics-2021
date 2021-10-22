@@ -24,6 +24,7 @@
             "name": "Debug nemu", // 配置名称, 将会在启动配置的下拉菜单中显示
             "type": "cppdbg", // 配置类型, 这里只能为cppdbg
             "request": "launch", // 请求配置类型, 可以为 launch (启动) 或 attach (附加) 
+            "processId": "34847",
             // "program": "${workspaceRoot}/nemu/build/riscv32-nemu-interpreter", // 将要进行调试的程序的路径
             // "args": [
             //     " --log",
