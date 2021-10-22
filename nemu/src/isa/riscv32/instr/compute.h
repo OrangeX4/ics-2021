@@ -16,6 +16,14 @@ def_EHelper(add) {
   rtl_add(s, ddest, dsrc1, dsrc2);
 }
 
+def_EHelper(andi) {
+  rtl_andi(s, ddest, dsrc1, id_src2->imm);
+}
+
+def_EHelper(and) {
+  rtl_and(s, ddest, dsrc1, dsrc2);
+}
+
 def_EHelper(sub) {
   rtl_sub(s, ddest, dsrc1, dsrc2);
 }
