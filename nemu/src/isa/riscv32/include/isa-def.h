@@ -29,7 +29,7 @@ typedef struct {
       uint32_t rd        : 5;
       uint32_t funct3    : 3;
       uint32_t rs1       : 5;
-      uint32_t imm11_0   :12;
+      int32_t  simm11_0  :12;
     } i;
     struct {
       uint32_t opcode1_0 : 2;
