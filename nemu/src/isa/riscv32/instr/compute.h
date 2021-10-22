@@ -24,6 +24,14 @@ def_EHelper(and) {
   rtl_and(s, ddest, dsrc1, dsrc2);
 }
 
+def_EHelper(ori) {
+  rtl_ori(s, ddest, dsrc1, id_src2->imm);
+}
+
+def_EHelper(or) {
+  rtl_or(s, ddest, dsrc1, dsrc2);
+}
+
 def_EHelper(xori) {
   rtl_xori(s, ddest, dsrc1, id_src2->imm);
 }
