@@ -148,25 +148,30 @@ config MTRACE
   depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
   bool "Enable memory tracer"
   default y
-
-config MTRACE_READ
+  
+  config MTRACE_READ
   depends on MTRACE
   bool "Only trace memories when the it is read"
   default n
   
-config MTRACE_WRITE
+  config MTRACE_WRITE
   depends on MTRACE
   bool "Only trace memories when the it is write"
   default y
-
-config DIFFTEST
+  
+  config DTRACE
+    depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+    bool "Enable device tracer"
+    default y
+  
+  config DIFFTEST
   depends on TARGET_NATIVE_ELF
   bool "Enable differential testing"
   default n
   help
-    Enable differential testing with a reference design.
-    Note that this will significantly reduce the performance of NEMU.
-
+  Enable differential testing with a reference design.
+  Note that this will significantly reduce the performance of NEMU.
+  
 choice
   prompt "Reference design"
   default DIFFTEST_REF_SPIKE if ISA_riscv64 || ISA_riscv32
