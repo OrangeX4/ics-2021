@@ -707,3 +707,15 @@ void cpu_exec(uint64_t n) {
     0x80000068: 13 55 75 00 srli        a0, a0, 7
 --> 0x8000006c: 33 05 f5 40 sub a0, a0, a5
 ```
+
+#### 3.3 klib
+
+AM 中需要我们实现的 klib 函数有这些:
+
+1. `malloc`, `free`
+2. `strlen`, `strcpy`, `strncpy`, `strcat`, `strcmp`, `strncmp`, `memset`, `memcpy`, `memmove`, `memcmp`
+3. `printf`, `vsnprintf`, `snprintf`, `vsprintf`, `sprintf`
+
+后两项已经实现, 可以通过 `string` 和 `hello-str` 样例.
+
+但是第一项 `malloc` 和 `free` 暂未实现, 打算留到之后实现.
