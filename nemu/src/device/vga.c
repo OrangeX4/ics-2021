@@ -69,7 +69,6 @@ static void vga_ctl_handler(uint32_t offset, int len, bool is_write) {
       vga_update_screen();
     }
   } else {
-    assert(offset == 0);
     vgactl_port_base[0] = (screen_width() << 16) | screen_height();
   }
 }
