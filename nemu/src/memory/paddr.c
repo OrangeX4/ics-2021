@@ -19,6 +19,9 @@ static word_t pmem_read(paddr_t addr, int len) {
 
 static void pmem_write(paddr_t addr, int len, word_t data) {
   host_write(guest_to_host(addr), len, data);
+#ifdef CONFIG_MTRACE
+  log_write("pmem_write(%x, %d, %u)\n", addr, len, data);
+#endif
 }
 
 void init_mem() {

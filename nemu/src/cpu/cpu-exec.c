@@ -48,7 +48,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
         nemu_state.state = NEMU_STOP;
     }
 #ifdef CONFIG_ITRACE_COND
-    // TODO: there is no ITRACE_COND
+    // there is no ITRACE_COND
     //   if (ITRACE_COND) log_write("%s\n", _this->logbuf);
     log_write("%s\n", _this->logbuf);
 #endif
