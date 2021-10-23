@@ -42,9 +42,13 @@ void *malloc(size_t size) {
     //     panic("Not implemented");
     // #endif
     //     return NULL;
-    if (addr == NULL) addr = heap.start;
+    size  = (size_t)ROUNDUP(size, 8);
+    char *old = addr;
     addr += size;
-    return addr - size;
+    for (uint64_t *p = (uint64_t *)old; p != (uint64_t *)addr; p ++) {
+        *p = 0;
+    }
+    return old;
 }
 void free(void *ptr) {}
 
