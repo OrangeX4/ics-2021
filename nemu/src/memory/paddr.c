@@ -38,7 +38,7 @@ void init_mem() {
 }
 
 word_t paddr_read(paddr_t addr, int len) {
-#ifdef CONFIG_MTRACE
+#ifdef CONFIG_MTRACE_READ
   log_write("paddr_read(%x, %d) = %u\n", addr, len, pmem_read(addr, len));
 #endif
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
@@ -48,7 +48,7 @@ word_t paddr_read(paddr_t addr, int len) {
 }
 
 void paddr_write(paddr_t addr, int len, word_t data) {
-#ifdef CONFIG_MTRACE
+#ifdef CONFIG_MTRACE_WRITE
   log_write("paddr_write(%x, %d, %u)\n", addr, len, data);
 #endif
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
