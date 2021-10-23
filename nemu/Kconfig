@@ -152,12 +152,12 @@ config MTRACE
 config MTRACE_READ
   depends on MTRACE
   bool "Only trace memories when the it is read"
-  default y
+  default n
   
 config MTRACE_WRITE
   depends on MTRACE
   bool "Only trace memories when the it is write"
-  default n
+  default y
 
 config DIFFTEST
   depends on TARGET_NATIVE_ELF
