@@ -42,6 +42,7 @@ void *malloc(size_t size) {
     //     panic("Not implemented");
     // #endif
     //     return NULL;
+    if (addr == NULL) addr = heap.start;
     size  = (size_t)ROUNDUP(size, 8);
     char *old = addr;
     addr += size;
