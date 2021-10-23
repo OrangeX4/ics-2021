@@ -780,6 +780,29 @@ paddr_write(80008fec, 4, 2147484132)
 
 经过一番痛苦的 RTFSC, 终于理解了怎么实现时钟的功能.
 
-只需要在 `timer.c` 文件中的 
+只需要在 `timer.c` 文件中加入以下代码即可:
+
+``` c
+void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
+  uptime->us = inl(RTC_ADDR) + ((uint64_t) inl(RTC_ADDR + 4) << 32);
+}
+```
+
+#### 4.2 键盘
+
+键盘同理, 但是要注意的是, 我们需要用位操作来处理键盘码 (keycode) 和是否按下 (keydown) 两个数据, 具体实现如下:
+
+``` c
+#define KEYDOWN_MASK 0x8000
+
+void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
+  uint32_t key = inl(KBD_ADDR);
+  kbd->keycode = key & ~KEYDOWN_MASK;
+  kbd->keydown = key & KEYDOWN_MASK;
+}
+```
+
+#### 4.3 VGA
+
 
 
