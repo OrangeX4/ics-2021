@@ -127,11 +127,14 @@ int printf(const char *fmt, ...) {
     return count;
 }
 
-int vsprintf(char *out, const char *fmt, va_list ap) {
+
+int vsnprintf(char *out, size_t _n, const char *fmt, va_list ap) {
     int count = 0;
     char c;
     char *s;
     int n;
+
+    char *_out = out;
 
     char buf[65];
     char digit[16];
@@ -139,7 +142,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
     memset(buf, 0, sizeof(buf));
     memset(digit, 0, sizeof(digit));
 
-    while (*fmt != '\0') {
+    while (*fmt != '\0' && (out - _out) < _n) {
         if (*fmt == '%') {
             fmt++;
             switch (*fmt) {
@@ -193,6 +196,22 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
     return count;
 }
 
+int snprintf(char *out, size_t n, const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+
+    int count = 0;
+    count = vsnprintf(out, n, fmt, ap);
+
+    va_end(ap);
+
+    return count;
+}
+
+int vsprintf(char *out, const char *fmt, va_list ap) {
+    return vsnprintf(out, -1, fmt, ap);
+}
+
 int sprintf(char *out, const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
@@ -203,14 +222,6 @@ int sprintf(char *out, const char *fmt, ...) {
     va_end(ap);
 
     return count;
-}
-
-int snprintf(char *out, size_t n, const char *fmt, ...) {
-    panic("Not implemented");
-}
-
-int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
-    panic("Not implemented");
 }
 
 #endif
