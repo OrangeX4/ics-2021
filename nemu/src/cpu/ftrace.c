@@ -67,12 +67,12 @@ void ftrace(Decode *s) {
     if (s->isa.instr.val == RET_INST) {
         for (int i = func_length - 1; i >= 0; --i) {
             if (addr >= functab[i].addr && addr <= functab[i].end) {
+                --indent;
                 log_write("[ftrace] ");
                 for (int j = 0; j < indent; ++j) {
                     log_write("    ");
                 }
                 log_write("ret\n");
-                --indent;
                 break;
             }
         }
