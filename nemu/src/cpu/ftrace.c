@@ -64,7 +64,7 @@ void ftrace(Decode *s) {
 
     vaddr_t addr = s->dnpc;
     if (s->isa.instr.val == RET_INST) {
-        for (int i = func_length - 1; i >= 0; ++i) {
+        for (int i = func_length - 1; i >= 0; --i) {
             if (addr >= functab[i].addr && addr <= functab[i].end) {
                 log_write("[ftrace] ret [%s]\n", functab[i].name);
                 break;
