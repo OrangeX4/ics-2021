@@ -804,5 +804,51 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
 
 #### 4.3 VGA
 
+VGA 需要非常认真地 RTFSC 才能完成, 花费了较多的时间. 
 
+NEMU 硬件方面, 我们要在 `vga.c` 文件中加入以下代码:
 
+``` c
+void vga_update_screen() {
+  update_screen();
+  vgactl_port_base[1] = false;
+}
+
+static void vga_ctl_handler(uint32_t offset, int len, bool is_write) {
+  if (is_write) {
+    assert(offset == 4);
+    assert(vgactl_port_base[1]);
+    vga_update_screen();
+  } else {
+    vgactl_port_base[0] = (screen_width() << 16) | screen_height();
+  }
+}
+```
+
+在 AM 软件方面, 我们要在 `gpu.c` 文件中加入以下代码:
+
+``` c
+void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
+  uint32_t hw = inl(VGACTL_ADDR);
+  *cfg = (AM_GPU_CONFIG_T) {
+    .present = true, .has_accel = false,
+    .width = (hw >> 16), .height = ((hw << 16) >> 16),
+    .vmemsz = 0
+  };
+}
+
+void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
+  uint32_t hw = inl(VGACTL_ADDR);
+  int i, j;
+  int w = (hw >> 16);
+  uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
+  for (i = 0; i < ctl->h; ++i) {
+    for (j = 0; j < ctl->w; ++j) {
+      fb[(ctl->y + i) * w + (ctl->x + j)] = ((uint32_t *)ctl->pixels)[i * ctl->w + j];
+    }
+  }
+  if (ctl->sync) {
+    outl(SYNC_ADDR, 1);
+  }
+}
+```
