@@ -777,7 +777,26 @@ paddr_write(80008fec, 4, 2147484132)
 
 #### 3.5 ftrace
 
-ftrace 实现起来较为麻烦, 主要麻烦在要看许多关于 ELF 文件的手册, 以获取各种信息, 再使用 `elf.h` 头文件里面的各种结构体, 即可读取函数的地址和对应名称. 经过一番查阅手册之后, 总算是完成了 ftrace,
+ftrace 实现起来较为麻烦, 主要麻烦在要看许多关于 ELF 文件的手册, 以获取各种信息, 再使用 `elf.h` 头文件里面的各种结构体, 即可读取函数的地址和对应名称. 经过一番查阅手册之后, 总算是完成了 ftrace.
+
+具体来说, 实现了从 `args` 读取 `elf` 文件的功能, 并完成了 ftrace 对应的功能, 具体代码较长, 位于 `ftrace.c` 文件中, 这里就不过多赘述.
+
+然后输出格式类似于:
+
+``` text
+[ftrace] call [_trm_init@0x80000108]
+[ftrace]     call [main@0x80000028]
+[ftrace]         call [check@0x80000010]
+[ftrace]         ret
+[ftrace]         call [check@0x80000010]
+[ftrace]         ret
+[ftrace]         call [check@0x80000010]
+[ftrace]         ret
+[ftrace]         call [check@0x80000010]
+[ftrace]         ret
+[ftrace]     ret
+[ftrace] ret
+```
 
 
 ### 4. 阶段三: 输入输出
