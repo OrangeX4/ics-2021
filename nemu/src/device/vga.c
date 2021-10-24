@@ -65,7 +65,7 @@ void vga_update_screen() {
 static void vga_ctl_handler(uint32_t offset, int len, bool is_write) {
   if (is_write) {
     assert(offset == 4);
-    assert(vgactl_port_base[1]);
+    assert(vgactl_port_base[1]); // assert the sync register is non-zero
     vga_update_screen();
   } else {
     vgactl_port_base[0] = (screen_width() << 16) | screen_height();
