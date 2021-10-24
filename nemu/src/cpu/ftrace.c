@@ -7,7 +7,6 @@
 typedef struct {
     char name[64];
     vaddr_t addr;
-    vaddr_t end;
 } Functab;
 
 Functab functab[64];
@@ -52,7 +51,6 @@ void init_ftrace(char *file) {
             fseek(fp, string_section.sh_offset + symbol.st_name, SEEK_SET);
             assert(fgets(functab[func_length].name, 63, fp));
             functab[func_length].addr = symbol.st_value;
-            functab[func_length].end = symbol.st_value + symbol.st_size;
             ++func_length;
         }
     }
