@@ -3,6 +3,7 @@
 #include <cpu/exec.h>
 #include <isa-all-instr.h>
 #include <locale.h>
+#include <elf.h>
 
 #include "../monitor/sdb/watchpoint.h"
 
@@ -41,6 +42,10 @@ void device_update();
 //     // if (eval_wp()) nemu_state.state = NEMU_STOP;
 // }
 // #endif
+
+void init_ftrace(const char* elf_file) {
+    printf("success\n");
+}
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     // Watchpoint
