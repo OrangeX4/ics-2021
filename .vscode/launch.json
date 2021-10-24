@@ -48,7 +48,6 @@
                 // "/home/orangex4/ics2021/nemu/build/nemu-log.txt",
                 "-l",
                 "/home/orangex4/ics2021/am-kernels/tests/cpu-tests/build/nemu-log.txt",
-                "/home/orangex4/ics2021/am-kernels/tests/cpu-tests/build/add-riscv32-nemu.bin",
                 "--diff",
                 "/home/orangex4/ics2021/nemu/tools/spike-diff/build/riscv32-spike-so",
                 "--elf",
