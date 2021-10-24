@@ -50,8 +50,8 @@
                 "/home/orangex4/ics2021/am-kernels/tests/cpu-tests/build/nemu-log.txt",
                 "--diff",
                 "/home/orangex4/ics2021/nemu/tools/spike-diff/build/riscv32-spike-so",
-                "--elf",
-                "/home/orangex4/ics2021/am-kernels/tests/cpu-tests/build/add-riscv32-nemu.elf"
+                // "--elf",
+                // "/home/orangex4/ics2021/am-kernels/tests/cpu-tests/build/add-riscv32-nemu.elf"
             ],
             "stopAtEntry": false, // 设为 true 时程序将暂停在程序入口处
             "cwd": "${workspaceRoot}/nemu", // 调试程序时的工作目录
