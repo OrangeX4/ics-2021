@@ -13,6 +13,7 @@ typedef struct {
 Functab functab[64];
 int func_length = 0;
 static char *elf_file;
+static int indent = 0;
 
 void init_ftrace(char *file) {
 
@@ -66,14 +67,24 @@ void ftrace(Decode *s) {
     if (s->isa.instr.val == RET_INST) {
         for (int i = func_length - 1; i >= 0; --i) {
             if (addr >= functab[i].addr && addr <= functab[i].end) {
-                log_write("[ftrace] ret [%s]\n", functab[i].name);
+                log_write("[ftrace] ");
+                for (int j = 0; j < indent; ++j) {
+                    log_write("    ");
+                }
+                log_write("ret\n");
+                --indent;
                 break;
             }
         }
     } else {
         for (int i = 0; i < func_length; ++i) {
             if (addr == functab[i].addr) {
-                log_write("[ftrace] call [%s@" FMT_PADDR "]\n", functab[i].name, functab[i].addr);
+                log_write("[ftrace] ");
+                for (int j = 0; j < indent; ++j) {
+                    log_write("    ");
+                }
+                log_write("call [%s@" FMT_PADDR "]\n", functab[i].name, functab[i].addr);
+                ++indent;
             }
         }
     }
