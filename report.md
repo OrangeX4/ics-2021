@@ -798,6 +798,10 @@ ftrace 实现起来较为麻烦, 主要麻烦在要看许多关于 ELF 文件的
 [ftrace] ret
 ```
 
+> **Question:** 你会发现在符号表中找不到和 `add()` 函数对应的表项, 为什么会这样?
+>
+> **Answer:** `add()` 函数实现较为简单, 在编译过程中被优化掉了.
+
 
 ### 4. 阶段三: 输入输出
 
@@ -877,3 +881,30 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   }
 }
 ```
+
+#### 4.4 游戏是如何运行的?
+
+在 `main()` 函数里, 先是使用 `ioe_init()` 和 `video_init()` 初始化设备, 以实现在之后的代码中读取时钟, 读取键盘输入和更新游戏逻辑并渲染.
+
+紧接着, 就进入一个 `while(1)` 循环, 实现游戏界面更新和信息接收的主体逻辑. 在这个循环里会做以下几件事情:
+
+1. 通过 `io_read(AM_TIMER_UPTIME)` 读取当前时间, 并通过 `FPS` 来获取当前的帧 (frames).
+   1. 调用 `io_read(AM_TIMER_UPTIME)`, 就相当于调用这个位于 AM 中的库函数, 相关代码位于 `ioe/timer.c` (通过 `ioe_read()` 分发).
+   2. `ioe_read()` 会调用 AM 的 `__am_timer_uptime(uptime)` 函数, 这个函数将会往 `uptime->us` 里写入当前运行的时间.
+   3. `__am_timer_uptime()` 会调用 `inl(RTC_ADDR)` 函数, 这个函数是沟通 AM 软件实现和 nemu 硬件实现的桥梁. 
+   4. `inl(RTC_ADDR)` 会在 nemu 的 `device/timer.c` 中通过分发调用 `rtc_io_handler()` 函数, 进一步获取时间.
+   5. `rtc_io_handler()` 函数会通过 `get_time()` 函数获取系统时间, 模拟硬件实现, 并写入 `rtc_port_base[]` 中.
+2. 通过当前帧数 (current) 和最新帧数 (frames) 的差, 确定需要更新多少帧, 然后通过 `game_logic_update(current)` 一帧一帧地更新 (逻辑上的, 并不会马上显示).
+3. 再次进入一个循环, 以接收键盘输入.
+   1. 通过 `io_read(AM_INPUT_KEYBRD)` 读取键盘输入.
+   2. `ioe_read()` 调用 `__am_input_keybrd(kbd)`, 将获取到的键盘输入写入到 `kbd->keycode` 和 `kbd->keydown` 中.
+   3. 进而在 nemu 中调用 `i8042_data_io_handler()` 写入按键信息.
+   4. 最后在 `game.c` 中调用 `check_hit(lut[ev.keycode])` 检测按键是否命中, 命中就更新命中的游戏逻辑.
+   5. 不断执行这个循环, 直到没有堆积的按键信息要处理, 就直接跳出循环.
+4. 最后, 通过 `render()` 函数, 对游戏画面进行渲染.
+   1. 在 `render()` 函数中, 通过 `io_write(AM_GPU_FBDRAW, ...)` 写入画面信息.
+   2. `ioe_write()` 调用 `gpu.c` 目录下的 `__am_gpu_fbdraw(cfg)` 函数, 进行相应画面的写入.
+   3. 最后在 `vga.c` 文件下执行 `vga_ctl_handler()` 函数, 然后在其中调用 `update_screen()` 进行画面的更新.
+
+整个运行过程中, 涉及到了程序, AM, NEMU 的协调运行, 通过层层的封装, 保证实现接口的统一与便捷.
+
