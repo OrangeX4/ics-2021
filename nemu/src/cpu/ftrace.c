@@ -18,11 +18,12 @@ void init_ftrace(char *file, char *img_file) {
 
 #ifdef CONFIG_FTRACE_DEFAULT
     int len = strlen(img_file);
-    elf_file = (char *) malloc(len);
+    elf_file = (char *) malloc(len + 1);
     strcpy(elf_file, img_file);
     elf_file[len - 3] = 'e';
     elf_file[len - 2] = 'l';
     elf_file[len - 1] = 'f';
+    elf_file[len] = '\0';
     printf("%s", elf_file);
 #else
     elf_file = file;
