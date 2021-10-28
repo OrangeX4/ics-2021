@@ -14,17 +14,27 @@ int func_length = 0;
 static char *elf_file;
 static int indent = 0;
 
-void init_ftrace(char *file) {
+void init_ftrace(char *file, char *img_file) {
 
+#ifdef CONFIG_FTRACE_DEFAULT
+    int len = strlen(img_file);
+    elf_file = (char *) malloc(len);
+    strcpy(elf_file, img_file);
+    elf_file[len - 4] = 'e';
+    elf_file[len - 3] = 'l';
+    elf_file[len - 2] = 'f';
+    printf("%s", elf_file);
+#else
     elf_file = file;
     if (elf_file == NULL) return;
+#endif
 
     FILE *fp = fopen(elf_file, "r");
-    Elf32_Ehdr section_table = {};
-    assert(fread(&section_table, sizeof(Elf32_Ehdr), 1, fp));
+    Elf32_Ehdr file_head = {};
+    assert(fread(&file_head, sizeof(Elf32_Ehdr), 1, fp));
 
     // get the section table
-    fseek(fp, section_table.e_shoff, SEEK_SET);
+    fseek(fp, file_head.e_shoff, SEEK_SET);
     // string section
     Elf32_Shdr string_section = {};
     // symbol section
@@ -32,10 +42,10 @@ void init_ftrace(char *file) {
 
     // temp section
     Elf32_Shdr temp_section = {};
-    for (Elf32_Half i = 0; i < section_table.e_shnum; ++i) {
+    for (Elf32_Half i = 0; i < file_head.e_shnum; ++i) {
         assert(fread(&temp_section, sizeof(Elf32_Shdr), 1, fp));
         // exclude the string section for section table
-        if (temp_section.sh_type == SHT_STRTAB && i != section_table.e_shstrndx) {
+        if (temp_section.sh_type == SHT_STRTAB && i != file_head.e_shstrndx) {
             string_section = temp_section;
         } else if (temp_section.sh_type == SHT_SYMTAB) {
             symbol_section = temp_section;

@@ -3,7 +3,7 @@
 
 void init_rand();
 void init_log(const char *log_file);
-void init_ftrace(const char *elf_file);
+void init_ftrace(const char *elf_file, const char *img_file);
 void init_mem();
 void init_difftest(char *ref_so_file, long img_size, int port);
 void init_device();
@@ -125,7 +125,7 @@ void init_monitor(int argc, char *argv[]) {
     MUXDEF(CONFIG_ISA_riscv64, "riscv64", "bad")))) "-pc-linux-gnu"
   ));
 
-  IFDEF(CONFIG_FTRACE, init_ftrace(elf_file));
+  IFDEF(CONFIG_FTRACE, init_ftrace(elf_file, img_file));
 
   /* Display welcome message. */
   welcome();
