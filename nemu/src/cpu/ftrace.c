@@ -20,9 +20,9 @@ void init_ftrace(char *file, char *img_file) {
     int len = strlen(img_file);
     elf_file = (char *) malloc(len);
     strcpy(elf_file, img_file);
-    elf_file[len - 4] = 'e';
-    elf_file[len - 3] = 'l';
-    elf_file[len - 2] = 'f';
+    elf_file[len - 3] = 'e';
+    elf_file[len - 2] = 'l';
+    elf_file[len - 1] = 'f';
     printf("%s", elf_file);
 #else
     elf_file = file;
