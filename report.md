@@ -911,8 +911,14 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 
 #### 4.5 编译与链接
 
-**(a)** 在 `def_rtl(setrelop, ...)` 中去掉 `static`.
+**(a)** 在 `static inline def_rtl(setrelop, ...)` 中去掉 `static`.
 
 `rtl_setrelop()` 函数调用了 `interpret_relop()` 函数, 后者是一个静态函数, 不能在内联函数内部使用.
 
-**(b)** 
+**(b)** 在 `static inline def_rtl(jr, ...)` 中去掉 `static`.
+
+这种情况没有报错, 程序也能正常运行, 此处的 `static` 只是为了保证函数作用域位于文件内部, 防止重名. 去掉 `static` 也能运行, 是因为外部文件没有与该函数重名的函数.
+
+**(c)** 在 `static def_rtl(jr, ...)` 中去掉 `inline`.
+
+显示 `'rtl_jr' defined but not used [-Werror=unused-function]`. 推测是声明和定义不一致, 导致该函数没有被使用.
