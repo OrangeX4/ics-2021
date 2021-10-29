@@ -7,7 +7,7 @@
 /* RTL basic instructions */
 
 #define def_rtl_compute_reg(name) \
-  static inline def_rtl(name, rtlreg_t* dest, const rtlreg_t* src1, const rtlreg_t* src2) { \
+  inline def_rtl(name, rtlreg_t* dest, const rtlreg_t* src1, const rtlreg_t* src2) { \
     *dest = concat(c_, name) (*src1, *src2); \
   }
 
@@ -142,7 +142,7 @@ static inline def_rtl(host_sm, void *addr, const rtlreg_t *src1, int len) {
 
 // control
 
-inline def_rtl(j, vaddr_t target) {
+static inline def_rtl(j, vaddr_t target) {
   s->dnpc = target;
 }
 
