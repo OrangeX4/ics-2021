@@ -917,8 +917,15 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 
 **(b)** 在 `static inline def_rtl(jr, ...)` 中去掉 `static`.
 
-这种情况没有报错, 程序也能正常运行, 此处的 `static` 只是为了保证函数作用域位于文件内部, 防止重名. 去掉 `static` 也能运行, 是因为外部文件没有与该函数重名的函数.
+这种情况没有报错, 程序也能正常运行.
 
-**(c)** 在 `static def_rtl(jr, ...)` 中去掉 `inline`.
+**(c)** 在 `static inline def_rtl(jr, ...)` 中去掉 `inline`.
 
-显示 `'rtl_jr' defined but not used [-Werror=unused-function]`. 推测是声明和定义不一致, 导致该函数没有被使用.
+显示 `'rtl_jr' defined but not used [-Werror=unused-function]`.
+
+**(c)** 在 `static inline def_rtl(jr, ...)` 中去掉 `static` 和 `inline`.
+
+显示函数在三处地方重复定义了. 分别是 `/src/cpu/cpu-exec.o`, `/src/isa/riscv32/instr/decode.o` 和 `/src/engine/interpreter/hostcall.o`.
+
+综合起来推测, 因为这个 `static inline def_rtl(jr, ...)` 函数的定义和实现是放在 `rtl-basic.h` 头文件内部的 (与常规的头文件只放函数定义不同), 所以引用该头文件的代码文件都会有一份该函数的定义与实现副本. 
+
