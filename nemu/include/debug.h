@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <utils.h>
 
-volatile int dummy;
 
 // #define LOG
 #ifdef LOG
