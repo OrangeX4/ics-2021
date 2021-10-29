@@ -101,7 +101,7 @@ static inline def_rtl(div64s_r, rtlreg_t* dest,
 
 // memory
 
-inline def_rtl(lm, rtlreg_t *dest, const rtlreg_t* addr, word_t offset, int len) {
+static inline def_rtl(lm, rtlreg_t *dest, const rtlreg_t* addr, word_t offset, int len) {
   *dest = vaddr_read(*addr + offset, len);
 }
 
@@ -146,7 +146,7 @@ static inline def_rtl(j, vaddr_t target) {
   s->dnpc = target;
 }
 
-static inline def_rtl(jr, rtlreg_t *target) {
+inline def_rtl(jr, rtlreg_t *target) {
   s->dnpc = *target;
 }
 

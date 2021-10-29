@@ -908,3 +908,11 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 
 整个运行过程中, 涉及到了程序, AM, NEMU 的协调运行, 通过层层的封装, 保证实现接口的统一与便捷.
 
+
+#### 4.5 编译与链接
+
+**(a)** 在 `def_rtl(setrelop, ...)` 中去掉 `static`.
+
+`rtl_setrelop()` 函数调用了 `interpret_relop()` 函数, 后者是一个静态函数, 不能在内联函数内部使用.
+
+**(b)** 
