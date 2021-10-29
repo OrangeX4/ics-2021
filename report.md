@@ -940,5 +940,5 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 
 #### 4.6 编译与链接 (2)
 
-1. 重新编译后的 NEMU 只含有 1 个 dummy 变量的实体. 因为全局变量的作用域是最后编译的文件, 我去掉 `static` 即加入 `volatile int dummy` 再次编译运行, 没有显示重复定义的错误, 说明 `dummy` 只定义了一次, 只有一个实体.
+1. 重新编译后的 NEMU 只含有 27 个 dummy 变量的实体. 我使用命令 `find . | grep '\.i' | xargs grep "volatile static int dummy;" | wc -l` 统计经过预编译之后的文件. 最后结果显示是 27. 
 2. 
