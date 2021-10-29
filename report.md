@@ -909,7 +909,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 整个运行过程中, 涉及到了程序, AM, NEMU 的协调运行, 通过层层的封装, 保证实现接口的统一与便捷.
 
 
-#### 4.5 编译与链接
+#### 4.5 编译与链接 (1)
 
 **(a)** 在 `static inline def_rtl(setrelop, ...)` 中去掉 `static`.
 
@@ -923,9 +923,20 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 
 显示 `'rtl_jr' defined but not used [-Werror=unused-function]`.
 
-**(c)** 在 `static inline def_rtl(jr, ...)` 中去掉 `static` 和 `inline`.
+**(d)** 在 `static inline def_rtl(jr, ...)` 中去掉 `static` 和 `inline`.
 
 显示函数在三处地方重复定义了. 分别是 `/src/cpu/cpu-exec.o`, `/src/isa/riscv32/instr/decode.o` 和 `/src/engine/interpreter/hostcall.o`.
 
 综合起来推测, 因为这个 `static inline def_rtl(jr, ...)` 函数的定义和实现是放在 `rtl-basic.h` 头文件内部的 (与常规的头文件只放函数定义不同), 所以引用该头文件的代码文件都会有一份该函数的定义与实现副本. 
+
+首先, `inline` 关键字是 "建议内联" 关键字, 它会向编译器提出将这个函数內联到调用函数体内的建议, 是否采纳取决于编译器.
+
+如果內联建议被采纳, `inline` 就会发挥作用, 被内嵌到调用函数体中, 作用域是文件内部, 此时即使不加入 `static` 也不会报错, 这就是 **(b)** 去掉 `static` 正常运行的原因.
+
+如果內联建议未被采纳, `inline` 可以视为不存在, 这时候就需要 `static` 保证该函数是静态的, 作用域仅限文件内, 否则就会在链接时, 报函数重复定义的错误, 这个错误可以等同于 **(d)** 的情况.
+
+如果去掉 `inline` 但不去掉 `static` 的话, 虽然不会报重复定义的错误, 但是此时函数就不是內联函数, 只要在文件中被定义了, 就一定要使用, 否则会被 `-Werror` 选项识别, 然后报函数未被使用的错误, 这就是 **(c)** 报错的原因.
+
+
+#### 4.6 编译与链接 (2)
 
