@@ -940,5 +940,6 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 
 #### 4.6 编译与链接 (2)
 
-1. 重新编译后的 NEMU 只含有 27 个 dummy 变量的实体. 我使用命令 `find . | grep '\.i' | xargs grep "volatile static int dummy;" | wc -l` 统计经过预编译之后的文件. 最后结果显示是 27. 
-2. 
+1. 在 `common.h` 加入 `volatile static int dummy` 之后, 重新编译后的 NEMU 含有 27 个 dummy 变量的实体. 我使用命令 `find . | grep '\.i' | xargs grep "volatile static int dummy;" | wc -l` 统计经过预编译之后的文件. 最后结果显示是 27. 
+2. 在 `debug.h` 加入 `volatile static int dummy` 之后, 重新编译后的 NEMU 含有 54 个 dummy 变量的实体. 我使用命令 `find . | grep '\.i' | xargs grep "volatile static int dummy;" | wc -l` 统计经过预编译之后的文件. 最后结果显示是 54. 原因是这 27 个文件都引入了 `common.h` 和 `debug.h` 头文件, 最后就成了 27 * 2 = 54 个重复的 `dummy` 声明.
+3. 加入了初始化之后, 编译时会重复定义的错误. 因为, 如果不加初始化, 编译器会将 `volatile static int dummy` 视作声明, 而不是定义, 声明是可以重复的, 而定义是不可重复的, 所以在编译环节就报出了错误. 
