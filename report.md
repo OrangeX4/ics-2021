@@ -947,4 +947,37 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 
 #### 4.7 了解 Makefile
 
+通过分析 Makefile 代码, 我们得到了以下引用关系:
 
+1. `am-kernels/kernels/hello/Makefile`
+2. `abstract-machine/Makefile`
+3. `abstract-machine/scripts/riscv32-nemu.mk`
+4. `abstract-machine/scripts/platform/nemu.mk`
+
+最后我们在 `abstract-machine/scripts/platform/nemu.mk` 找到了第一个目标 (也是一个伪目标): `image`. 而 `image` 的前置目标为 `$(IMAGE).elf`.
+
+对于 `$(IMAGE).elf` 来说, 它的前置目标有三个: `$(OBJS) am $(LIBS)`, 我们分别来分析.
+
+对于 `$(OBJS)` 目标, 这是一个变量, 我们在 Makefile 中加入一句 `$(info Objects: $(OBJS))` 并 `make -n` 便可知, 它是 `am-kernels/kernels/hello/build/riscv32-nemu/hello.o`. 同理可以分析 `$(LIBS)`.
+
+三个目标 `$(OBJS) am $(LIBS)` 统一起来, 可以知道
+
+- `am-kernels/kernels/hello/build/riscv32-nemu/hello.o`
+  - 通过 `$(DST_DIR)/%.o: %.c` 使用 `hello.c` 生成 `hello.o` 文件. 
+- `am`
+  - 即执行了 `make abstract-machine/am/Makefile`
+- `$(LIBS)`
+  - 执行 `make -s -C abstract-machine/am archive`
+  - 执行 `make -s -C abstract-machine/klib archive`
+  - 这两者又会循环调用 `abstract-machine/Makefile`, 对 `am` 和 `klib` 进行编译.
+
+统一起来, 我们知道有以下步骤:
+
+1. 根据 `hello.c` 生成 `hello.o`, 各种头文件, 是通过 `CFLAGS` 变量设定的.
+2. 执行 `make -s -C abstract-machine/am archive`, 使用 `riscv64-linux-gnu-gcc` 编译生成 `trm.o` 和各种其他 `am` 设备文件.
+3. 执行 `make -s -C /home/orangex4/ics2021/abstract-machine/klib archive`, 使用 `riscv64-linux-gnu-gcc` 编译生成各种 `klib` 相关文件, 如 `int64.o`, `string.o` 和 `stdio.o` 等.
+4. 使用链接器 `riscv64-linux-gnu-ld` 将对应文件链接起来, 生成 `hello-riscv32-meu.elf` 文件.
+5. 使用 `riscv64-linux-gnu-objdump` 反汇编可执行文件 `hello-riscv32-meu.elf`, 生成反汇编结果 `hello-riscv32-nemu.txt`.
+6. 使用 `riscv64-linux-gnu-objcopy` 将可执行镜像部分拆分出来, 生成 `hello-riscv32-nemu.bin` 文件, 供 NEMU 运行.
+
+以上就是执行 `make ARCH=riscv32-nemu` 后, `make` 程序如何组织 `.c` 和 `.h` 文件, 最终生成可执行文件 `hello-$ISA-nemu.elf` 的过程.
