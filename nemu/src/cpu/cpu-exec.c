@@ -3,6 +3,7 @@
 #include <cpu/exec.h>
 #include <isa-all-instr.h>
 #include <locale.h>
+#include <elf.h>
 
 #include "../monitor/sdb/watchpoint.h"
 
@@ -20,21 +21,53 @@ static bool g_print_step = false;
 const rtlreg_t rzero = 0;
 rtlreg_t tmp_reg[4];
 
+// iringbuf
+#define MAX_IRINGBUF_LENGTH 8
+typedef char buf[128];
+buf iringbuf[MAX_IRINGBUF_LENGTH];
+uint32_t iringbuf_count = 0;
+
 void device_update();
+void ftrace(Decode *s);
 
-#ifdef CONFIG_DEBUG
-static void debug_hook(vaddr_t pc, const char *asmbuf) {
-    log_write("%s\n", asmbuf);
-    if (g_print_step) {
-        puts(asmbuf);
-    }
+// #ifdef CONFIG_DEBUG
+// static void debug_hook(vaddr_t pc, const char *asmbuf) {
+//     log_write("%s\n", asmbuf);
+//     if (g_print_step) {
+//         puts(asmbuf);
+//     }
+//     // Watchpoint
+//     if (is_stop()) {
+//         nemu_state.state = NEMU_STOP;
+//     }
+//     // if (eval_wp()) nemu_state.state = NEMU_STOP;
+// }
+// #endif
 
+static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     // Watchpoint
     if (is_stop()) {
         nemu_state.state = NEMU_STOP;
     }
-}
+#ifdef CONFIG_ITRACE_COND
+    // there is no ITRACE_COND
+    //   if (ITRACE_COND) log_write("%s\n", _this->logbuf);
+    log_write("%s\n", _this->logbuf);
 #endif
+#ifdef CONFIG_FTRACE
+    ftrace(_this);
+#endif
+    if (g_print_step) {
+        IFDEF(CONFIG_ITRACE, puts(_this->logbuf));
+    }
+    IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+    // iringbuf
+#ifdef CONFIG_ITRACE
+    strcpy(iringbuf[iringbuf_count % MAX_IRINGBUF_LENGTH], _this->logbuf);
+    iringbuf[iringbuf_count % MAX_IRINGBUF_LENGTH][strlen(_this->logbuf)] = '\0';
+    ++iringbuf_count;
+#endif
+}
 
 #include <isa-exec.h>
 
@@ -43,36 +76,13 @@ static const void *g_exec_table[TOTAL_INSTR] = {
     MAP(INSTR_LIST, FILL_EXEC_TABLE)};
 
 void fetch_decode(Decode *s, vaddr_t pc);
-
 static void fetch_decode_exec_updatepc(Decode *s) {
     fetch_decode(s, cpu.pc);
     s->EHelper(s);
     cpu.pc = s->dnpc;
 }
 
-void fetch_decode(Decode *s, vaddr_t pc) {
-    s->pc = pc;
-    s->snpc = pc;
-    IFDEF(CONFIG_DEBUG, log_bytebuf[0] = '\0');
-    int idx = isa_fetch_decode(s);
-    s->dnpc = s->snpc;
-    s->EHelper = g_exec_table[idx];
-#ifdef CONFIG_DEBUG
-    char *p = s->logbuf;
-    int len =
-        snprintf(p, sizeof(s->logbuf), FMT_WORD ":   %s", s->pc, log_bytebuf);
-    p += len;
-    int ilen = s->snpc - s->pc;
-    int ilen_max = MUXDEF(CONFIG_ISA_x86, 16, 4);
-    int space_len = 3 * (ilen_max - ilen + 1);
-    memset(p, ' ', space_len);
-    p += space_len;
-    strcpy(p, log_asmbuf);
-    assert(strlen(s->logbuf) < sizeof(s->logbuf));
-#endif
-}
-
-void monitor_statistic() {
+static void statistic() {
     IFNDEF(CONFIG_TARGET_AM, setlocale(LC_NUMERIC, ""));
 #define NUMBERIC_FMT MUXDEF(CONFIG_TARGET_AM, "%ld", "%'ld")
     Log("host time spent = " NUMBERIC_FMT " us", g_timer);
@@ -83,6 +93,41 @@ void monitor_statistic() {
     else
         Log("Finish running in less than 1 us and can not calculate the "
             "simulation frequency");
+}
+
+void assert_fail_msg() {
+    isa_reg_display();
+    statistic();
+}
+
+void fetch_decode(Decode *s, vaddr_t pc) {
+    s->pc = pc;
+    s->snpc = pc;
+    int idx = isa_fetch_decode(s);
+    s->dnpc = s->snpc;
+    s->EHelper = g_exec_table[idx];
+#ifdef CONFIG_ITRACE
+    char *p = s->logbuf;
+    p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
+    int ilen = s->snpc - s->pc;
+    int i;
+    uint8_t *instr = (uint8_t *)&s->isa.instr.val;
+    for (i = 0; i < ilen; i++) {
+        p += snprintf(p, 4, " %02x", instr[i]);
+    }
+    int ilen_max = MUXDEF(CONFIG_ISA_x86, 8, 4);
+    int space_len = ilen_max - ilen;
+    if (space_len < 0) space_len = 0;
+    space_len = space_len * 3 + 1;
+    memset(p, ' ', space_len);
+    p += space_len;
+
+    void disassemble(char *str, int size, uint64_t pc, uint8_t *code,
+                     int nbyte);
+    disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
+                MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc),
+                (uint8_t *)&s->isa.instr.val, ilen);
+#endif
 }
 
 /* Simulate how the CPU works. */
@@ -105,9 +150,8 @@ void cpu_exec(uint64_t n) {
     for (; n > 0; n--) {
         fetch_decode_exec_updatepc(&s);
         g_nr_guest_instr++;
-        IFDEF(CONFIG_DEBUG, debug_hook(s.pc, s.logbuf));
+        trace_and_difftest(&s, cpu.pc);
         if (nemu_state.state != NEMU_RUNNING) break;
-        IFDEF(CONFIG_DIFFTEST, difftest_step(s.pc, cpu.pc));
         IFDEF(CONFIG_DEVICE, device_update());
     }
 
@@ -128,8 +172,20 @@ void cpu_exec(uint64_t n) {
                             ? ASNI_FMT("HIT GOOD TRAP", ASNI_FG_GREEN)
                             : ASNI_FMT("HIT BAD TRAP", ASNI_FG_RED))),
                 nemu_state.halt_pc);
+
+            // iringbuf
+            #ifdef CONFIG_ITRACE
+            if (nemu_state.halt_ret != 0) {
+                Log("--------------------------\n");
+                Log("[iringbuf]:\n");
+                for (int i = 0; i < MAX_IRINGBUF_LENGTH - 1; ++i) {
+                    Log("    %s\n", iringbuf[(iringbuf_count + i) % MAX_IRINGBUF_LENGTH]);
+                }
+                Log("--> %s\n\n\n", iringbuf[(iringbuf_count + 7) % MAX_IRINGBUF_LENGTH]);
+            }
+            #endif
             // fall through
         case NEMU_QUIT:
-            monitor_statistic();
+            statistic();
     }
 }

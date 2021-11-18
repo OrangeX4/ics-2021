@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/nemu/include/**",
-                "${workspaceFolder}/nemu/**"
+                "${workspaceFolder}/nemu/**",
+                "${workspaceFolder}/abstract-machine/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

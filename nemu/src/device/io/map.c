@@ -38,14 +38,25 @@ void init_map() {
 }
 
 word_t map_read(paddr_t addr, int len, IOMap *map) {
+  // dtrace
+#ifdef CONFIG_DTRACE
+  log_write("[dtrace] map_read(addr=%x, len=%d, map=%s)\n", addr, len, map->name);
+#endif
+
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
   invoke_callback(map->callback, offset, len, false); // prepare data to read
-  return host_read(map->space + offset, len);
+  word_t ret = host_read(map->space + offset, len);
+  return ret;
 }
 
 void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
+  // dtrace
+#ifdef CONFIG_DTRACE
+  log_write("[dtrace] map_write(addr=%x, len=%d, data=%u, map=%s)\n", addr, len, data, map->name);
+#endif
+
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
