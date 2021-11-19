@@ -119,6 +119,9 @@ endmenu
 
 menu "Testing and Debugging"
 
+config LOG
+  bool "Enable log"
+  default y
 
 config TRACE
   bool "Enable tracer"
