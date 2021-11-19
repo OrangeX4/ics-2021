@@ -107,7 +107,8 @@ int printf(const char *fmt, ...) {
                 }
                 case 's': {
                     s = va_arg(ap, char *);
-                    printf(s);
+                    for (; *s != '\0'; s++) putch(*s);
+                    // printf(s);
                     break;
                 }
                 case '%': {
