@@ -24,7 +24,22 @@ static def_DopHelper(csr) {
     // bool is_write = flag;
     // static word_t zero_null = 0;
     // op->preg = (is_write && val == 0) ? &zero_null : &gpr(val);
-    op->preg = &csr(val);
+    switch (val) {
+    case 0x305:
+        op->preg = &csr(0); // mtvec
+        break;
+    case 0x342:
+        op->preg = &csr(1); // mcause
+        break;
+    case 0x300:
+        op->preg = &csr(2); // mstatus
+        break;
+    case 0x341:
+        op->preg = &csr(3); // mepc
+        break;
+    default:
+        break;
+    }
 }
 
 static def_DHelper(I) {
