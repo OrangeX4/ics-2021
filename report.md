@@ -996,3 +996,32 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 6. 使用 `riscv64-linux-gnu-objcopy` 将可执行镜像部分拆分出来, 生成 `hello-riscv32-nemu.bin` 文件, 供 NEMU 运行.
 
 以上就是执行 `make ARCH=riscv32-nemu` 后, `make` 程序如何组织 `.c` 和 `.h` 文件, 最终生成可执行文件 `hello-$ISA-nemu.elf` 的过程.
+
+<!-- $ -->
+
+
+## PA 2
+
+### 1. 阶段一: 穿越时空的旅程
+
+#### 1.1 设置异常入口地址
+
+要想正确实现 `csrrs` 指令, 就需要先加入 `mtvec`, `mcause`, `mstatus`, `mepc` 这四个寄存器, 然后再使用这些寄存器实现第一条 CSR 指令.
+
+1. 加入 CSR 寄存器
+   1. 在 `isa-def.h` 加入 CSR 的四个寄存器 `mtvec`, `mcause`, `mstatus`, `mepc`
+   2. 在 `reg.h` 中加入 `csr(idx)` 全局宏
+   3. 在 `reg.c` 中修改寄存器有关的函数, 如 `isa_reg_display()`
+2. 加入 `csrrs` 指令
+   1. 在 `isa-all-instr.h` 之类的添加就不过多赘述
+   2. 在 `decode.c` 里加入了 `def_DopHelper(csr)` 辅助函数
+      1. 用于将 12 位的 csr 地址映射到只有 4 个的 csr 寄存器中 (暂时)
+      2. 这步踩了很多坑...
+   3. 在 `csr.h` 加入 `def_EHelper(csrrs)` 实现对应指令
+
+做完这些之后, 终于能开始写自陷操作了...
+
+#### 1.2 触发自陷操作
+
+
+

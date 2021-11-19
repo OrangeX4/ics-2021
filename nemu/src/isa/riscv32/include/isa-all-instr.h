@@ -7,6 +7,6 @@
             f(bge) f(bgeu) f(blt) f(bltu) f(beq) f(bne) \
             f(slt) f(slti) f(sltu) f(sltiu) f(jal) f(jalr) \
             f(lui) f(lw) f(lh) f(lhu) f(lb) f(lbu) f(sw) f(sh) f(sb) f(inv) f(nemu_trap) \
-            f(csrrs)
+            f(csrrs) f(ecall)
 
 def_all_EXEC_ID();
