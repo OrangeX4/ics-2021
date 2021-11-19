@@ -22,7 +22,7 @@ extern void __am_asm_trap(void);
 
 bool cte_init(Context*(*handler)(Event, Context*)) {
   // initialize exception entry
-  asm volatile("li t0, 0x1800; csrw mtvec, %0" : : "r"(__am_asm_trap) : "%t0");
+  asm volatile("li t0, 0x1800; csrw mstatus, t0; csrw mtvec, %0" : : "r"(__am_asm_trap) : "%t0");
 
   // register event handler
   user_handler = handler;
