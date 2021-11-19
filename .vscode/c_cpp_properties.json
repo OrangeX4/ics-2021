@@ -25,6 +25,16 @@
             "compileCommands": "${workspaceFolder}/nemu/compile_commands.json"
         },
         {
+            "name": "am",
+            "includePath": [],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64",
+            "compileCommands": "${workspaceFolder}/am-kernels/tests/cpu-tests/compile_commands.json"
+        },
+        {
             "name": "nanos-lite",
             "includePath": [],
             "defines": [],
