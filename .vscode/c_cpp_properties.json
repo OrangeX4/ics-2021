@@ -3,8 +3,9 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/nemu/include/**",
-                "${workspaceFolder}/nemu/**",
+                "${workspaceFolder}/nanos-lite/**",
+                // "${workspaceFolder}/nemu/include/**",
+                // "${workspaceFolder}/nemu/**",
                 "${workspaceFolder}/abstract-machine/**"
             ],
             "defines": [],
