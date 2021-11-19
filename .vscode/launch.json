@@ -70,6 +70,7 @@
             "args": [
                 // " --log",
                 // "/home/orangex4/ics2021/nemu/build/nemu-log.txt",
+                "-b",
                 "-l",
                 "/home/orangex4/ics2021/nanos-lite/build/nemu-log.txt",
                 "/home/orangex4/ics2021/nanos-lite/build/nanos-lite-riscv32-nemu.bin"
