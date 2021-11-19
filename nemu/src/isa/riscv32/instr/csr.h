@@ -15,5 +15,5 @@ def_EHelper(ecall) {
 }
 
 def_EHelper(mret) {
-  rtl_j(s, csr(3));
+  rtl_j(s, csr(3) + 4);
 }
