@@ -4,8 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/nanos-lite/**",
-                // "${workspaceFolder}/nemu/include/**",
-                // "${workspaceFolder}/nemu/**",
+                "${workspaceFolder}/nemu/include/**",
+                "${workspaceFolder}/nemu/**",
                 "${workspaceFolder}/abstract-machine/**"
             ],
             "defines": [],
@@ -16,7 +16,10 @@
         },
         {
             "name": "nemu",
-            "includePath": [],
+            "includePath": [
+                "${workspaceFolder}/nemu/include/**",
+                "${workspaceFolder}/nemu/**"
+            ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
@@ -26,7 +29,11 @@
         },
         {
             "name": "am",
-            "includePath": [],
+            "includePath": [
+                "${workspaceFolder}/nemu/include/**",
+                "${workspaceFolder}/nemu/**",
+                "${workspaceFolder}/abstract-machine/**"
+            ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
@@ -36,7 +43,11 @@
         },
         {
             "name": "nanos-lite",
-            "includePath": [],
+            "includePath": [
+                "${workspaceFolder}/nanos-lite/**",
+                "${workspaceFolder}/nemu/**",
+                "${workspaceFolder}/abstract-machine/**"
+            ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
