@@ -1006,13 +1006,13 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 
 #### 1.1 设置异常入口地址
 
-要想正确实现 `csrrs` 指令, 就需要先加入 `mtvec`, `mcause`, `mstatus`, `mepc` 这四个寄存器, 然后再使用这些寄存器实现第一条 CSR 指令.
+要想正确实现 `csrrw` 指令, 就需要先加入 `mtvec`, `mcause`, `mstatus`, `mepc` 这四个寄存器, 然后再使用这些寄存器实现第一条 CSR 指令.
 
 1. 加入 CSR 寄存器
    1. 在 `isa-def.h` 加入 CSR 的四个寄存器 `mtvec`, `mcause`, `mstatus`, `mepc`
    2. 在 `reg.h` 中加入 `csr(idx)` 全局宏
    3. 在 `reg.c` 中修改寄存器有关的函数, 如 `isa_reg_display()`
-2. 加入 `csrrs` 指令
+2. 加入 `csrrw` 指令
    1. 在 `isa-all-instr.h` 之类的添加就不过多赘述
    2. 在 `decode.c` 里加入了 `def_DopHelper(csr)` 辅助函数
       1. 用于将 12 位的 csr 地址映射到只有 4 个的 csr 寄存器中 (暂时)
@@ -1023,5 +1023,21 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 
 #### 1.2 触发自陷操作
 
+1. 完成 `ecall` 指令
+   1. `rtl_j(s, isa_raise_intr(gpr(17), cpu.pc));`
+2. 完成 `csrrs` 指令
 
+这里踩了很多坑, difftest 还出问题了...
+
+### 1.3 重新组织结构体
+
+通过观察 `trap.S` 的内容, 对 `Context` 重新整理如下:
+
+``` c
+struct Context {
+  // fix the order of these members to match trap.S
+  uintptr_t gpr[32], mcause, mstatus, mepc;
+  void *pdir;
+};
+```
 
