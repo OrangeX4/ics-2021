@@ -1000,7 +1000,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 <!-- $ -->
 
 
-## PA 2
+## PA 3
 
 ### 1. 阶段一: 穿越时空的旅程
 
@@ -1076,6 +1076,7 @@ struct Context {
 13. `__am_asm_trap()` 使用 `mret`, 将 `mtvec` 寄存器内保存的数据取出, 并跳转到该位置, 即回到了调用中断代码的 `yield()` 函数中;
 14. `yield()` 处理完所有事情, 便返回了, 进而调用了 `panic("Should not reach here")`.
 
+此外, 我还在 `trap.S` 的 `csrw mepc, t2` 指令前加入了 `addi t2, t2, 4`, 来实现自陷指令 `ecall` PC 加 4 的效果.
 
 #### 1.6 异常处理的踪迹 - etrace
 
