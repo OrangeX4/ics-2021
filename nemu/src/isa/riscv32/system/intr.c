@@ -7,6 +7,11 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
 
     cpu.csr[3]._32 = cpu.pc + 4;    // mepc
     cpu.csr[1]._32 = NO;            // mcause
+
+#ifdef CONFIG_ETRACE
+log_write("[etrace] mcause: %d, mstatus: %x, mepc: %x", cpu.csr[1]._32, cpu.csr[2]._32, cpu.csr[3]._32);
+#endif
+
     return cpu.csr[0]._32;          // mtvec
 }
 
