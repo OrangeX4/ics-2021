@@ -11,7 +11,7 @@ def_EHelper(csrrw) {
 }
 
 def_EHelper(ecall) {
-  rtl_j(s, isa_raise_intr(11, cpu.pc)); // 异常号 11, 代表 Environment call from M-mode
+  rtl_j(s, isa_raise_intr(11, cpu.pc + 4)); // 异常号 11, 代表 Environment call from M-mode
 }
 
 def_EHelper(mret) {
