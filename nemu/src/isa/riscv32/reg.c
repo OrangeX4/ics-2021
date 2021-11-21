@@ -39,7 +39,7 @@ void _isa_reg_display(CPU_state *_cpu, char *msg) {
 
 void isa_reg_display() {
     // riscv32
-    _isa_reg_display(&cpu, "[DUT]:");
+    _isa_reg_display(&cpu, "");
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
