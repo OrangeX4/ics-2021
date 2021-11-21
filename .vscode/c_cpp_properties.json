@@ -1,46 +1,46 @@
 {
     "configurations": [
-        {
-            "name": "Linux",
-            "includePath": [
-                "${workspaceFolder}/nanos-lite/**",
-                "${workspaceFolder}/nemu/include/**",
-                "${workspaceFolder}/nemu/**",
-                "${workspaceFolder}/abstract-machine/**"
-            ],
-            "defines": [],
-            "compilerPath": "/usr/bin/gcc",
-            "cStandard": "gnu17",
-            "cppStandard": "gnu++14",
-            "intelliSenseMode": "linux-gcc-x64"
-        },
-        {
-            "name": "nemu",
-            "includePath": [
-                "${workspaceFolder}/nemu/include/**",
-                "${workspaceFolder}/nemu/**"
-            ],
-            "defines": [],
-            "compilerPath": "/usr/bin/gcc",
-            "cStandard": "gnu17",
-            "cppStandard": "gnu++14",
-            "intelliSenseMode": "linux-gcc-x64",
-            "compileCommands": "${workspaceFolder}/nemu/compile_commands.json"
-        },
-        {
-            "name": "am",
-            "includePath": [
-                "${workspaceFolder}/nemu/include/**",
-                "${workspaceFolder}/nemu/**",
-                "${workspaceFolder}/abstract-machine/**"
-            ],
-            "defines": [],
-            "compilerPath": "/usr/bin/gcc",
-            "cStandard": "gnu17",
-            "cppStandard": "gnu++14",
-            "intelliSenseMode": "linux-gcc-x64",
-            "compileCommands": "${workspaceFolder}/am-kernels/tests/cpu-tests/compile_commands.json"
-        },
+        // {
+        //     "name": "Linux",
+        //     "includePath": [
+        //         "${workspaceFolder}/nanos-lite/**",
+        //         "${workspaceFolder}/nemu/include/**",
+        //         "${workspaceFolder}/nemu/**",
+        //         "${workspaceFolder}/abstract-machine/**"
+        //     ],
+        //     "defines": [],
+        //     "compilerPath": "/usr/bin/gcc",
+        //     "cStandard": "gnu17",
+        //     "cppStandard": "gnu++14",
+        //     "intelliSenseMode": "linux-gcc-x64"
+        // },
+        // {
+        //     "name": "nemu",
+        //     "includePath": [
+        //         "${workspaceFolder}/nemu/include/**",
+        //         "${workspaceFolder}/nemu/**"
+        //     ],
+        //     "defines": [],
+        //     "compilerPath": "/usr/bin/gcc",
+        //     "cStandard": "gnu17",
+        //     "cppStandard": "gnu++14",
+        //     "intelliSenseMode": "linux-gcc-x64",
+        //     "compileCommands": "${workspaceFolder}/nemu/compile_commands.json"
+        // },
+        // {
+        //     "name": "am",
+        //     "includePath": [
+        //         "${workspaceFolder}/nemu/include/**",
+        //         "${workspaceFolder}/nemu/**",
+        //         "${workspaceFolder}/abstract-machine/**"
+        //     ],
+        //     "defines": [],
+        //     "compilerPath": "/usr/bin/gcc",
+        //     "cStandard": "gnu17",
+        //     "cppStandard": "gnu++14",
+        //     "intelliSenseMode": "linux-gcc-x64",
+        //     "compileCommands": "${workspaceFolder}/am-kernels/tests/cpu-tests/compile_commands.json"
+        // },
         {
             "name": "nanos-lite",
             "includePath": [
