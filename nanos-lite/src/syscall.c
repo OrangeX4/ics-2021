@@ -16,10 +16,6 @@ void do_syscall(Context *c) {
     a[2] = c->GPR3;
     a[3] = c->GPR4;
 
-#ifdef ENABLE_STRACE
-    printf("[strace] %s(%d, %d, %d) = %d\n", syscall_names[a[0]], a[1], a[2], a[3], c->GPRx);
-#endif
-
     switch (a[0]) {
         case SYS_exit:
             printf("[strace] SYS_exit(%d)\n", a[1]);
@@ -42,4 +38,8 @@ void do_syscall(Context *c) {
         default:
             panic("Unhandled syscall ID = %d", a[0]);
     }
+
+#ifdef ENABLE_STRACE
+    printf("[strace] %s(%d, %d, %d) = %d\n", syscall_names[a[0]], a[1], a[2], a[3], c->GPRx);
+#endif
 }
