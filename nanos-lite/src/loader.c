@@ -26,10 +26,10 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
         ramdisk_read(&ph, elf.e_phoff + i * sizeof(Elf_Phdr), sizeof(Elf_Phdr));
         if (ph.p_type == PT_LOAD) {
             // Copy to [VirtAddr, VirtAddr + FileSiz)
-            printf("Addr: %x\n", ENTRY);
-            ramdisk_write((void *)ENTRY, ph.p_offset, ph.p_filesz);
+            printf("Addr: %x", ph.p_vaddr);
+            ramdisk_write((void *)ph.p_vaddr, ph.p_offset, ph.p_filesz);
             // Set [VirtAddr + FileSiz, VirtAddr + MenSiz) with zero
-            memset((void *)(ENTRY + ph.p_filesz), 0, ph.p_memsz - ph.p_filesz);
+            memset((void *)(ph.p_vaddr + ph.p_filesz), 0, ph.p_memsz - ph.p_filesz);
         }
     }
     
