@@ -35,8 +35,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
         }
     }
     
-    ramdisk_read(&ph, elf.e_phoff, sizeof(Elf_Phdr));
-    return ph.p_vaddr;
+    return elf.e_entry;
 }
 
 void naive_uload(PCB *pcb, const char *filename) {
