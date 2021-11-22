@@ -62,7 +62,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     }
     IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
     // iringbuf
-#ifdef CONFIG_ITRACE
+#ifdef CONFIG_IRINGBUF
     strcpy(iringbuf[iringbuf_count % MAX_IRINGBUF_LENGTH], _this->logbuf);
     iringbuf[iringbuf_count % MAX_IRINGBUF_LENGTH][strlen(_this->logbuf)] = '\0';
     ++iringbuf_count;
@@ -174,14 +174,14 @@ void cpu_exec(uint64_t n) {
                 nemu_state.halt_pc);
 
             // iringbuf
-            #ifdef CONFIG_ITRACE
+            #ifdef CONFIG_IRINGBUF
             if (nemu_state.halt_ret != 0) {
-                Log("--------------------------\n");
-                Log("[iringbuf]:\n");
+                printf("--------------------------\n");
+                printf("[iringbuf]:\n");
                 for (int i = 0; i < MAX_IRINGBUF_LENGTH - 1; ++i) {
-                    Log("    %s\n", iringbuf[(iringbuf_count + i) % MAX_IRINGBUF_LENGTH]);
+                    printf("    %s\n", iringbuf[(iringbuf_count + i) % MAX_IRINGBUF_LENGTH]);
                 }
-                Log("--> %s\n\n\n", iringbuf[(iringbuf_count + 7) % MAX_IRINGBUF_LENGTH]);
+                printf("--> %s\n\n\n", iringbuf[(iringbuf_count + 7) % MAX_IRINGBUF_LENGTH]);
             }
             #endif
             // fall through

@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <utils.h>
 
-#ifdef CONFIG_LOG
+#ifndef CONFIG_LOG_TO_FILE
 #define Log(format, ...) \
     _Log(ASNI_FMT("[%s:%d %s] " format, ASNI_FG_BLUE) "\n", \
         __FILE__, __LINE__, __func__, ## __VA_ARGS__)

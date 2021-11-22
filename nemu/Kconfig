@@ -119,8 +119,8 @@ endmenu
 
 menu "Testing and Debugging"
 
-config LOG
-  bool "Enable log"
+config LOG_TO_FILE
+  bool "Enable log without screen"
   default y
 
 config TRACE
@@ -144,8 +144,13 @@ config ITRACE
 
 config ITRACE_COND
   depends on ITRACE
-  string "Only trace instructions when the condition is true"
-  default "true"
+  bool "Only trace instructions when the condition is true"
+  default n
+
+config IRINGBUF
+  depends on ITRACE
+  bool "Enable iringbuf"
+  default y
 
 config MTRACE
   depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
