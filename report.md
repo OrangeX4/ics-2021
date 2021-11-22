@@ -1261,14 +1261,15 @@ case SYS_exit: halt(0); break;
 
 ``` c
 #ifdef ENABLE_STRACE
-printf("[strace] %s(%d, %d, %d)", syscall_names[a[0]], a[1], a[2], a[3]);
+ printf("[strace] %s(%d, %d, %d) = %d\n", syscall_names[a[0]], a[1], a[2], a[3], c->GPRx);
 #endif
 
-// ...
-
-#ifdef ENABLE_STRACE
-printf(" = %d\n", c->GPRx);
-#endif
+ switch (a[0]) {
+     case SYS_exit:
+         printf("[strace] SYS_exit(0)\n");
+         halt(0);
+         break;
+ }
 ```
 
 
