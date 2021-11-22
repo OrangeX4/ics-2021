@@ -22,13 +22,13 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     assert(*(uint32_t *)elf.e_ident == ELF_MAGIC);
 
     Elf_Phdr ph = {};
-    printf("phnum: %d\n", elf.e_phnum);
+    // printf("phnum: %d\n", elf.e_phnum);
     for (int i = 0; i < elf.e_phnum; ++i) {
         ramdisk_read(&ph, elf.e_phoff + i * sizeof(Elf_Phdr), sizeof(Elf_Phdr));
         if (ph.p_type == PT_LOAD) {
             // Copy to [VirtAddr, VirtAddr + FileSiz)
-            printf("Addr: %x\n", ph.p_vaddr);
-            printf("Offset: %x\n", ph.p_offset);
+            // printf("Addr: %x\n", ph.p_vaddr);
+            // printf("Offset: %x\n", ph.p_offset);
             memcpy((void *)ph.p_vaddr, &ramdisk_start + ph.p_offset, ph.p_filesz);
             // Set [VirtAddr + FileSiz, VirtAddr + MenSiz) with zero
             memset((void *)(ph.p_vaddr + ph.p_filesz), 0, ph.p_memsz - ph.p_filesz);
