@@ -28,13 +28,14 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
         if (ph.p_type == PT_LOAD) {
             // Copy to [VirtAddr, VirtAddr + FileSiz)
             printf("Addr: %x\n", ph.p_vaddr);
+            printf("Offset: %x\n", ph.p_offset);
             memcpy((void *)ph.p_vaddr, &ramdisk_start + ph.p_offset, ph.p_filesz);
             // Set [VirtAddr + FileSiz, VirtAddr + MenSiz) with zero
             memset((void *)(ph.p_vaddr + ph.p_filesz), 0, ph.p_memsz - ph.p_filesz);
         }
     }
-    ramdisk_read(&ph, elf.e_phoff, sizeof(Elf_Phdr));
     
+    ramdisk_read(&ph, elf.e_phoff, sizeof(Elf_Phdr));
     return ph.p_vaddr;
 }
 
