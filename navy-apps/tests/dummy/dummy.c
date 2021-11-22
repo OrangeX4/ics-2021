@@ -8,5 +8,7 @@
 extern int _syscall_(int, uintptr_t, uintptr_t, uintptr_t);
 
 int main() {
+  // riscv: li a7, 1; ecall
+  // x86: mov 1, eax; int $0x80
   return _syscall_(SYS_yield, 0, 0, 0);
 }
