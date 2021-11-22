@@ -1272,4 +1272,14 @@ case SYS_exit: halt(0); break;
  }
 ```
 
+其中开关位于 `common.h`.
+
+具体输出大致如下:
+
+```
+[strace] SYS_yield(0, 0, 0) = 0
+EVENT_YIELD, GPR1: -1
+[strace] SYS_exit(0, 0, 0) = 0
+[strace] SYS_exit(0)
+```
 
