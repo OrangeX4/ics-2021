@@ -64,8 +64,11 @@ int _write(int fd, void *buf, size_t count) {
   return _syscall_(SYS_write, fd, buf, count);
 }
 
+extern end;
+
 void *_sbrk(intptr_t increment) {
-  return (void *)-1;
+  if (increment == 0) return end;
+  return _syscall_(SYS_brk, increment, 0, 0);
 }
 
 int _read(int fd, void *buf, size_t count) {

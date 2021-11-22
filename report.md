@@ -1283,3 +1283,19 @@ EVENT_YIELD, GPR1: -1
 [strace] SYS_exit(0)
 ```
 
+
+#### 2.10 标准输出
+
+``` c
+case SYS_write: {
+   // int _write(int fd, void *buf, size_t count)
+   if (a[1] == 1 || a[1] == 2) {
+       for (size_t i = 0; i < a[3]; ++i) putch(((char *) a[2])[i]);
+       c->GPRx = a[3];
+   }
+   break;
+}
+```
+
+
+#### 2.11 
