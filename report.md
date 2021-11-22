@@ -1266,7 +1266,7 @@ case SYS_exit: halt(0); break;
 
  switch (a[0]) {
      case SYS_exit:
-         printf("[strace] SYS_exit(0)\n");
+         printf("[strace] SYS_exit(%d)\n", a[1]);
          halt(0);
          break;
  }

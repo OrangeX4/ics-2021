@@ -22,12 +22,20 @@ void do_syscall(Context *c) {
 
     switch (a[0]) {
         case SYS_exit:
-            printf("[strace] SYS_exit(0)\n");
+            printf("[strace] SYS_exit(%d)\n", a[1]);
             halt(0);
             break;
         case SYS_yield: {
             yield();
             c->GPRx = 0;
+            break;
+        }
+        case SYS_write: {
+            // int _write(int fd, void *buf, size_t count)
+            if (a[1] == 1 || a[1] == 2) {
+                for (size_t i = 0; i < a[3]; ++i) putch(((char *) a[2])[i]);
+                c->GPRx = a[3];
+            }
             break;
         }
         default:
