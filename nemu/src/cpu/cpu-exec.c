@@ -22,7 +22,7 @@ const rtlreg_t rzero = 0;
 rtlreg_t tmp_reg[4];
 
 // iringbuf
-#define MAX_IRINGBUF_LENGTH 16
+#define MAX_IRINGBUF_LENGTH 32
 typedef char buf[128];
 buf iringbuf[MAX_IRINGBUF_LENGTH];
 uint32_t iringbuf_count = 0;
