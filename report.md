@@ -1298,4 +1298,24 @@ case SYS_write: {
 ```
 
 
-#### 2.11 
+#### 2.11 堆区管理
+
+在 Navy 的 `syscall.c` 中加入
+
+``` c
+extern char end;
+void *program_break = &end;
+
+void *_sbrk(intptr_t increment) {
+  if (increment == 0) {
+      return program_break;
+  }
+  if (_syscall_(SYS_brk, increment, 0, 0)) {
+    return -1;
+  } else {
+    program_break += increment;
+    return program_break - increment;
+  }
+}
+```
+
