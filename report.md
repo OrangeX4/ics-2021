@@ -1177,4 +1177,62 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 }
 ```
 
+此外, 我还修改了 `cte.c` 中 `event` 分发的方式, 这里我们认为 `a7 == -1` 时是 `EVENT_YIELD`, 否则是 `EVENT_SYSCALL`
+
+``` c
+ switch (c->mcause) {
+   case 11: {
+     if (c->GPR1 == -1) {
+       ev.event = EVENT_YIELD;
+     } else {
+       ev.event = EVENT_SYSCALL;
+     }
+     break;
+   }
+   default: ev.event = EVENT_ERROR; break;
+ }
+```
+
+
+#### 2.6 识别系统调用
+
+目前 dummy 已经通过 `_syscall_()` 直接触发系统调用, 我需要让 Nanos-lite 识别出系统调用事件 EVENT_SYSCALL.
+
+于是我在 `irq.c` 中将其修改为
+
+``` c
+switch (e.event) {
+ case EVENT_YIELD: printf("EVENT_YIELD, GPR1: %d\n", c->GPR1); break;
+ case EVENT_SYSCALL: {
+     do_syscall(c);
+     break;
+ }
+ default: panic("Unhandled event ID = %d, GPR1: %d\n", e.event, c->GPR1);
+}
+```
+
+
+#### 2.7 实现 SYS_yield 系统调用
+
+我在补充完整 `syscall.h` 的基础上, 在 `syscall.c` 中加入了:
+
+``` c
+void do_syscall(Context *c) {
+  uintptr_t a[4];
+  a[0] = c->GPR1;
+
+  switch (a[0]) {
+    case SYS_yield: {
+        yield();
+        c->GPRx = 0;
+        break;
+    }
+    default: panic("Unhandled syscall ID = %d", a[0]);
+  }
+}
+```
+
+
+#### 2.8 实现 SYS_exit 系统调用
+
 
