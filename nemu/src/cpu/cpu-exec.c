@@ -175,7 +175,7 @@ void cpu_exec(uint64_t n) {
 
             // iringbuf
             #ifdef CONFIG_IRINGBUF
-            if (nemu_state.halt_ret != 0) {
+            if (nemu_state.state == NEMU_ABORT || nemu_state.halt_ret != 0) {
                 printf("--------------------------\n");
                 printf("[iringbuf]:\n");
                 for (int i = 0; i < MAX_IRINGBUF_LENGTH - 1; ++i) {
