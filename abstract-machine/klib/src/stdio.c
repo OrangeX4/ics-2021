@@ -105,6 +105,14 @@ int printf(const char *fmt, ...) {
                     printf(buf);
                     break;
                 }
+                case 'p': {
+                    n = va_arg(ap, int);
+                    xtoa(n, buf);
+                    int len = sizeof(int) * 2 - strlen(buf);
+                    for (int j = 0; j < len; ++j) putch('0');
+                    printf(buf);
+                    break;
+                }
                 case 's': {
                     s = va_arg(ap, char *);
                     for (; *s != '\0'; s++) putch(*s);
