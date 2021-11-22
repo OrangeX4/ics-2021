@@ -1105,7 +1105,6 @@ log_write("[etrace] mcause: %d, mstatus: %x, mepc: %x\n", cpu.csr[1]._32, cpu.cs
 
 ``` bash
 #!/bin/bash
-
 program=dummy
 
 function init() {
@@ -1149,5 +1148,33 @@ esac
 > 
 > **Answer:** 因为程序中 `.bss` 节对应的是未初始化的全局变量, 在程序中也就不需要占用空间, 即长度为 0; 但是对于进程来说, `.bss` 节加载到内存中, 仍然是需要占用空间的, 此时长度就不为 0, 因此 `MemSiz` 总长度也会大于 `FileSiz`.
 
+
+#### 2.5 实现 loader
+
+我实现的 `loader` 如下:
+
+``` c
+static uintptr_t loader(PCB *pcb, const char *filename) {
+
+    Elf_Ehdr elf = {};
+    ramdisk_read(&elf, 0, sizeof(Elf_Ehdr));
+
+    // Make sure that the file is an elf file
+    assert(*(uint32_t *)elf.e_ident == ELF_MAGIC);
+
+    Elf_Phdr ph = {};
+    for (int i = 0; i < elf.e_phnum; ++i) {
+        ramdisk_read(&ph, elf.e_phoff + i * sizeof(Elf_Phdr), sizeof(Elf_Phdr));
+        if (ph.p_type == PT_LOAD) {
+            // Copy to [VirtAddr, VirtAddr + FileSiz)
+            memcpy((void *)ph.p_vaddr, &ramdisk_start + ph.p_offset, ph.p_filesz);
+            // Set [VirtAddr + FileSiz, VirtAddr + MenSiz) with zero
+            memset((void *)(ph.p_vaddr + ph.p_filesz), 0, ph.p_memsz - ph.p_filesz);
+        }
+    }
+    
+    return elf.e_entry;
+}
+```
 
 
