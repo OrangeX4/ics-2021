@@ -1089,3 +1089,65 @@ log_write("[etrace] mcause: %d, mstatus: %x, mepc: %x\n", cpu.csr[1]._32, cpu.cs
 ```
 
 即可.
+
+
+### 2. 阶段二: 穿越时空的旅程
+
+#### 2.1 简化操作: 自动化脚本
+
+我们需要在 `riscv32-nemu` 和 `native` 之间不断切换, 要做如下三件事情:
+
+1. 使用 `ISA=xxx` 编译 dummy
+2. 把编译出的 dummy ELF 文件作为 nanos-lite 的 ramdisk, 复制过去
+3. 使用 `ARCH=xxx` 编译并运行 nanos-lite
+
+为了简化操作, 写了一个脚本, 脚本如下所示:
+
+``` bash
+#!/bin/bash
+
+program=dummy
+
+function init() {
+
+    make -C ../navy-apps/tests/dummy ISA=$1
+    cp ../navy-apps/tests/dummy/build/dummy-$1 ./build/ramdisk.img
+    make ARCH=$2 run
+}
+
+case $1 in
+nemu)
+    init riscv32 riscv32-nemu
+    ;;
+native)
+    init am_native native
+    ;;
+*)
+    echo "Invalid input..."
+    exit
+    ;;
+esac
+```
+
+#### 2.2 堆和栈在哪里?
+
+> **Question:** 我们提到了代码和数据都在可执行文件里面, 但却没有提到堆 (heap) 和栈 (stack). 为什么堆和栈的内容没有放入可执行文件里面? 那程序运行时刻用到的堆和栈又是怎么来的? AM 的代码是否能给你带来一些启发?
+>
+> **Answer:** 堆和栈是进程才有的概念, 程序只是一个静态的可执行文件, 包含着一个进程运行所需的代码信息, 本身并不是运行着的. 只有程序被加载为进程, 才会出现堆和栈.
+
+
+#### 2.3 如何识别不同格式的可执行文件?
+
+> **Question:** 如果你在GNU/Linux下执行一个从Windows拷过来的可执行文件, 将会报告"格式错误". 思考一下, GNU/Linux是如何知道"格式错误"的?
+> 
+> **Answer:** 通过文件头的 "魔数", 对于 ELF 文件来说, 这个魔数为 `Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00`.
+
+
+#### 2.4  冗余的属性?
+
+> **Question:** 使用 readelf 查看一个 ELF 文件的信息, 你会看到一个 segment 包含两个大小的属性, 分别是 FileSiz 和 MemSiz, 这是为什么? 再仔细观察一下, 你会发现 FileSiz 通常不会大于相应的 MemSiz, 这又是为什么?
+> 
+> **Answer:** 因为程序中 `.bss` 节对应的是未初始化的全局变量, 在程序中也就不需要占用空间, 即长度为 0; 但是对于进程来说, `.bss` 节加载到内存中, 仍然是需要占用空间的, 此时长度就不为 0, 因此 `MemSiz` 总长度也会大于 `FileSiz`.
+
+
+
