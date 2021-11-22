@@ -1,5 +1,6 @@
 #include <elf.h>
 #include <proc.h>
+#include <ramdisk.h>
 
 #ifdef __LP64__
 #define Elf_Ehdr Elf64_Ehdr
@@ -9,14 +10,18 @@
 #define Elf_Phdr Elf32_Phdr
 #endif
 
-#define ELF_MAGIC 0x7f454c46
-
-size_t ramdisk_read(void *buf, size_t offset, size_t len);
+#define ELF_MAGIC 0x464c457f
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
+
     Elf_Ehdr elf = {};
     ramdisk_read(&elf, 0, sizeof(Elf_Ehdr));
+
+    // Make sure that the file is an elf file
     assert(*(uint32_t *)elf.e_ident == ELF_MAGIC);
+
+    
+    
     return 0;
 }
 
