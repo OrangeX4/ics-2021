@@ -33,6 +33,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             memset((void *)(ph.p_vaddr + ph.p_filesz), 0, ph.p_memsz - ph.p_filesz);
         }
     }
+    ramdisk_read(&ph, elf.e_phoff, sizeof(Elf_Phdr));
     
     return ph.p_vaddr;
 }
