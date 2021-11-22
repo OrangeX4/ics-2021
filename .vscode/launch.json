@@ -73,6 +73,8 @@
                 "-b",
                 "-l",
                 "/home/orangex4/ics2021/nanos-lite/build/nemu-log.txt",
+                "--diff",
+                "/home/orangex4/ics2021/nemu/tools/spike-diff/build/riscv32-spike-so",
                 "/home/orangex4/ics2021/nanos-lite/build/nanos-lite-riscv32-nemu.bin"
             ],
             "stopAtEntry": false, // 设为 true 时程序将暂停在程序入口处
