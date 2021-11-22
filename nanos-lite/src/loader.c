@@ -34,7 +34,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
         }
     }
     
-    return ENTRY;
+    return ph.p_vaddr;
 }
 
 void naive_uload(PCB *pcb, const char *filename) {
