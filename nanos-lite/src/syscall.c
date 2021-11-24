@@ -18,7 +18,9 @@ void do_syscall(Context *c) {
 
     switch (a[0]) {
         case SYS_exit:
+#ifdef ENABLE_STRACE
             printf("[strace] SYS_exit(%d)\n", a[1]);
+#endif
             halt(0);
             break;
         case SYS_yield: {
