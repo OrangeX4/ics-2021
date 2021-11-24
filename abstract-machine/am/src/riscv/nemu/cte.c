@@ -20,6 +20,10 @@ Context* __am_irq_handle(Context *c) {
     }
 
     c = user_handler(ev, c);
+
+    // 通过软件进行 +4 操作
+    c->mepc += 4;
+
     assert(c != NULL);
   }
 
