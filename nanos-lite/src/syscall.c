@@ -2,6 +2,9 @@
 
 #include <common.h>
 #include <fs.h>
+#include <time.h>
+
+int gettimeofday(struct timeval *tv, struct timezone *tz);
 
 const char *syscall_names[] = {
     "SYS_exit",  "SYS_yield",  "SYS_open",   "SYS_read",   "SYS_write",
@@ -86,6 +89,19 @@ void do_syscall(Context *c) {
 #ifdef ENABLE_STRACE
             printf("[strace] %s(increment = %d) = %d\n", syscall_names[a[0]],
                    a[1], c->GPRx);
+#endif
+            break;
+        }
+        case SYS_gettimeofday: {
+            // int _gettimeofday(struct timeval *tv, struct timezone *tz)
+            c->GPRx = gettimeofday((struct timeval *)a[1], (struct timezone *)a[2]);
+#ifdef ENABLE_STRACE
+            printf(
+                "[strace] %s(timeval = {%d, %d}, timezone = {%d, %d}) = %d\n",
+                syscall_names[a[0]], ((struct timeval *)a[1])->tv_sec,
+                ((struct timeval *)a[1])->tv_usec,
+                ((struct timezone *)a[2])->tz_dsttime,
+                ((struct timezone *)a[2])->tz_minuteswest, c->GPRx);
 #endif
             break;
         }
