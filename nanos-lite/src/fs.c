@@ -41,6 +41,11 @@ void init_fs() {
   // TODO: initialize the size of /dev/fb
 }
 
+char *fs_getname(int fd) {
+    assert(fd < LENGTH(file_table));
+    return file_table[fd].name;
+}
+
 int fs_open(const char *pathname, int flags, int mode) {
     int fd = 0;
     for (; fd < LENGTH(file_table) && strcmp(pathname, file_table[fd].name); ++fd);
