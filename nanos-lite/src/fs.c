@@ -56,6 +56,7 @@ int fs_open(const char *pathname, int flags, int mode) {
 
 
 size_t fs_read(int fd, void *buf, size_t len) {
+    assert(buf != 0);
     assert(fd < LENGTH(file_table));
     Finfo *finfo = &file_table[fd];
     if (finfo->read) {
@@ -73,6 +74,7 @@ size_t fs_read(int fd, void *buf, size_t len) {
 
 
 size_t fs_write(int fd, const void *buf, size_t len) {
+    assert(buf != 0);
     assert(fd < LENGTH(file_table));
     Finfo *finfo = &file_table[fd];
     if (finfo->write) {
