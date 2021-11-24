@@ -20,6 +20,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 
     Elf_Ehdr elf = {};
     int fd = fs_open(filename, 0, 0);
+    assert(fd == 4); // bin/hello
     // ramdisk_read(&elf, 0, sizeof(Elf_Ehdr));
     fs_read(fd, &elf, sizeof(Elf_Ehdr));
 
