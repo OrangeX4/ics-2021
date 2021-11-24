@@ -1346,4 +1346,233 @@ void *_sbrk(intptr_t increment) {
 
 ### 3. 阶段三: 简易文件系统
 
+#### 3.1 简易文件系统
+
+我在 `device.c` 文件中加入
+
+``` c
+size_t serial_write(const void *buf, size_t offset, size_t len) {
+  for (size_t i = 0; i < len; ++i) putch(((char *) buf)[i]);
+  return len;
+}
+```
+
+并完成了 `fs.c` 里的大部分 API 实现
+
+``` c
+/* This is the information about all files in disk. */
+static Finfo file_table[] __attribute__((used)) = {
+  [FD_STDIN]  = {"stdin", 0, 0, invalid_read, invalid_write},
+  [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
+  [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
+#include "files.h"
+};
+
+void init_fs() {
+  // TODO: initialize the size of /dev/fb
+}
+
+char *fs_getname(int fd) {
+    assert(fd < LENGTH(file_table));
+    return file_table[fd].name;
+}
+
+int fs_open(const char *pathname, int flags, int mode) {
+    int fd = 0;
+    for (; fd < LENGTH(file_table) && strcmp(pathname, file_table[fd].name); ++fd);
+    assert(fd != LENGTH(file_table));
+    file_table[fd].open_offset = 0;
+    return fd;
+}
+
+
+size_t fs_read(int fd, void *buf, size_t len) {
+    assert(buf != 0);
+    assert(fd < LENGTH(file_table));
+    Finfo *finfo = &file_table[fd];
+    if (finfo->read) {
+        // Virtual File
+        finfo->read(buf, 0, len);
+        // finfo->open_offset += len;
+    } else {
+        // Normal File
+        assert(finfo->open_offset <= finfo->size);
+        ramdisk_read(buf, finfo->disk_offset + finfo->open_offset, len);
+        finfo->open_offset += len;
+    }
+    return len;
+}
+
+
+size_t fs_write(int fd, const void *buf, size_t len) {
+    assert(buf != 0);
+    assert(fd < LENGTH(file_table));
+    Finfo *finfo = &file_table[fd];
+    if (finfo->write) {
+        // Virtual File
+        finfo->write(buf, 0, len);
+        // finfo->open_offset += len;
+    } else {
+        // Normal File
+        assert(finfo->open_offset <= finfo->size);
+        ramdisk_write(buf, finfo->disk_offset + finfo->open_offset, len);
+        finfo->open_offset += len;
+    }
+    return len;
+}
+
+
+size_t fs_lseek(int fd, size_t offset, int whence) {
+    assert(fd < LENGTH(file_table));
+    switch (whence) {
+    case SEEK_SET:
+        // assert(offset <= file_table[fd].size);
+        file_table[fd].open_offset = offset;
+        break;
+    case SEEK_CUR:
+        // assert(file_table[fd].open_offset + offset <= file_table[fd].size);
+        file_table[fd].open_offset += offset;
+        break;
+    case SEEK_END:
+        // assert(file_table[fd].size + offset <= file_table[fd].size);
+        file_table[fd].open_offset = file_table[fd].size + offset;
+        break;
+    
+    default:
+        panic("Invalid whence");
+        break;
+    }
+    return file_table[fd].open_offset;
+}
+
+
+int fs_close(int fd) {
+    // Always success
+    return 0;
+}
+```
+
+#### 3.2 让 loader 使用文件
+
+具体实现如下:
+
+``` c
+static uintptr_t loader(PCB *pcb, const char *filename) {
+
+    Elf_Ehdr elf = {};
+    int fd = fs_open(filename, 0, 0);
+    // assert(fd == 4); // bin/hello
+    // ramdisk_read(&elf, 0, sizeof(Elf_Ehdr));
+    fs_read(fd, &elf, sizeof(Elf_Ehdr));
+
+    // Make sure that the file is an elf file
+    assert(*(uint32_t *)elf.e_ident == ELF_MAGIC);
+
+    Elf_Phdr ph = {};
+    for (int i = 0; i < elf.e_phnum; ++i) {
+        // ramdisk_read(&ph, elf.e_phoff + i * sizeof(Elf_Phdr), sizeof(Elf_Phdr));
+        fs_lseek(fd, elf.e_phoff + i * sizeof(Elf_Phdr), SEEK_SET);
+        fs_read(fd, &ph, sizeof(Elf_Phdr));
+        if (ph.p_type == PT_LOAD) {
+            // Copy to [VirtAddr, VirtAddr + FileSiz)
+            // memcpy((void *)ph.p_vaddr, &ramdisk_start + ph.p_offset, ph.p_filesz);
+            fs_lseek(fd, ph.p_offset, SEEK_SET);
+            fs_read(fd, (void *)ph.p_vaddr, ph.p_filesz);
+            // Set [VirtAddr + FileSiz, VirtAddr + MenSiz) with zero
+            memset((void *)(ph.p_vaddr + ph.p_filesz), 0, ph.p_memsz - ph.p_filesz);
+        }
+    }
+    
+    return elf.e_entry;
+}
+
+void naive_uload(PCB *pcb, const char *filename) {
+    uintptr_t entry = loader(pcb, filename);
+    Log("Jump to entry = %p", entry);
+    ((void (*)())entry)();
+}
+```
+
+此时便可以在 `proc.c` 里任意切换程序了:
+
+``` c
+void init_proc() {
+  switch_boot_pcb();
+
+  Log("Initializing processes...");
+
+  // load program here
+
+//   naive_uload(NULL, "/bin/dummy");
+//   naive_uload(NULL, "/bin/hello");
+  naive_uload(NULL, "/bin/file-test");
+}
+```
+
+#### 3.3 实现完整的文件系统
+
+要让测试程序 `navy-apps/tests/file-test` 正常运行, 我们需要实现 `syscall.c` 对应的接口, 这部分不过多赘述.
+
+为了编译它, 需要把它加到 `navy-apps/Makefile` 的 `TESTS` 变量中, 这样它最终就会被包含在 ramdisk 镜像中. 
+
+
+#### 3.4 支持 sfs 的 strace
+
+为了实现这个功能, 我在 `fs.c` 里加入了 `char *fs_getname(int fd)` 函数, 如下:  
+
+``` c
+char *fs_getname(int fd) {
+    assert(fd < LENGTH(file_table));
+    return file_table[fd].name;
+}
+```
+
+然后在 `syscall.c` 中完善对应的 strace, 如
+
+``` c
+case SYS_read: {
+   // int _read(int fd, void *buf, size_t count)
+   c->GPRx = fs_read(a[1], (void *)a[2], a[3]);
+#ifdef ENABLE_STRACE
+   printf("[strace] %s(\"%s\", *buf = %p, len = %d) = %d\n",
+          syscall_names[a[0]], fs_getname(a[1]), a[2], a[3], c->GPRx);
+#endif
+   break;
+}
+```
+
+具体输出格式大致如下:
+
+```
+[strace] SYS_brk(increment = 448) = 0
+[strace] SYS_brk(increment = 316) = 0
+[strace] SYS_open(*path = "/share/files/num", flags = 2, mode = 438) = 22
+[strace] SYS_brk(increment = 4096) = 0
+[strace] SYS_lseek("/share/files/num", offset = 0, whence = SEEK_END) = 5000
+[strace] SYS_lseek("/share/files/num", offset = 2500, whence = SEEK_SET) = 2500
+[strace] SYS_read("/share/files/num", *buf = 0x83009ec0, len = 1024) = 1024
+[strace] SYS_read("/share/files/num", *buf = 0x83009ec0, len = 1024) = 1024
+[strace] SYS_read("/share/files/num", *buf = 0x83009ec0, len = 1024) = 1024
+[strace] SYS_lseek("/share/files/num", offset = 4999, whence = SEEK_SET) = 49
+```
+
+
+#### 3.5 把串口抽象成文件
+
+为了让让 VFS 支持串口的写入. 我们的代码已经改为了
+
+``` c
+static Finfo file_table[] __attribute__((used)) = {
+  [FD_STDIN]  = {"stdin", 0, 0, invalid_read, invalid_write},
+  [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
+  [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
+#include "files.h"
+};
+```
+
+
+#### 3.6 实现 gettimeofday
+
+> 实现 `gettimeofday` 系统调用, 这一系统调用的参数含义请 RTFM. 实现后, 在 `navy-apps/tests/` 中新增一个 `timer-test` 测试, 在测试中通过 `gettimeofday()` 获取当前时间, 并每过 0.5 秒输出一句话.
+
 
