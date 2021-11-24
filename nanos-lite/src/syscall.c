@@ -61,7 +61,7 @@ void do_syscall(Context *c) {
             break;
         }
         case SYS_close: {
-            c->GPRx = 0;
+            c->GPRx = fs_close(a[1]);
 #ifdef ENABLE_STRACE
             printf("[strace] %s(\"%s\") = %d\n", syscall_names[a[0]],
                    fs_getname(a[1]), c->GPRx);
