@@ -1,6 +1,5 @@
 #include <elf.h>
 #include <proc.h>
-#include <ramdisk.h>
 
 #ifdef __LP64__
 #define Elf_Ehdr Elf64_Ehdr
@@ -11,7 +10,11 @@
 #endif
 
 #define ELF_MAGIC 0x464c457f
-// #define ENTRY 0x83000000
+
+extern uint8_t ramdisk_start;
+#define RAMDISK_SIZE ((&ramdisk_end) - (&ramdisk_start))
+
+size_t ramdisk_read(void *buf, size_t offset, size_t len);
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
 

@@ -1045,7 +1045,7 @@ struct Context {
 
 #### 1.4 实现正确的事件分发
 
-1. 在 `__am_irq_handle()` 加入了 `case -1: ev.event = EVENT_YIELD; break;`, 识别异常号 `-1`, 并打包为 `EVENT_YIELD` 事件.
+1. 在 `__am_irq_handle()` 加入了 `case 11: ev.event = EVENT_YIELD; break;`, 识别异常号 `11`, 并打包为 `EVENT_YIELD` 事件.
 2. 在 `do_event()` 加入了 `case EVENT_YIELD: printf("Event: Yield\n"); break;`, 识别出自陷事件 `EVENT_YIELD`, 然后输出 `Event: Yield`.
 
 
@@ -1340,5 +1340,10 @@ void *_sbrk(intptr_t increment) {
    6. 对于 `SYS_write` 系统调用, 我们通过 `for (size_t i = 0; i < a[3]; ++i) putch(((char *) a[2])[i]);` 输出每一个字符.
    7. AM 的 `putch()` 又调用了 NEMU 里的串口设备, 进行输出.
    8. 最后由 NEMU 把字符输出到控制台.
+
+
+
+
+### 3. 阶段三: 简易文件系统
 
 
