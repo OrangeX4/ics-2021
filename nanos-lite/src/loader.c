@@ -11,7 +11,7 @@
 #endif
 
 #define ELF_MAGIC 0x464c457f
-#define ENTRY 0x83000000
+// #define ENTRY 0x83000000
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
 
