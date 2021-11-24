@@ -1,5 +1,6 @@
 #include <elf.h>
 #include <proc.h>
+#include <fs.h>
 
 #ifdef __LP64__
 #define Elf_Ehdr Elf64_Ehdr
@@ -14,19 +15,22 @@
 extern uint8_t ramdisk_start;
 #define RAMDISK_SIZE ((&ramdisk_end) - (&ramdisk_start))
 
-size_t ramdisk_read(void *buf, size_t offset, size_t len);
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
 
     Elf_Ehdr elf = {};
-    ramdisk_read(&elf, 0, sizeof(Elf_Ehdr));
+    int fd = fs_open(filename, 0, 0);
+    // ramdisk_read(&elf, 0, sizeof(Elf_Ehdr));
+    fs_read(fd, &elf, sizeof(Elf_Ehdr));
 
     // Make sure that the file is an elf file
     assert(*(uint32_t *)elf.e_ident == ELF_MAGIC);
 
     Elf_Phdr ph = {};
+    fs_lseek(fd, elf.e_phoff, SEEK_SET);
     for (int i = 0; i < elf.e_phnum; ++i) {
-        ramdisk_read(&ph, elf.e_phoff + i * sizeof(Elf_Phdr), sizeof(Elf_Phdr));
+        // ramdisk_read(&ph, elf.e_phoff + i * sizeof(Elf_Phdr), sizeof(Elf_Phdr));
+        fs_read(fd, &ph, sizeof(Elf_Phdr));
         if (ph.p_type == PT_LOAD) {
             // Copy to [VirtAddr, VirtAddr + FileSiz)
             memcpy((void *)ph.p_vaddr, &ramdisk_start + ph.p_offset, ph.p_filesz);

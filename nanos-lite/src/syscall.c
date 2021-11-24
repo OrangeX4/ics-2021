@@ -2,6 +2,9 @@
 
 #include <common.h>
 
+size_t fs_read(int fd, void *buf, size_t len);
+size_t fs_write(int fd, void *buf, size_t len);
+
 const char *syscall_names[] = {
     "SYS_exit",  "SYS_yield",  "SYS_open",   "SYS_read",   "SYS_write",
     "SYS_kill",  "SYS_getpid", "SYS_close",  "SYS_lseek",  "SYS_brk",
@@ -30,10 +33,7 @@ void do_syscall(Context *c) {
         }
         case SYS_write: {
             // int _write(int fd, void *buf, size_t count)
-            if (a[1] == 1 || a[1] == 2) {
-                for (size_t i = 0; i < a[3]; ++i) putch(((char *) a[2])[i]);
-                c->GPRx = a[3];
-            }
+            c->GPRx = fs_write(a[1], (void *) a[2], a[3]);
             break;
         }
         case SYS_brk: c->GPRx = 0; break;
