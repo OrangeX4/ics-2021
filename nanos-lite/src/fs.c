@@ -65,7 +65,7 @@ size_t fs_read(int fd, void *buf, size_t len) {
         // finfo->open_offset += len;
     } else {
         // Normal File
-        // assert(finfo->open_offset + len <= finfo->size);
+        assert(finfo->open_offset <= finfo->size);
         ramdisk_read(buf, finfo->disk_offset + finfo->open_offset, len);
         finfo->open_offset += len;
     }
@@ -83,7 +83,7 @@ size_t fs_write(int fd, const void *buf, size_t len) {
         // finfo->open_offset += len;
     } else {
         // Normal File
-        // assert(finfo->open_offset + len <= finfo->size);
+        assert(finfo->open_offset <= finfo->size);
         ramdisk_write(buf, finfo->disk_offset + finfo->open_offset, len);
         finfo->open_offset += len;
     }
@@ -95,15 +95,15 @@ size_t fs_lseek(int fd, size_t offset, int whence) {
     assert(fd < LENGTH(file_table));
     switch (whence) {
     case SEEK_SET:
-        // assert(offset <= file_table[fd].size);
+        assert(offset <= file_table[fd].size);
         file_table[fd].open_offset = offset;
         break;
     case SEEK_CUR:
-        // assert(file_table[fd].open_offset + offset <= file_table[fd].size);
+        assert(file_table[fd].open_offset + offset <= file_table[fd].size);
         file_table[fd].open_offset += offset;
         break;
     case SEEK_END:
-        // assert(file_table[fd].size + offset <= file_table[fd].size);
+        assert(file_table[fd].size + offset <= file_table[fd].size);
         file_table[fd].open_offset = file_table[fd].size + offset;
         break;
     
