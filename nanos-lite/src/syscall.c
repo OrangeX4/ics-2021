@@ -44,7 +44,6 @@ void do_syscall(Context *c) {
         }
         case SYS_read: {
             // int _read(int fd, void *buf, size_t count)
-            assert(a[2] != 0);
             c->GPRx = fs_read(a[1], (void *)a[2], a[3]);
 #ifdef ENABLE_STRACE
             printf("[strace] %s(\"%s\", *buf = %p, len = %d) = %d\n",
@@ -54,7 +53,6 @@ void do_syscall(Context *c) {
         }
         case SYS_write: {
             // int _write(int fd, void *buf, size_t count)
-            assert(a[2] != 0);
             c->GPRx = fs_write(a[1], (void *)a[2], a[3]);
 #ifdef ENABLE_STRACE
             printf("[strace] %s(\"%s\", *buf = %p, len = %d) = %d\n",
