@@ -96,14 +96,20 @@ void do_syscall(Context *c) {
             // int _gettimeofday(struct timeval *tv, struct timezone *tz)
             c->GPRx = gettimeofday((struct timeval *)a[1], (struct timezone *)a[2]);
 #ifdef ENABLE_STRACE
-            printf(
-                "[strace] %s(timeval = {%d, %d}, timezone = {%d, %d}) = %d\n",
-                syscall_names[a[0]], ((struct timeval *)a[1])->tv_sec,
-                ((struct timeval *)a[1])->tv_usec,
-                ((struct timezone *)a[2])->tz_dsttime,
-                ((struct timezone *)a[2])->tz_minuteswest, c->GPRx);
+            if (a[2]) {
+                printf(
+                    "[strace] %s(timeval = {%d, %d}, timezone = {%d, %d}) = %d\n",
+                    syscall_names[a[0]], ((struct timeval *)a[1])->tv_sec,
+                    ((struct timeval *)a[1])->tv_usec,
+                    ((struct timezone *)a[2])->tz_dsttime,
+                    ((struct timezone *)a[2])->tz_minuteswest, c->GPRx);
+            } else {
+                printf(
+                    "[strace] %s(timeval = {%d, %d}, timezone = NULL) = %d\n",
+                    syscall_names[a[0]], ((struct timeval *)a[1])->tv_sec,
+                    ((struct timeval *)a[1])->tv_usec, c->GPRx);
+            }
 #endif
-            assert(0);
             break;
         }
         default:
