@@ -64,15 +64,15 @@ size_t fs_read(int fd, void *buf, size_t len) {
     Finfo *finfo = &file_table[fd];
     if (finfo->read) {
         // Virtual File
-        finfo->read(buf, 0, len);
+        return finfo->read(buf, 0, len);
         // finfo->open_offset += len;
     } else {
         // Normal File
         assert(finfo->open_offset <= finfo->size);
         ramdisk_read(buf, finfo->disk_offset + finfo->open_offset, len);
         finfo->open_offset += len;
+        return len;
     }
-    return len;
 }
 
 
@@ -82,15 +82,15 @@ size_t fs_write(int fd, const void *buf, size_t len) {
     Finfo *finfo = &file_table[fd];
     if (finfo->write) {
         // Virtual File
-        finfo->write(buf, 0, len);
+        return finfo->write(buf, 0, len);
         // finfo->open_offset += len;
     } else {
         // Normal File
         assert(finfo->open_offset <= finfo->size);
         ramdisk_write(buf, finfo->disk_offset + finfo->open_offset, len);
         finfo->open_offset += len;
+        return len;
     }
-    return len;
 }
 
 
