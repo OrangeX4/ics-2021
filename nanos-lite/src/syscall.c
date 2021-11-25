@@ -48,7 +48,6 @@ void do_syscall(Context *c) {
         case SYS_read: {
             // int _read(int fd, void *buf, size_t count)
             c->GPRx = fs_read(a[1], (void *)a[2], a[3]);
-            assert(c->GPRx == 0);
 #ifdef ENABLE_STRACE
             printf("[strace] %s(\"%s\", *buf = 0x%p, len = %d) = %d\n",
                    syscall_names[a[0]], fs_getname(a[1]), a[2], a[3], c->GPRx);
