@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <assert.h>
 #include <sys/_timeval.h>
 
 #define true 1
