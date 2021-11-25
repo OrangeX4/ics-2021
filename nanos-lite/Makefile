@@ -27,7 +27,7 @@ update:
 	@ln -sf $(NAVY_HOME)/build/ramdisk.img $(RAMDISK_FILE)
 	@ln -sf $(NAVY_HOME)/build/ramdisk.h src/files.h
 	@ln -sf $(NAVY_HOME)/libs/libos/src/syscall.h src/syscall.h
-	$(MAKE) run
+	$(MAKE) ARCH=$(ARCH) run
 
 .PHONY: update
 endif
