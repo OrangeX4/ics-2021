@@ -1696,6 +1696,58 @@ int main() {
 
 #### 3.8 把按键输入抽象成文件
 
+`device.c` 修改为
+
+```c
+size_t events_read(void *buf, size_t offset, size_t len) {
+  AM_INPUT_KEYBRD_T ev = io_read(AM_INPUT_KEYBRD);
+  if (ev.keycode == AM_KEY_NONE) return 0;
+  return snprintf(buf, len, "%s %s\n", ev.keydown ? "kd" : "ku", keyname[ev.keycode]);
+}
+```
+
+`fs.c` 修改为
+
+```c
+static Finfo file_table[] __attribute__((used)) = {
+  [FD_STDIN]  = {"stdin", 0, 0, invalid_read, invalid_write},
+  [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
+  [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
+  [FD_FB] = {"fb", 0, 0, invalid_read, invalid_write},
+  [FD_EVENT] = {"/dev/events", 0, 0, events_read, invalid_write},
+#include "files.h"
+};
+```
+
+顺便修复了 `printf` 和 `snprintf` 的 bug.
+
+最后正确显示如下:
+
+```
+receive event: kd D
+
+receive event: ku D
+
+receive event: kd D
+
+receive event: ku D
+
+receive event: kd S
+
+receive event: ku S
+
+receive event: kd D
+
+receive event: ku D
+```
+
+
+#### 3.9 用 fopen() 还是 open()?
+
+答案是使用 `open()`. 普通文件用 `fopen()`, 其有缓冲区以及一些其他的概念. 设备文件用 `open()`, 更接近系统调用.
+
+
+#### 3.10 在 NDL 中获取屏幕大小
 
 
 
