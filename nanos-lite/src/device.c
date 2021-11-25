@@ -22,14 +22,13 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
 
 int gettimeofday(struct timeval *tv, struct timezone *tz) {
     assert(tv);
-    assert(&(tv->tv_usec));
     tv->tv_usec = io_read(AM_TIMER_UPTIME).us;
     tv->tv_sec = tv->tv_usec / 1000000;
-    assert(0);
     if (tz) {
         tz->tz_minuteswest = tv->tv_sec / 60;
         tz->tz_dsttime = 0;
     }
+    assert(0);
     return 0;
 }
 
