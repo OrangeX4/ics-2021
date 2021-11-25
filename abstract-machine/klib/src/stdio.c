@@ -181,6 +181,15 @@ int vsnprintf(char *out, size_t _n, const char *fmt, va_list ap) {
                     out += strlen(buf);
                     break;
                 }
+                case 'p': {
+                    n = va_arg(ap, int);
+                    xtoa(n, buf);
+                    int len = sizeof(int) * 2 - strlen(buf);
+                    for (int j = 0; j < len; ++j) *out++ = '0';
+                    memcpy(out, buf, strlen(buf));
+                    out += strlen(buf);
+                    break;
+                }
                 case 's': {
                     s = va_arg(ap, char *);
                     memcpy(out, s, strlen(s));

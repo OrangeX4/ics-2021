@@ -1,6 +1,7 @@
 #include <fs.h>
 
 size_t serial_write(const void *buf, size_t offset, size_t len);
+size_t events_read(void *buf, size_t offset, size_t len);
 
 size_t ramdisk_read(void *buf, size_t offset, size_t len);
 size_t ramdisk_write(const void *buf, size_t offset, size_t len);
@@ -17,7 +18,7 @@ typedef struct {
   size_t open_offset;
 } Finfo;
 
-enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB};
+enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB, FD_EVENT};
 
 size_t invalid_read(void *buf, size_t offset, size_t len) {
   panic("should not reach here: Invalid Read");
@@ -34,6 +35,7 @@ static Finfo file_table[] __attribute__((used)) = {
   [FD_STDIN]  = {"stdin", 0, 0, invalid_read, invalid_write},
   [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
   [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
+  [FD_EVENT] = {"/dev/events", 0, 0, events_read, invalid_write},
 #include "files.h"
 };
 

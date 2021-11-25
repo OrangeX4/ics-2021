@@ -1666,6 +1666,37 @@ Hello, world!
 
 #### 3.7 实现 NDL 的时钟
 
+在 `NDL.c` 中加入
+
+```c
+uint32_t NDL_GetTicks() {
+  struct timeval tv = {};
+  _gettimeofday(&tv, NULL);
+  return tv.tv_usec / 1000;
+}
+```
+
+在 `timer-test.c` 中改为
+
+```c
+int main() {
+  long lst_msec = NDL_GetTicks();
+  long cur_msec = lst_msec;
+  while (true) {
+    cur_msec = NDL_GetTicks();
+    if (cur_msec - lst_msec >= 500) {
+        printf("Hello, world!\n");
+        lst_msec = cur_msec;
+    }
+  }
+  return 0;
+}
+```
+
+
+#### 3.8 把按键输入抽象成文件
+
+
 
 
 

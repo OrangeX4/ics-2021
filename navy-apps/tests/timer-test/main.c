@@ -5,6 +5,7 @@
 #define true 1
 
 int main() {
+  NDL_Init(0);
   long lst_msec = NDL_GetTicks();
   long cur_msec = lst_msec;
   while (true) {
