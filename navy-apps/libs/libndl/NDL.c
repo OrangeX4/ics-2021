@@ -11,6 +11,7 @@ int _gettimeofday(struct timeval *tv, struct timezone *tz);
 static int evtdev = -1;
 static int fbdev = -1;
 static int screen_w = 0, screen_h = 0;
+static int canvas_w = 0, canvas_h = 0;
 static FILE *fp_event;
 
 uint32_t NDL_GetTicks() {
@@ -37,7 +38,12 @@ char *parse_kv(const char *str, char *key, char *value) {
   for (; *str == ' '; ++str);
   assert(*str == '\n' || *str == '\0');
   if (*str == '\n') {
-    return ++str;
+    ++str;
+    if (*str != '\0') {
+      return str;
+    } else {
+      return NULL;
+    }
   } else if (*str == '\0') {
     return NULL;
   }
@@ -99,8 +105,17 @@ void NDL_OpenCanvas(int *w, int *h) {
     }
     assert(screen_w);
     assert(screen_h);
-    printf("screen_w: [%d]\n", screen_w);
-    printf("screen_h: [%d]\n", screen_h);
+    // printf("screen_w: [%d]\n", screen_w);
+    // printf("screen_h: [%d]\n", screen_h);
+    assert(*w <= screen_w);
+    assert(*h <= screen_h);
+    if (*w == 0 || *h == 0) {
+        canvas_w = screen_w;
+        canvas_w = screen_h;
+    } else {
+        canvas_w = *w;
+        canvas_w = *h;
+    }
   }
 }
 
