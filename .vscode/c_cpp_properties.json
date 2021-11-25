@@ -46,7 +46,9 @@
             "includePath": [
                 "${workspaceFolder}/nanos-lite/**",
                 "${workspaceFolder}/nemu/**",
-                "${workspaceFolder}/abstract-machine/**"
+                "${workspaceFolder}/abstract-machine/**",
+                "${workspaceFolder}/navy-apps/**",
+                "${workspaceFolder}/navy-apps/libs/libc/include/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
