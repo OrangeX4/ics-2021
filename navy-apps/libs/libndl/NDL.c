@@ -24,6 +24,7 @@ int NDL_PollEvent(char *buf, int len) {
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
+  assert(0);
   if (getenv("NWM_APP")) {
     assert(0);
     int fbctl = 4;
