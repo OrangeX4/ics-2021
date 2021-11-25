@@ -64,11 +64,20 @@ int is_letter(unsigned char c) {
         return 0;
 }
 
+void putch_count(char ch, int *count) {
+    putch(ch);
+    (*count)++;
+}
+
+void print_buf_count(char *buf, int *count) {
+    for (; *buf != '\0'; buf++) putch_count(*buf, count);
+}
+
 int printf(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
 
-    int count = 0;
+    int count = 1;
     char c;
     char *s;
     int n;
@@ -86,48 +95,48 @@ int printf(const char *fmt, ...) {
                 case 'd': {
                     n = va_arg(ap, int);
                     if (n < 0) {
-                        putch('-');
+                        putch_count('-', &count);
                         n = -n;
                     }
                     itoa(n, buf);
-                    printf(buf);
+                    print_buf_count(buf, &count);
                     break;
                 }
                 case 'c': {
                     c = va_arg(ap, int);
-                    putch(c);
+                    putch_count(c, &count);
 
                     break;
                 }
                 case 'x': {
                     n = va_arg(ap, int);
                     xtoa(n, buf);
-                    printf(buf);
+                    print_buf_count(buf, &count);
                     break;
                 }
                 case 'p': {
                     n = va_arg(ap, int);
                     xtoa(n, buf);
                     int len = sizeof(int) * 2 - strlen(buf);
-                    for (int j = 0; j < len; ++j) putch('0');
-                    printf(buf);
+                    for (int j = 0; j < len; ++j) putch_count('0', &count);
+                    print_buf_count(buf, &count);
                     break;
                 }
                 case 's': {
                     s = va_arg(ap, char *);
-                    for (; *s != '\0'; s++) putch(*s);
-                    // printf(s);
+                    // for (; *s != '\0'; s++) putch(*s);
+                    print_buf_count(s, &count);
                     break;
                 }
                 case '%': {
-                    putch('%');
+                    putch_count('%', &count);
                     break;
                 }
                 default:
                     break;
             }
         } else {
-            putch(*fmt);
+            putch_count(*fmt, &count);
         }
         fmt++;
     }
@@ -138,7 +147,6 @@ int printf(const char *fmt, ...) {
 
 
 int vsnprintf(char *out, size_t _n, const char *fmt, va_list ap) {
-    int count = 0;
     char c;
     char *s;
     int n;
@@ -211,7 +219,7 @@ int vsnprintf(char *out, size_t _n, const char *fmt, va_list ap) {
         fmt++;
     }
     *out = '\0';
-    return count;
+    return out - _out + 1;
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
