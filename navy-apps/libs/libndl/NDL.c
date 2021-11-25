@@ -71,14 +71,14 @@ void NDL_OpenCanvas(int *w, int *h) {
     char key[16], value[16];
     _buf = parse_kv(_buf, key, value);
     assert(_buf);
-    printf("buf:\n%s\n", buf);
-    printf("key: [%s]\n", key);
-    printf("value: [%s]\n", value);
+    // printf("buf:\n%s\n", buf);
+    // printf("key: [%s]\n", key);
+    // printf("value: [%s]\n", value);
     if (strcmp(key, "WIDTH") == 0) {
       screen_w = atoi(value);
-      _buf = parse_kv(_buf, key, value);
-      printf("key: [%s]\n", key);
-      printf("value: [%s]\n", value);
+      parse_kv(_buf, key, value);
+    //   printf("key: [%s]\n", key);
+    //   printf("value: [%s]\n", value);
       assert(_buf == NULL);
       if (strcmp(key, "HEIGHT") == 0) {
         screen_h = atoi(value);
@@ -87,8 +87,8 @@ void NDL_OpenCanvas(int *w, int *h) {
       }
     } else if (strcmp(key, "HEIGHT") == 0) {
       screen_h = atoi(value);
-      _buf = parse_kv(_buf, key, value);
-      assert(_buf == NULL);
+      parse_kv(_buf, key, value);
+    //   assert(_buf == NULL);
       if (strcmp(key, "WIDTH") == 0) {
         screen_w = atoi(value);
       } else {
@@ -99,6 +99,8 @@ void NDL_OpenCanvas(int *w, int *h) {
     }
     assert(screen_w);
     assert(screen_h);
+    printf("screen_w: [%d]\n", screen_w);
+    printf("screen_h: [%d]\n", screen_h);
   }
 }
 
