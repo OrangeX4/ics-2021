@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <assert.h>
 
 int _gettimeofday(struct timeval *tv, struct timezone *tz);
 
@@ -19,6 +20,9 @@ uint32_t NDL_GetTicks() {
 }
 
 int NDL_PollEvent(char *buf, int len) {
+  assert(buf);
+  assert(len);
+  assert(fp_event);
   return fread(buf, len, 1, fp_event);
 }
 
