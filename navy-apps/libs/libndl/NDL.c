@@ -23,9 +23,28 @@ int NDL_PollEvent(char *buf, int len) {
   return read(fp_event, buf, len);
 }
 
+// Return the next string after '\n' or NULL after '\0' 
+char *parse_kv(const char *str, char *key, char *value) {
+  for (; *str == ' '; ++str);
+  for (; *str != ' ' && *str != ':'; ++str, ++key) *key = *str; 
+  *key = '\0';
+  for (; *str == ' '; ++str);
+  assert(*str == ':');
+  ++str;
+  for (; *str == ' '; ++str);
+  for (; *str != ' ' && *str != '\n'; ++str, ++value) *value = *str; 
+  *value = '\0';
+  for (; *str == ' '; ++str);
+  assert(*str == '\n' || *str == '\0');
+  if (*str == '\n') {
+    return ++str;
+  } else if (*str == '\0') {
+    return NULL;
+  }
+}
+
 void NDL_OpenCanvas(int *w, int *h) {
   if (getenv("NWM_APP")) {
-    assert(0);
     int fbctl = 4;
     fbdev = 5;
     screen_w = *w; screen_h = *h;
@@ -42,7 +61,39 @@ void NDL_OpenCanvas(int *w, int *h) {
     }
     close(fbctl);
   } else {
-      
+    FILE *fp_info = open("/proc/dispinfo", "r+");
+    char buf[64];
+    char *_buf = buf;
+    read(fp_info, buf, sizeof(buf));
+    close(fp_info);
+    // WIDTH : 640
+    // HEIGHT:480
+    char key[16], value[16];
+    _buf = parse_kv(_buf, key, value);
+    assert(_buf);
+    if (strcmp(key, "WIDTH") == 0) {
+      screen_w = atoi(value);
+      _buf = parse_kv(_buf, key, value);
+      assert(_buf == NULL);
+      if (strcmp(key, "HEIGHT") == 0) {
+        screen_h = atoi(value);
+      } else {
+        assert(0);
+      }
+    } else if (strcmp(key, "HEIGHT") == 0) {
+      screen_h = atoi(value);
+      _buf = parse_kv(_buf, key, value);
+      assert(_buf == NULL);
+      if (strcmp(key, "WIDTH") == 0) {
+        screen_w = atoi(value);
+      } else {
+        assert(0);
+      }
+    } else {
+      assert(0);
+    }
+    assert(screen_w);
+    assert(screen_h);
   }
 }
 
