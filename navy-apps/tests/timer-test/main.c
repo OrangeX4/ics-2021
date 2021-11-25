@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
-#include <sys/_timeval.h>
+#include <sys/time.h>
 
 #define true 1
 
