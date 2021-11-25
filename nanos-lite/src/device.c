@@ -28,7 +28,6 @@ int gettimeofday(struct timeval *tv, struct timezone *tz) {
         tz->tz_minuteswest = tv->tv_sec / 60;
         tz->tz_dsttime = 0;
     }
-    assert(0);
     return 0;
 }
 
