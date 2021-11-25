@@ -13,14 +13,14 @@ int _gettimeofday(struct timeval *tv, struct timezone *tz);
 int main() {
   struct timeval tv = {};
   _gettimeofday(&tv, NULL);
-  long lst_sec = tv.tv_sec;
-  long cur_sec = tv.tv_sec;
+  long lst_usec = tv.tv_usec;
+  long cur_usec = tv.tv_usec;
   while (true) {
     _gettimeofday(&tv, NULL);
-    cur_sec = tv.tv_sec;
-    if (cur_sec - lst_sec >= 30) {
+    cur_usec = tv.tv_usec;
+    if (cur_usec - lst_usec >= 500000) {
         printf("Hello, world!\n");
-        lst_sec = cur_sec;
+        lst_usec = cur_usec;
     }
   }
   return 0;
