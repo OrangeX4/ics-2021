@@ -4,10 +4,6 @@
 
 #define true 1
 
-// extern struct timeval;
-
-// extern struct timezone;
-
 int _gettimeofday(struct timeval *tv, struct timezone *tz);
 
 int main() {

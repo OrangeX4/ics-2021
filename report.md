@@ -1575,4 +1575,92 @@ static Finfo file_table[] __attribute__((used)) = {
 
 > 实现 `gettimeofday` 系统调用, 这一系统调用的参数含义请 RTFM. 实现后, 在 `navy-apps/tests/` 中新增一个 `timer-test` 测试, 在测试中通过 `gettimeofday()` 获取当前时间, 并每过 0.5 秒输出一句话.
 
+首先我们在 `device.c` 里通过 `io_read(AM_TIMER_UPTIME).us` 读取当前的微秒数, 并写入 `timeval tv` 结构体里, 实现 `int gettimeofday(struct timeval *tv, struct timezone *tz)` 的功能
+
+``` c
+int gettimeofday(struct timeval *tv, struct timezone *tz) {
+    assert(tv);
+    tv->tv_usec = io_read(AM_TIMER_UPTIME).us;
+    tv->tv_sec = tv->tv_usec / 1000000;
+    if (tz) {
+        tz->tz_minuteswest = tv->tv_sec / 60;
+        tz->tz_dsttime = 0;
+    }
+    return 0;
+}
+```
+
+并在 `syscall.c` 里加入对应的接口和 strace:
+
+``` c
+case SYS_gettimeofday: {
+   // int _gettimeofday(struct timeval *tv, struct timezone *tz)
+   c->GPRx = gettimeofday((struct timeval *)a[1], (struct timezone *)a[2]);
+#ifdef ENABLE_STRACE
+   if (a[2]) {
+       printf(
+           "[strace] %s(timeval = {%d, %d}, timezone = {%d, %d}) = %d\n",
+           syscall_names[a[0]], ((struct timeval *)a[1])->tv_sec,
+           ((struct timeval *)a[1])->tv_usec,
+           ((struct timezone *)a[2])->tz_dsttime,
+           ((struct timezone *)a[2])->tz_minuteswest, c->GPRx);
+   } else {
+       printf(
+           "[strace] %s(timeval = {%d, %d}, timezone = NULL) = %d\n",
+           syscall_names[a[0]], ((struct timeval *)a[1])->tv_sec,
+           ((struct timeval *)a[1])->tv_usec, c->GPRx);
+   }
+#endif
+   break;
+}
+```
+
+最后完成 `timer-test.c` 并在 Makefile 中加入即可:
+
+``` c
+#include <stdio.h>
+#include <assert.h>
+#include <sys/_timeval.h>
+
+#define true 1
+
+int _gettimeofday(struct timeval *tv, struct timezone *tz);
+
+int main() {
+  struct timeval tv = {};
+  _gettimeofday(&tv, NULL);
+  long lst_usec = tv.tv_usec;
+  long cur_usec = tv.tv_usec;
+  while (true) {
+    _gettimeofday(&tv, NULL);
+    cur_usec = tv.tv_usec;
+    if (cur_usec - lst_usec >= 500000) {
+        printf("Hello, world!\n");
+        lst_usec = cur_usec;
+    }
+  }
+  return 0;
+}
+```
+
+大致输出如下:
+
+```
+[strace] SYS_gettimeofday(timeval = {1, 1360942}, timezone = NULL) = 0
+[strace] SYS_gettimeofday(timeval = {1, 1383621}, timezone = NULL) = 0
+[strace] SYS_gettimeofday(timeval = {1, 1409805}, timezone = NULL) = 0
+[strace] SYS_gettimeofday(timeval = {1, 1454106}, timezone = NULL) = 0
+[strace] SYS_gettimeofday(timeval = {1, 1494646}, timezone = NULL) = 0
+[strace] SYS_gettimeofday(timeval = {1, 1536292}, timezone = NULL) = 0
+[strace] SYS_gettimeofday(timeval = {1, 1585010}, timezone = NULL) = 0
+[strace] SYS_gettimeofday(timeval = {1, 1636254}, timezone = NULL) = 0
+[strace] SYS_gettimeofday(timeval = {1, 1691342}, timezone = NULL) = 0
+[strace] SYS_gettimeofday(timeval = {1, 1747402}, timezone = NULL) = 0
+[strace] SYS_gettimeofday(timeval = {1, 1809710}, timezone = NULL) = 0
+[strace] SYS_gettimeofday(timeval = {1, 1882482}, timezone = NULL) = 0
+[strace] SYS_brk(increment = 1048) = 0
+[strace] SYS_brk(increment = 3176) = 0
+Hello, world!
+```
+
 
