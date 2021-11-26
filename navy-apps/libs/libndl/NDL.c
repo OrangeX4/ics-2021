@@ -26,6 +26,7 @@ int NDL_PollEvent(char *buf, int len) {
 
 // Return the next string after '\n' or NULL after '\0' 
 char *parse_kv(const char *str, char *key, char *value) {
+  printf("String:\n%s\n", str);
   for (; *str == ' '; ++str);
   for (; *str != ' ' && *str != ':'; ++str, ++key) *key = *str; 
   *key = '\0';
