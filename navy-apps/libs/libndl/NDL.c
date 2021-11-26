@@ -76,11 +76,10 @@ void NDL_OpenCanvas(int *w, int *h) {
     // HEIGHT:480
     char key[16], value[16];
     _buf = parse_kv(_buf, key, value);
-    assert(0);
     assert(_buf);
-    // printf("buf:\n%s\n", buf);
-    // printf("key: [%s]\n", key);
-    // printf("value: [%s]\n", value);
+    printf("buf:\n%s\n", buf);
+    printf("key: [%s]\n", key);
+    printf("value: [%s]\n", value);
     if (strcmp(key, "WIDTH") == 0) {
       screen_w = atoi(value);
       parse_kv(_buf, key, value);
