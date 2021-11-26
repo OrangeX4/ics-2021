@@ -120,8 +120,8 @@ void NDL_OpenCanvas(int *w, int *h) {
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
-  assert(0);
   FILE *fp = open("/dev/fb", "w+");
+  assert(0);
   long off_h = (screen_h - canvas_h) / 2;
   long off_w = (screen_w - canvas_w) / 2;
   // printf("screen_h: %d\n", screen_h);
