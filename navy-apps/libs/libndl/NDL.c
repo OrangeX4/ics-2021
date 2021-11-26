@@ -121,12 +121,12 @@ void NDL_OpenCanvas(int *w, int *h) {
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   FILE *fp = open("/dev/fb", "w+");
-  assert(0);
   long off_h = (screen_h - canvas_h) / 2;
   long off_w = (screen_w - canvas_w) / 2;
   for (int i = 0; i < h; ++i) {
     long offset = (off_h + y + i) * screen_w + off_w + x;
     fseek(fp, offset, SEEK_SET);
+    assert(0);
     write(fp, pixels, w);
   }
   close(fp);
