@@ -83,9 +83,9 @@ void NDL_OpenCanvas(int *w, int *h) {
     if (strcmp(key, "WIDTH") == 0) {
       screen_w = atoi(value);
       parse_kv(_buf, key, value);
-    //   printf("key: [%s]\n", key);
-    //   printf("value: [%s]\n", value);
-    //   assert(_buf == NULL);
+    // printf("key: [%s]\n", key);
+    // printf("value: [%s]\n", value);
+    // assert(_buf == NULL);
       if (strcmp(key, "HEIGHT") == 0) {
         screen_h = atoi(value);
       } else {
@@ -110,16 +110,25 @@ void NDL_OpenCanvas(int *w, int *h) {
     assert(*w <= screen_w);
     assert(*h <= screen_h);
     if (*w == 0 || *h == 0) {
-        canvas_w = screen_w;
-        canvas_w = screen_h;
+      canvas_w = screen_w;
+      canvas_w = screen_h;
     } else {
-        canvas_w = *w;
-        canvas_w = *h;
+      canvas_w = *w;
+      canvas_w = *h;
     }
   }
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
+  FILE *fp = open("/dev/fb", "w+");
+  long off_h = (screen_h - canvas_h) / 2;
+  long off_w = (screen_w - canvas_w) / 2;
+  for (int i = 0; i < h; ++i) {
+    long offset = (off_h + y + i) * screen_w + off_w + x;
+    fseek(fp, offset, SEEK_SET);
+    write(fp, pixels, w);
+  }
+  close(fp);
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {

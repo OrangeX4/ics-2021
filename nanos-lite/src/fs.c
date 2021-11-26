@@ -3,6 +3,8 @@
 size_t serial_write(const void *buf, size_t offset, size_t len);
 size_t events_read(void *buf, size_t offset, size_t len);
 size_t dispinfo_read(void *buf, size_t offset, size_t len);
+size_t get_fb_size();
+size_t fb_write(const void *buf, size_t offset, size_t len);
 
 size_t ramdisk_read(void *buf, size_t offset, size_t len);
 size_t ramdisk_write(const void *buf, size_t offset, size_t len);
@@ -43,7 +45,8 @@ static Finfo file_table[] __attribute__((used)) = {
 };
 
 void init_fs() {
-  // TODO: initialize the size of /dev/fb
+  // initialize the size of /dev/fb
+  file_table[FD_FB].size = get_fb_size();
 }
 
 char *fs_getname(int fd) {
