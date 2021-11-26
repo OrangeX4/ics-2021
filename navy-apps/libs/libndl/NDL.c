@@ -36,6 +36,7 @@ char *parse_kv(const char *str, char *key, char *value) {
   for (; *str != ' ' && *str != '\n'; ++str, ++value) *value = *str; 
   *value = '\0';
   for (; *str == ' '; ++str);
+  printf("*str: [%c]\n", *str);
   assert(*str == '\n' || *str == '\0');
   if (*str == '\n') {
     ++str;
