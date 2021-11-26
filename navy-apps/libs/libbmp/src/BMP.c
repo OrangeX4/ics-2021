@@ -52,5 +52,6 @@ void* BMP_Load(const char *filename, int *width, int *height) {
   printf("hdr.height: %d\n", hdr.height);
   if (width) *width = w;
   if (height) *height = h;
+  assert(0);
   return pixels;
 }
