@@ -87,9 +87,6 @@ int _close(int fd) {
 }
 
 off_t _lseek(int fd, off_t offset, int whence) {
-  if (fd == 3) {
-    assert(0);
-  }
   return _syscall_(SYS_lseek, fd, offset, whence);
 }
 
