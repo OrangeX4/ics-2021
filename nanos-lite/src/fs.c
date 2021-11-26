@@ -95,6 +95,7 @@ size_t fs_write(int fd, const void *buf, size_t len) {
   if (finfo->write) {
     // Virtual File
     finfo->open_offset += len;
+    assert(0);
     return finfo->write(buf, finfo->open_offset - len, len);
     // finfo->open_offset += len;
   } else {
