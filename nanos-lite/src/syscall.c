@@ -72,9 +72,6 @@ void do_syscall(Context *c) {
     }
     case SYS_lseek: {
       // off_t _lseek(int fd, off_t offset, int whence)
-      if (a[1] == 3) {
-        assert(0);
-      }
       c->GPRx = fs_lseek(a[1], a[2], a[3]);
 #ifdef ENABLE_STRACE
       printf("[strace] %s(\"%s\", offset = %d, whence = %s) = %d\n",
