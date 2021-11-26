@@ -75,12 +75,12 @@ void NDL_OpenCanvas(int *w, int *h) {
     // WIDTH : 640
     // HEIGHT:480
     char key[16], value[16];
-    printf("buf:\n%s\n", buf);
+    // printf("buf:\n%s\n", buf);
     _buf = parse_kv(_buf, key, value);
     assert(_buf);
-    printf("_buf:\n%s\n", _buf);
-    printf("key: [%s]\n", key);
-    printf("value: [%s]\n", value);
+    // printf("_buf:\n%s\n", _buf);
+    // printf("key: [%s]\n", key);
+    // printf("value: [%s]\n", value);
     if (strcmp(key, "WIDTH") == 0) {
       screen_w = atoi(value);
       parse_kv(_buf, key, value);
@@ -106,10 +106,10 @@ void NDL_OpenCanvas(int *w, int *h) {
     }
     assert(screen_w);
     assert(screen_h);
-    printf("screen_w: %d\n", screen_w);
-    printf("screen_h: %d\n", screen_h);
-    printf("w: %d\n", *w);
-    printf("h: %d\n", *h);
+    // printf("screen_w: %d\n", screen_w);
+    // printf("screen_h: %d\n", screen_h);
+    // printf("w: %d\n", *w);
+    // printf("h: %d\n", *h);
     assert(*w <= screen_w);
     assert(*h <= screen_h);
     if (*w == 0 || *h == 0) {
@@ -128,12 +128,12 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   FILE *fp = open("/dev/fb", "w+");
   long off_h = (screen_h - canvas_h) / 2;
   long off_w = (screen_w - canvas_w) / 2;
-  // printf("screen_h: %d\n", screen_h);
-  // printf("screen_w: %d\n", screen_w);
-  // printf("canvas_h: %d\n", canvas_h);
-  // printf("canvas_w: %d\n", canvas_w);
-  // printf("off_h: %d\n", off_h);
-  // printf("off_w: %d\n", off_w);
+  printf("screen_h: %d\n", screen_h);
+  printf("screen_w: %d\n", screen_w);
+  printf("canvas_h: %d\n", canvas_h);
+  printf("canvas_w: %d\n", canvas_w);
+  printf("off_h: %d\n", off_h);
+  printf("off_w: %d\n", off_w);
   printf("x: %d\n", x);
   printf("y: %d\n", y);
   printf("w: %d\n", w);
