@@ -127,12 +127,12 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   printf("screen_w: %d\n", screen_w);
   printf("canvas_h: %d\n", canvas_h);
   printf("canvas_w: %d\n", canvas_w);
-  // printf("off_h: %d\n", off_h);
-  // printf("off_w: %d\n", off_w);
-  // printf("x: %d\n", x);
-  // printf("y: %d\n", y);
-  // printf("w: %d\n", w);
-  // printf("h: %d\n", h);
+  printf("off_h: %d\n", off_h);
+  printf("off_w: %d\n", off_w);
+  printf("x: %d\n", x);
+  printf("y: %d\n", y);
+  printf("w: %d\n", w);
+  printf("h: %d\n", h);
   for (int i = 0; i < h; ++i) {
     long offset = (off_h + y + i) * screen_w + off_w + x;
     printf("offset: %d\n", offset);
