@@ -107,6 +107,8 @@ void NDL_OpenCanvas(int *w, int *h) {
     assert(screen_h);
     printf("screen_w: %d\n", screen_w);
     printf("screen_h: %d\n", screen_h);
+    printf("w: %d\n", *w);
+    printf("h: %d\n", *h);
     assert(*w <= screen_w);
     assert(*h <= screen_h);
     if (*w == 0 || *h == 0) {
