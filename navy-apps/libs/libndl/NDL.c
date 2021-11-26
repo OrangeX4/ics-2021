@@ -125,8 +125,8 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   long off_w = (screen_w - canvas_w) / 2;
   // printf("screen_h: %d\n", screen_h);
   // printf("screen_w: %d\n", screen_w);
-  assert(0);
   printf("canvas_h: %d\n", canvas_h);
+  assert(0);
   printf("canvas_w: %d\n", canvas_w);
   // printf("off_h: %d\n", off_h);
   // printf("off_w: %d\n", off_w);
