@@ -21,7 +21,7 @@ extern PCB *current;
 // #define ENTRY_PROGRAM "/bin/menu"
 // #define ENTRY_PROGRAM "/bin/nterm"
 // #define ENTRY_PROGRAM "/bin/nslider"
-#define ENTRY_PROGRAM "/bin/event-test"
+#define ENTRY_PROGRAM "/bin/bmp-test"
 
 
 #endif
