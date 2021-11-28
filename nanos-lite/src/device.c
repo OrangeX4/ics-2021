@@ -1,5 +1,5 @@
 #include <common.h>
-#include <time.h>
+#include <my_time.h>
 
 #if defined(MULTIPROGRAM) && !defined(TIME_SHARING)
 # define MULTIPROGRAM_YIELD() yield()
@@ -20,13 +20,14 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
   return len;
 }
 
-int gettimeofday(struct timeval *tv, struct timezone *tz) {
+int my_gettimeofday(struct timeval *tv, struct timezone *tz) {
     assert(tv);
-    tv->tv_usec = io_read(AM_TIMER_UPTIME).us;
-    tv->tv_sec = tv->tv_usec / 1000000;
+    uint64_t tmp = io_read(AM_TIMER_UPTIME).us;
+    tv->tv_usec = tmp % 1000000;
+    tv->tv_sec = tmp / 1000000;
     if (tz) {
-        tz->tz_minuteswest = tv->tv_sec / 60;
-        tz->tz_dsttime = 0;
+      tz->tz_minuteswest = tv->tv_sec / 60;
+      tz->tz_dsttime = 0;
     }
     return 0;
 }
@@ -49,15 +50,15 @@ size_t get_fb_size() {
   AM_GPU_CONFIG_T config = io_read(AM_GPU_CONFIG);
   screen_w = config.width;
   screen_h = config.height;
-  return screen_w * screen_h;
+  return 4 * screen_w * screen_h;
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  assert(offset + len <= screen_w * screen_h);
-  int x = offset % screen_w;
-  int y = offset / screen_w;
-  assert(x + len <= screen_w);
-  io_write(AM_GPU_FBDRAW, x, y, (void *) buf, len, 1, false);
+  assert(offset + len <= 4 * screen_w * screen_h);
+  int x = (offset % screen_w) / 4;
+  int y = (offset / screen_w) / 4;
+  assert(x + len / 4 <= screen_w);
+  io_write(AM_GPU_FBDRAW, x, y, (void *) buf, len / 4, 1, false);
   return len;
 }
 

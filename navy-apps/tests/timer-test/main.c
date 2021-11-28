@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <NDL.h>
-#include <assert.h>
 
 #define true 1
 

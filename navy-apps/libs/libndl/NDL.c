@@ -6,18 +6,21 @@
 #include <sys/time.h>
 #include <assert.h>
 
-int _gettimeofday(struct timeval *tv, struct timezone *tz);
+// int _gettimeofday(struct timeval *tv, struct timezone *tz);
 
 static int evtdev = -1;
 static int fbdev = -1;
 static int screen_w = 0, screen_h = 0;
 static int canvas_w = 0, canvas_h = 0;
 static FILE *fp_event;
+static FILE *fp_fb;
 
 uint32_t NDL_GetTicks() {
   struct timeval tv = {};
-  _gettimeofday(&tv, NULL);
-  return tv.tv_usec / 1000;
+  gettimeofday(&tv, NULL);
+  // printf("sec: %ld\n", tv.tv_sec);
+  // printf("usec: %ld\n", tv.tv_usec);
+  return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
 int NDL_PollEvent(char *buf, int len) {
@@ -54,6 +57,7 @@ void NDL_OpenCanvas(int *w, int *h) {
     int fbctl = 4;
     fbdev = 5;
     screen_w = *w; screen_h = *h;
+    canvas_w = *w; canvas_h = *h;
     char buf[64];
     int len = sprintf(buf, "%d %d", screen_w, screen_h);
     // let NWM resize the window and create the frame buffer
@@ -113,21 +117,21 @@ void NDL_OpenCanvas(int *w, int *h) {
     assert(*w <= screen_w);
     assert(*h <= screen_h);
     if (*w == 0 || *h == 0) {
-      canvas_w = screen_w;
-      canvas_h = screen_h;
-    } else {
-      canvas_w = *w;
-      canvas_h = *h;
+      *w = screen_w;
+      *h = screen_h;
     }
+    canvas_w = *w;
+    canvas_h = *h;
   }
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   assert(w);
   assert(h);
-  FILE *fp = open("/dev/fb", "w+");
   long off_h = (screen_h - canvas_h) / 2;
   long off_w = (screen_w - canvas_w) / 2;
+  // long off_h = 0;
+  // long off_w = 0;
   // printf("screen_h: %d\n", screen_h);
   // printf("screen_w: %d\n", screen_w);
   // printf("canvas_h: %d\n", canvas_h);
@@ -138,15 +142,16 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   // printf("y: %d\n", y);
   // printf("w: %d\n", w);
   // printf("h: %d\n", h);
+  // lseek(fp_fb, 0, SEEK_SET);
+  // write(fp_fb, pixels, 1000);
   for (int i = 0; i < h; ++i) {
-    long offset = (off_h + y + i) * screen_w + off_w + x;
+    long offset = 4 * ((off_h + y + i) * screen_w + off_w + x);
     // printf("offset: %d\n", offset);
     // printf("size: %d\n", screen_h * screen_w);
-    // printf("fp: %d\n", fp);
-    lseek(fp, offset, SEEK_SET);
-    write(fp, pixels + w * i, w);
+    // printf("fp_fb: %d\n", fp_fb);
+    lseek(fp_fb, offset, SEEK_SET);
+    write(fp_fb, pixels + w * i, 4 * w);
   }
-  close(fp);
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
@@ -168,9 +173,11 @@ int NDL_Init(uint32_t flags) {
     evtdev = 3;
   }
   fp_event = open("/dev/events", "r+");
+  fp_fb = open("/dev/fb", "w+");
   return 0;
 }
 
 void NDL_Quit() {
   close(fp_event);
+  close(fp_fb);
 }

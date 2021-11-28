@@ -22,7 +22,26 @@ static void sh_prompt() {
   sh_printf("sh> ");
 }
 
+static void clean_line_break(char *buf) {
+  for (; *buf != '\n' && *buf != '\0'; ++buf);
+  if (*buf == '\n') *buf = '\0';
+}
+
+static bool isStringAllSpaces(const char *buf) {
+  bool result = true;
+  for (; *buf != '\n' && *buf != '\0'; ++buf) {
+    if (*buf != ' ') result = false;
+  }
+  return result;
+}
+
 static void sh_handle_cmd(const char *cmd) {
+  char *buf = (char *) malloc(strlen(cmd) + 1);
+  strcpy(buf, cmd);
+  clean_line_break(buf);
+  if (!isStringAllSpaces(buf)) {
+    execve(buf, NULL, (char *const *) getenv("PATH"));
+  }
 }
 
 void builtin_sh_run() {

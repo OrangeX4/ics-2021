@@ -4,15 +4,108 @@
 #include <string.h>
 #include <stdlib.h>
 
+static uint32_t convert_RGBA_ARGB(SDL_Color color) {
+  return (((uint32_t) color.r) << 16) + (((uint32_t) color.g) << 8) + (uint32_t) color.b;
+}
+
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
+  int x, y, w, h, dst_x, dst_y;
+  if (srcrect) {
+    x = srcrect->x;
+    y = srcrect->y;
+    w = srcrect->w;
+    h = srcrect->h;
+  } else {
+    x = 0;
+    y = 0;
+    w = src->w;
+    h = src->h;
+  }
+  if (dstrect) {
+    dst_x = dstrect->x;
+    dst_y = dstrect->y;
+  } else {
+    dst_x = 0;
+    dst_y = 0;
+  }
+  for (int i = 0; i < h; ++i) {
+    for (int j = 0; j < w; ++j) {
+      if (src->format->palette) {
+        dst->pixels[(dst_y + i) * dst->w + (dst_x + j)] =
+          src->pixels[(y + i) * src->w + (x + j)]; 
+      } else {
+        ((uint32_t *) dst->pixels)[(dst_y + i) * dst->w + (dst_x + j)] =
+          ((uint32_t *) src->pixels)[(y + i) * src->w + (x + j)]; 
+      }
+    }
+  }
 }
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
+  int x, y, w, h;
+  // uint8_t color_8bit;
+  if (dstrect) {
+    x = dstrect->x;
+    y = dstrect->y;
+    w = dstrect->w;
+    h = dstrect->h;
+  } else {
+    x = 0;
+    y = 0;
+    w = dst->w;
+    h = dst->h;
+  }
+  // printf("FillRect\n");
+  // if (dst->format->palette) {
+  //   uint8_t i = 0, ncolors = dst->format->palette->ncolors;
+  //   for (; i < ncolors && convert_RGBA_ARGB(dst->format->palette->colors[i]) != color; i++);
+  //   if (i >= ncolors) {
+  //     printf("Invalid color: [0x%x]\n", color);
+  //     color_8bit = 0;
+  //   } else {
+  //     color_8bit = i;
+  //   }
+  //   // assert(i < ncolors);
+  // }
+  for (int i = 0; i < h; ++i) {
+    for (int j = 0; j < w; ++j) {
+      if (dst->format->palette) {
+        dst->pixels[(y + i) * dst->w + (x + j)] = (uint8_t) color;
+      } else {
+        ((uint32_t *)dst->pixels)[(y + i) * dst->w + (x + j)] = color; 
+      }
+    }
+  }
 }
 
+uint32_t pixels_buf[300 * 400 * 10];
+
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+  // printf("x: %d\n", x);
+  // printf("y: %d\n", y);
+  // printf("w: %d\n", w);
+  // printf("h: %d\n", h);
+  if (s->format->palette) {
+    for (int i = 0; i < s->h; ++i) {
+      for (int j = 0; j < s->w; ++j) {
+        pixels_buf[i * (s->w) + j] =
+          convert_RGBA_ARGB(s->format->palette->colors[s->pixels[i * (s->w) + j]]);
+      }
+    }
+    if (w == 0 && h == 0) {
+      NDL_DrawRect(pixels_buf, x, y, s->w, s->h);
+    } else {
+      NDL_DrawRect(pixels_buf, x, y, w, h);
+    }
+  } else {
+    if (w == 0 && h == 0) {
+      NDL_DrawRect((uint32_t *) s->pixels, x, y, s->w, s->h);
+    } else {
+      NDL_DrawRect((uint32_t *) s->pixels, x, y, w, h);
+    }
+  }
 }
 
 // APIs below are already implemented.
@@ -193,8 +286,10 @@ uint32_t SDL_MapRGBA(SDL_PixelFormat *fmt, uint8_t r, uint8_t g, uint8_t b, uint
 }
 
 int SDL_LockSurface(SDL_Surface *s) {
+  assert(0);
   return 0;
 }
 
 void SDL_UnlockSurface(SDL_Surface *s) {
+  assert(0);
 }

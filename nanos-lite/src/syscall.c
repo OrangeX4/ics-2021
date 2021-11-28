@@ -2,9 +2,13 @@
 
 #include <common.h>
 #include <fs.h>
-#include <time.h>
+#include <my_time.h>
+#include <proc.h>
 
-int gettimeofday(struct timeval *tv, struct timezone *tz);
+char *getenv(const char *__name);
+void naive_uload(PCB *pcb, const char *filename);
+
+static char program_buf[64];
 
 const char *syscall_names[] = {
     "SYS_exit",  "SYS_yield",  "SYS_open",   "SYS_read",   "SYS_write",
@@ -24,7 +28,8 @@ void do_syscall(Context *c) {
 #ifdef ENABLE_STRACE
       printf("[strace] %s(%d)\n", syscall_names[a[0]], a[1]);
 #endif
-      halt(0);
+      // halt(0);
+      naive_uload(NULL, ENTRY_PROGRAM);
       break;
     }
     case SYS_yield: {
@@ -91,9 +96,25 @@ void do_syscall(Context *c) {
 #endif
       break;
     }
+    case SYS_execve: {
+#ifdef ENABLE_STRACE
+      printf("[strace] %s(file = %s)\n", syscall_names[a[0]], (char *) a[1]);
+#endif
+      if (*((char *) a[1]) == '/') {
+        naive_uload(NULL, (char *) a[1]);
+      } else {
+        int len = strlen((char *) a[3]);
+        strcpy(program_buf, (char *) a[3]);
+        *(program_buf + len) = '/';
+        strcpy(program_buf + len + 1, (char *) a[1]);
+        // printf("Program buf: [%s]\n", program_buf);
+        naive_uload(NULL, program_buf);
+      }
+      break;
+    }
     case SYS_gettimeofday: {
       // int _gettimeofday(struct timeval *tv, struct timezone *tz)
-      c->GPRx = gettimeofday((struct timeval *)a[1], (struct timezone *)a[2]);
+      c->GPRx = my_gettimeofday((struct timeval *)a[1], (struct timezone *)a[2]);
 #ifdef ENABLE_STRACE
       if (a[2]) {
         printf("[strace] %s(timeval = {%d, %d}, timezone = {%d, %d}) = %d\n",
