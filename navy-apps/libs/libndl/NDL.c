@@ -130,18 +130,16 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   assert(h);
   long off_h = (screen_h - canvas_h) / 2;
   long off_w = (screen_w - canvas_w) / 2;
-  // long off_h = 0;
-  // long off_w = 0;
-  // printf("screen_h: %d\n", screen_h);
-  // printf("screen_w: %d\n", screen_w);
-  // printf("canvas_h: %d\n", canvas_h);
-  // printf("canvas_w: %d\n", canvas_w);
-  // printf("off_h: %d\n", off_h);
-  // printf("off_w: %d\n", off_w);
-  // printf("x: %d\n", x);
-  // printf("y: %d\n", y);
-  // printf("w: %d\n", w);
-  // printf("h: %d\n", h);
+  printf("screen_h: %d\n", screen_h);
+  printf("screen_w: %d\n", screen_w);
+  printf("canvas_h: %d\n", canvas_h);
+  printf("canvas_w: %d\n", canvas_w);
+  printf("off_h: %d\n", off_h);
+  printf("off_w: %d\n", off_w);
+  printf("x: %d\n", x);
+  printf("y: %d\n", y);
+  printf("w: %d\n", w);
+  printf("h: %d\n", h);
   // lseek(fp_fb, 0, SEEK_SET);
   // write(fp_fb, pixels, 1000);
   for (int i = 0; i < h; ++i) {
