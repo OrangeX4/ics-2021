@@ -34,7 +34,7 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     for (int j = 0; j < w; ++j) {
       if (src->format->palette) {
         dst->pixels[(dst_y + i) * dst->w + (dst_x + j)] =
-          src->pixels[(y + i) * src->w + (x + j)]; 
+          src->pixels[(y + i) * src->w + (x + j)];
       } else {
         ((uint32_t *) dst->pixels)[(dst_y + i) * dst->w + (dst_x + j)] =
           ((uint32_t *) src->pixels)[(y + i) * src->w + (x + j)]; 
