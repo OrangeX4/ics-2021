@@ -6,4 +6,6 @@ _start:
   // See amd64 ABI manual for more details
   andq $0xfffffffffffffff0, %rsp
   movq %rax, %rdi
+  // 设置栈顶
+  movq %rax, %rsp
   call call_main
