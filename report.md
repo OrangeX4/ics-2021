@@ -2466,3 +2466,73 @@ static inline void update_screen() {
 
 
 
+## PA 0
+
+### 1. 阶段一: 多道程序
+
+#### 1.1 实现上下文切换
+
+CTE 的 `kcontext()` 函数:
+
+```c
+Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
+  Context *c = (Context*)kstack.end - 1;
+  
+  c->mstatus = 0x1800;
+  c->mcause = 11;
+  c->mepc = (uintptr_t)entry;
+  return c;
+}
+```
+
+Nanos-lite 的 `context_kload()` 函数:
+
+```c
+void context_kload(PCB* pcb, void (*entry)(void *), void *arg) {
+  Area kstack = { (void *) pcb, (void *) pcb + sizeof(PCB) };
+  pcb->cp = kcontext(kstack, entry, arg);
+}
+```
+
+Nanos-lite 的 `schedule()` 函数:
+
+```c
+Context* schedule(Context *prev) {
+  // save the context pointer
+  current->cp = prev;
+
+  // always select pcb[0] as the new process
+  current = &pcb[0];
+
+  // then return the new context
+  return current->cp;
+}
+```
+
+Nanos-lite 的 EVENT_YIELD 事件:
+
+```c
+switch (e.event) {
+  case EVENT_YIELD: c = schedule(c); break;
+}
+```
+
+修改 CTE 中 `__am_asm_trap()` 的实现:
+
+``` asm
+// 切换到新的栈
+mv sp, a0
+LOAD t1, OFFSET_STATUS(sp)
+LOAD t2, OFFSET_EPC(sp)
+csrw mstatus, t1
+csrw mepc, t2
+```
+
+在 `init_proc()` 中单独创建一个以 `hello_fun` 为返回地址的上下文:
+
+```c
+void init_proc() {
+  context_kload(&pcb[0], hello_fun, NULL);
+  switch_boot_pcb();
+}
+```

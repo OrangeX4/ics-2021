@@ -46,8 +46,10 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   Context *c = (Context*)kstack.end - 1;
   
-  c->mstatus = 0x1800;
-  c->mcause = 11;
+  // 给 a0 即第一个参数传参
+  c->GPR2 = (uintptr_t) arg;
+  c->mstatus = (uintptr_t) 0x1800;
+  c->mcause = (uintptr_t) 11;
   c->mepc = (uintptr_t)entry;
   return c;
 }
