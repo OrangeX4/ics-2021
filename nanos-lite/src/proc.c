@@ -21,26 +21,29 @@ void hello_fun(void *arg) {
   }
 }
 
+void context_kload(PCB* pcb, void (*entry)(void *), void *arg) {
+  Area kstack = { (void *) pcb, (void *) pcb + sizeof(PCB) };
+  pcb->cp = kcontext(kstack, entry, arg);
+}
+
 void init_proc() {
-  switch_boot_pcb();
 
   Log("Initializing processes...");
 
+  context_kload(&pcb[0], hello_fun, NULL);
+  switch_boot_pcb();
+
   // load program here
-  // naive_uload(NULL, "/bin/dummy");
-  // naive_uload(NULL, "/bin/hello");
-  // naive_uload(NULL, "/bin/file-test");
-  // naive_uload(NULL, "/bin/timer-test");
-  // naive_uload(NULL, "/bin/event-test");
-  // naive_uload(NULL, "/bin/bmp-test");
-  // naive_uload(NULL, "/bin/nslider");
-  // naive_uload(NULL, "/bin/menu");
-  // naive_uload(NULL, "/bin/nterm");
-  // naive_uload(NULL, "/bin/bird");
-  // naive_uload(NULL, "/bin/pal");
-  naive_uload(NULL, ENTRY_PROGRAM);
+  // naive_uload(NULL, ENTRY_PROGRAM);
 }
 
 Context* schedule(Context *prev) {
-  return NULL;
+  // save the context pointer
+current->cp = prev;
+
+// always select pcb[0] as the new process
+current = &pcb[0];
+
+// then return the new context
+return current->cp;
 }
