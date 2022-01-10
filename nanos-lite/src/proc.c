@@ -67,7 +67,6 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   int arg_size = strings_size(argv, sizeof(uintptr_t));
   int env_size = strings_size(envp, sizeof(uintptr_t));
 
-  assert(0);
 
   // 栈顶自减
   ustack -= (env_size + arg_size + envc + 1 + argc + 1);
@@ -79,6 +78,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   char *arg_str = (char *) (ustack + 1 + argc + 1 + envc + 1);
   char *env_str = (char *) (ustack + 1 + argc + 1 + envc + 1 + arg_size);
 
+  assert(0);
+  
   // 写入数据
   *argc_p = argc;
   strings_copy(argv, argv_p, arg_str, sizeof(uintptr_t));
