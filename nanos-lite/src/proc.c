@@ -58,15 +58,14 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   pcb->cp = ucontext(&pcb->as, kstack, (void *) pcb_uload(pcb, filename));
   Context *c = (Context*)kstack.end - 1;
   
-  // 当前默认栈顶为 heap.end
-  uintptr_t *ustack = (uintptr_t *)heap.end;
+  // 初始默认栈顶为 heap.end, 后续不断分新页
+  uintptr_t *ustack = (uintptr_t *) new_page(8) + 8 * (1 << 12);
 
   // 向下生成字符串区等栈区所需数据, 还要注意对齐
   int argc = strings_len(argv);
   int envc = strings_len(envp);
   int arg_size = strings_size(argv, sizeof(uintptr_t));
   int env_size = strings_size(envp, sizeof(uintptr_t));
-
 
   // 栈顶自减
   ustack -= (env_size + arg_size + envc + 1 + argc + 1 + 1);
@@ -91,19 +90,20 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 
 void init_proc() {
 
-  // char *const empty[] =  { NULL };
-  char *const one[] =  { "one", NULL };
-  char *const two[] =  { "one", "two", NULL };
+  char *const empty[] =  { NULL };
+  char *const pal_argv[] =  { "other", "--skip", NULL };
+  // char *const two[] =  { "one", "two", NULL };
 
   Log("Initializing processes...");
 
   // context_uload(&pcb[0], "/bin/hello");
   context_kload(&pcb[0], hello_fun, "&pcb[0]");
   // context_kload(&pcb[1], hello_fun, "&pcb[1]");
-  // context_uload(&pcb[1], "/bin/pal");
+  context_uload(&pcb[1], "/bin/bird", pal_argv, empty);
+  // context_uload(&pcb[1], "/bin/pal", empty, empty);
   // context_uload(&pcb[1], "/bin/hello", one, empty);
   // context_uload(&pcb[1], "/bin/hello", empty, one);
-  context_uload(&pcb[1], "/bin/hello", two, one);
+  // context_uload(&pcb[1], "/bin/hello", two, one);
   switch_boot_pcb();
 
   // load program here

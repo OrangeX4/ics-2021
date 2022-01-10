@@ -3,7 +3,9 @@
 static void *pf = NULL;
 
 void* new_page(size_t nr_page) {
-  return NULL;
+  if (pf == NULL) pf = heap.end;
+  pf -= nr_page * (1 << 12);
+  return pf;
 }
 
 #ifdef HAS_VME
