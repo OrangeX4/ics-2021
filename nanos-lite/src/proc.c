@@ -31,7 +31,8 @@ void context_uload(PCB* pcb, const char *filename) {
   Area kstack = { (void *) pcb, (void *) pcb + sizeof(PCB) };
   Context *c = (Context*)kstack.end - 1;
   c->GPRx = (uintptr_t)heap.end;
-  printf("addr: %p\n", c->GPRx);
+  // printf("addr: %p\n", c->GPRx);
+  // printf("entry: %p\n", pcb_uload(pcb, filename));
   pcb->cp = ucontext(&pcb->as, kstack, (void *) pcb_uload(pcb, filename));
 }
 
@@ -39,7 +40,7 @@ void init_proc() {
 
   Log("Initializing processes...");
 
-  context_uload(&pcb[0], "/bin/hello");
+  // context_uload(&pcb[0], "/bin/hello");
   // context_kload(&pcb[0], hello_fun, "&pcb[0]");
   // context_kload(&pcb[1], hello_fun, "&pcb[1]");
   // context_uload(&pcb[1], "/bin/pal");
@@ -48,6 +49,7 @@ void init_proc() {
 
   // load program here
   // naive_uload(NULL, ENTRY_PROGRAM);
+  naive_uload(NULL, "/bin/hello");
 }
 
 Context* schedule(Context *prev) {
