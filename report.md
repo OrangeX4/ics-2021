@@ -2593,3 +2593,57 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   return c;
 }
 ```
+
+#### 1.3 实现多道程序系统
+
+首先是实现 VME 的 `ucontext()` 函数, 只需要类比一下 `kcontext()` 函数即可:
+
+```c
+Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
+  Context *c = (Context*)kstack.end - 1;
+
+  c->mstatus = (uintptr_t) 0x1800;
+  c->mcause = (uintptr_t) 11;
+  c->mepc = (uintptr_t) entry;
+  return c;
+}
+```
+
+然后是实现 `context_uload()` 函数, 这个函数可把我坑惨了. 一不小心弄反了 `ucontext` 和 `GPRx` 的写入顺序, 导致 `GPRx` 被覆盖, 查了将近两天的 bug.
+
+```c
+void context_uload(PCB* pcb, const char *filename) {
+  Area kstack = { (void *) pcb, (void *) pcb + sizeof(PCB) };
+  pcb->cp = ucontext(&pcb->as, kstack, (void *) pcb_uload(pcb, filename));
+  Context *c = (Context*)kstack.end - 1;
+  c->GPRx = (uintptr_t)heap.end;
+}
+```
+
+最后是实现在两个 `_start` 中设置正确的栈指针.
+
+```asm
+.globl  _start
+_start:
+  // 设置栈顶
+  mv sp, a0
+  move s0, zero
+  jal call_main
+```
+
+```asm
+.globl  _start
+_start:
+  // 设置栈顶
+  movq %rax, %rsp
+  movq $0, %rbp
+  // (rsp + 8) should be multiple of 16 when
+  // control is transfered to the function entry point.
+  // See amd64 ABI manual for more details
+  andq $0xfffffffffffffff0, %rsp
+  movq %rax, %rdi
+  call call_main
+```
+
+
+
