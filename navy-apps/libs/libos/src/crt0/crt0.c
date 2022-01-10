@@ -12,6 +12,7 @@ void call_main(uintptr_t *args) {
   assert(argc == 0);
   char **argv = (char **)(args + 1);
   assert(*argv == NULL);
+  assert(0);
   while (args != NULL) ++args;
   char **envp = (char **)(args + 1);
   assert(*envp == NULL);
@@ -20,7 +21,6 @@ void call_main(uintptr_t *args) {
   // char **argv = empty;
   // char **envp = empty;
   
-  assert(0);
 
   environ = envp;
   exit(main(argc, argv, envp));
