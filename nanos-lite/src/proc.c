@@ -79,12 +79,12 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   char *env_str = (char *) (ustack + 1 + argc + 1 + envc + 1 + arg_size);
   
   // 写入数据
-  printf("*argc_p: %d\n", argc);
+  // printf("*argc_p: %d\n", argc);
   *argc_p = argc;
   strings_copy(argv, argv_p, arg_str, sizeof(uintptr_t));
   strings_copy(envp, envp_p, env_str, sizeof(uintptr_t));
 
-  printf("ustack: %p\n", ustack);
+  // printf("ustack: %p\n", ustack);
 
   c->GPRx = (uintptr_t)ustack;
 }
@@ -92,8 +92,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 void init_proc() {
 
   char *const empty[] =  { NULL };
-  char *const one[] =  { "one" };
-  // char *const two[] =  { "one", "two" };
+  char *const one[] =  { "one", NULL };
+  // char *const two[] =  { "one", "two", NULL };
 
   Log("Initializing processes...");
 
