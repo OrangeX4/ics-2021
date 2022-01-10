@@ -16,6 +16,10 @@ void call_main(uintptr_t *args) {
   // int argc = 0;
   // char **argv = empty;
   // char **envp = empty;
+
+  printf("argc: %d\n", argc);
+  printf("*argv: %s\n", *argv);
+  // printf("*envp: %s\n", *envp);
   
   assert(*argv != NULL);
   assert(argc == 1);
