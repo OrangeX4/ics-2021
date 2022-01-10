@@ -16,14 +16,14 @@ void call_main(uintptr_t *args) {
   // char **argv = empty;
   // char **envp = empty;
 
-  // printf("args: %p\n", args);
-  // printf("argc: %d\n", argc);
-  // printf("argv[0]: %s\n", argv[0]);
-  // printf("argv[1]: %s\n", argv[1]);
-  // assert(argv[2] == NULL);
-  // printf("envp[0]: %s\n", envp[0]);
-  // assert(envp[1] == NULL);
-  // assert(0);
+  printf("args: %p\n", args);
+  printf("argc: %d\n", argc);
+  printf("argv[0]: %s\n", argv[0]);
+  printf("argv[1]: %s\n", argv[1]);
+  assert(argv[2] == NULL);
+  printf("envp[0]: %s\n", envp[0]);
+  assert(envp[1] == NULL);
+  assert(0);
 
   environ = envp;
   exit(main(argc, argv, envp));

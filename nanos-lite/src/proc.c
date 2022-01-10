@@ -46,8 +46,8 @@ static int strings_size(char *const *strings, int align) {
 // 复制字符串数组
 static void strings_copy(char *const *strings, char **new_strings, char *buf, int align) {
   for (; *strings != NULL; ++strings, ++new_strings) {
-    *new_strings = *strings;
     strcpy(buf, *strings);
+    *new_strings = buf;
     buf += (strlen(*strings) / align + 1) * align;
   }
   *new_strings = NULL;
