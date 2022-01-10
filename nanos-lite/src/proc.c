@@ -79,6 +79,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   char *env_str = (char *) (ustack + 1 + argc + 1 + envc + 1 + arg_size);
   
   // 写入数据
+  printf("*argc_p: %d\n", argc);
   *argc_p = argc;
   strings_copy(argv, argv_p, arg_str, sizeof(uintptr_t));
   strings_copy(envp, envp_p, env_str, sizeof(uintptr_t));
