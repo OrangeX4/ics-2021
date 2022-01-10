@@ -41,23 +41,23 @@ void init_proc() {
   Log("Initializing processes...");
 
   // context_uload(&pcb[0], "/bin/hello");
-  // context_kload(&pcb[0], hello_fun, "&pcb[0]");
+  context_kload(&pcb[0], hello_fun, "&pcb[0]");
   // context_kload(&pcb[1], hello_fun, "&pcb[1]");
   // context_uload(&pcb[1], "/bin/pal");
-  // context_uload(&pcb[1], "/bin/hello");
+  context_uload(&pcb[1], "/bin/hello");
   switch_boot_pcb();
 
   // load program here
   // naive_uload(NULL, ENTRY_PROGRAM);
-  naive_uload(NULL, "/bin/hello");
+  // naive_uload(NULL, "/bin/hello");
 }
 
 Context* schedule(Context *prev) {
   // save the context pointer
   current->cp = prev;
 
-  current = &pcb[0];
-  // current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+  // current = &pcb[0];
+  current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
   // then return the new context
   return current->cp;
