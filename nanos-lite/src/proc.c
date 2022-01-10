@@ -83,6 +83,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   strings_copy(argv, argv_p, arg_str, sizeof(uintptr_t));
   strings_copy(envp, envp_p, env_str, sizeof(uintptr_t));
 
+  printf("ustack: %p\n", ustack);
+
   c->GPRx = (uintptr_t)ustack;
 }
 
