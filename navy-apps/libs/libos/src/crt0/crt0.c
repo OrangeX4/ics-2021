@@ -18,14 +18,12 @@ void call_main(uintptr_t *args) {
   // char **envp = empty;
 
   printf("argc: %d\n", argc);
-  printf("*argv: %s\n", *argv);
-  // printf("*envp: %s\n", *envp);
+  printf("argv[0]: %s\n", argv[0]);
+  printf("argv[1]: %s\n", argv[1]);
+  assert(argv[2] == NULL);
+  printf("envp[0]: %s\n", envp[0]);
+  assert(envp[1] == NULL);
   
-  assert(*argv != NULL);
-  assert(argc == 1);
-  // assert(argc == 0);
-  // assert(*argv == NULL);
-  // assert(*envp == NULL);
   assert(0);
 
   environ = envp;
