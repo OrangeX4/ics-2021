@@ -20,7 +20,7 @@ void call_main(uintptr_t *args) {
   // assert(argc == 1);
   assert(argc == 0);
   assert(*argv == NULL);
-  assert(*envp == NULL);
+  // assert(*envp == NULL);
   assert(0);
 
   environ = envp;
