@@ -48,8 +48,8 @@ void init_proc() {
   switch_boot_pcb();
 
   // load program here
-  naive_uload(NULL, ENTRY_PROGRAM);
-  // naive_uload(NULL, "/bin/hello");
+  // naive_uload(NULL, ENTRY_PROGRAM);
+  naive_uload(NULL, "/bin/hello");
 }
 
 Context* schedule(Context *prev) {
