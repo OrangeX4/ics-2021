@@ -69,7 +69,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 
 
   // 栈顶自减
-  ustack -= (env_size + arg_size + envc + 1 + argc + 1);
+  ustack -= (env_size + arg_size + envc + 1 + argc + 1 + 1);
 
   // 各个地址
   int *argc_p = (int *) (ustack);
@@ -83,6 +83,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   *argc_p = argc;
   strings_copy(argv, argv_p, arg_str, sizeof(uintptr_t));
   strings_copy(envp, envp_p, env_str, sizeof(uintptr_t));
+
   assert(0);
 
   c->GPRx = (uintptr_t)ustack;
