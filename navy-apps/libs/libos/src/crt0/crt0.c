@@ -17,6 +17,7 @@ void call_main(uintptr_t *args) {
   // char **argv = empty;
   // char **envp = empty;
   
+  assert(*argv != NULL);
   assert(argc == 1);
   // assert(argc == 0);
   // assert(*argv == NULL);
