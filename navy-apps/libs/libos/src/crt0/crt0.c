@@ -17,9 +17,10 @@ void call_main(uintptr_t *args) {
   // char **argv = empty;
   // char **envp = empty;
   
-  assert(argc == 1);
-  // assert(*argv == NULL);
-  // assert(*envp == NULL);
+  // assert(argc == 1);
+  assert(argc == 0);
+  assert(*argv == NULL);
+  assert(*envp == NULL);
   assert(0);
 
   environ = envp;
