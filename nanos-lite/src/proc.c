@@ -98,7 +98,8 @@ void init_proc() {
   char *const empty[] =  { NULL };
   // char *const pal_argv[] =  { "other", "--skip", NULL };
   // char *const two[] =  { "one", "two", NULL };
-  DEF_TEST_ARGV(exec);
+  // DEF_TEST_ARGV(exec);
+  DEF_ARGV(menu);
 
   Log("Initializing processes...");
 
@@ -106,7 +107,8 @@ void init_proc() {
   context_kload(&pcb[0], hello_fun, "&pcb[0]");
   // context_kload(&pcb[1], hello_fun, "&pcb[1]");
   // context_uload(&pcb[1], "/bin/pal", pal_argv, empty);
-  context_uload(&pcb[1], "/bin/exec-test", REF_ARGV(exec), empty);
+  // context_uload(&pcb[1], "/bin/exec-test", REF_ARGV(exec), empty);
+  context_uload(&pcb[1], "/bin/menu", REF_ARGV(menu), empty);
   // context_uload(&pcb[1], "/bin/pal", empty, empty);
   // context_uload(&pcb[1], "/bin/hello", one, empty);
   // context_uload(&pcb[1], "/bin/hello", empty, one);
