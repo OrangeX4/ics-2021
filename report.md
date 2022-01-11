@@ -2646,4 +2646,182 @@ _start:
 ```
 
 
+#### 1.4 给用户进程传递参数
+
+这一步有非常坑的地方, 主要是 `context_uload()` 函数内部的实现要非常注重顺序. 为了它, 我 de 了非常久的 bug. 因为没有注意到 `pcb_load()` 的时候, 新程序会将旧程序的堆区栈区覆盖掉, 所以一开始顺序有误. 修改完之后就能正常跑了.
+
+经过一番奋战, 最终完成的代码如下:
+
+```c
+#define MAX_STRINGS_LEN 10000
+
+// 返回字符串数组的元素个数
+static int strings_len(char *const *strings) {
+  int count = 0;
+  assert(strings != NULL);
+  for (; *strings != NULL; ++strings) ++count;
+  return count;
+}
+
+// 返回字符串数组的对齐占用的空间大小
+static int strings_size(char *const *strings, int align) {
+  assert(strings != NULL);
+  int size = 0;
+  for (; *strings != NULL; ++strings) size += (strlen(*strings) / align + 1);
+  return size;
+}
+
+// 复制字符串数组
+static void strings_copy(char *const *strings, char **new_strings, char *buf, int align) {
+  for (; *strings != NULL; ++strings, ++new_strings) {
+    strcpy(buf, *strings);
+    *new_strings = buf;
+    buf += (strlen(*strings) / align + 1) * align;
+  }
+  *new_strings = NULL;
+}
+
+void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
+  Area kstack = { (void *) pcb, (void *) pcb + sizeof(PCB) };
+  Context *c = (Context*)kstack.end - 1;
+  
+  // 初始默认栈顶为 heap.end, 后续不断分新页
+  uintptr_t *ustack = (uintptr_t *) new_page(8) + 8 * (1 << 12);
+
+  // 向下生成字符串区等栈区所需数据, 还要注意对齐
+  int argc = strings_len(argv);
+  int envc = strings_len(envp);
+  int arg_size = strings_size(argv, sizeof(uintptr_t));
+  int env_size = strings_size(envp, sizeof(uintptr_t));
+
+  // 栈顶自减
+  ustack -= (env_size + arg_size + envc + 1 + argc + 1 + 1);
+
+  // 各个地址
+  int *argc_p = (int *) (ustack);
+  char **argv_p = (char **) (ustack + 1);
+  char **envp_p = (char **) (ustack + 1 + argc + 1);
+  char *arg_str = (char *) (ustack + 1 + argc + 1 + envc + 1);
+  char *env_str = (char *) (ustack + 1 + argc + 1 + envc + 1 + arg_size);
+  
+  // 写入数据
+  // printf("*argc_p: %d\n", argc);
+  *argc_p = argc;
+  strings_copy(argv, argv_p, arg_str, sizeof(uintptr_t));
+  strings_copy(envp, envp_p, env_str, sizeof(uintptr_t));
+
+  pcb->cp = ucontext(&pcb->as, kstack, (void *) pcb_uload(pcb, filename));
+  c->GPRx = (uintptr_t)ustack;
+}
+```
+
+相比之下, 仙剑奇侠传的 `--skip` 实现就很简单了:
+
+```c
+//
+// Show the trademark screen and splash screen
+//
+// Modified: 根据 argv 来跳过
+bool is_skip = false;
+for (int i = 0; i < argc; ++i) {
+ if (!strcmp(argv[i], "--skip")) {
+   is_skip = true;
+   break;
+ }
+}
+if (!is_skip) {
+ PAL_TrademarkScreen();
+ PAL_SplashScreen();
+}
+```
+
+
+#### 1.5 实现带参数的 execve()
+
+`syscall.c` 中代码如下:
+
+```c
+case SYS_execve: {
+#ifdef ENABLE_STRACE
+      printf("[strace] %s(file = %s, argv = %s, envp = %s)\n", syscall_names[a[0]], (char *) a[1], *(char **) a[2], *(char **) a[3]);
+#endif
+        context_uload(current, (char *) a[1], (char **) a[2], (char **) a[3]);
+        switch_boot_pcb();
+        yield();
+```
+
+`mm.c` 实现如下:
+
+```c
+void* new_page(size_t nr_page) {
+  if (pf == NULL) pf = heap.end;
+  pf -= nr_page * (1 << 12);
+  return pf;
+}
+```
+
+`nterm` 较为复杂, 要将 `cmd` 分解成一系列 `argv`, 具体代码如下:
+
+```c
+char** str_split(char* a_str, const char a_delim) {
+  char** result = 0;
+  size_t count = 0;
+  char* tmp = a_str;
+  char* last_comma = 0;
+  char delim[2];
+  delim[0] = a_delim;
+  delim[1] = 0;
+
+  /* Count how many elements will be extracted. */
+  while (*tmp) {
+    if (a_delim == *tmp) {
+      count++;
+      last_comma = tmp;
+    }
+    tmp++;
+  }
+
+  /* Add space for trailing token. */
+  count += last_comma < (a_str + strlen(a_str) - 1);
+
+  /* Add space for terminating null string so caller
+      knows where the list of returned strings ends. */
+  count++;
+
+  result = (char**) malloc(sizeof(char*) * count);
+
+  if (result) {
+    size_t idx = 0;
+    char* token = strtok(a_str, delim);
+
+    while (token) {
+      assert(idx < count);
+      *(result + idx++) = strdup(token);
+      token = strtok(0, delim);
+    }
+    *(result + idx) = 0;
+  }
+
+  return result;
+}
+
+static void sh_handle_cmd(const char *cmd) {
+  char *const nterm_empty_argv[] = { NULL };
+  char *buf = (char *) malloc(strlen(cmd) + 1);
+  strcpy(buf, cmd);
+  clean_line_break(buf);
+
+  char **argv = str_split(buf, ' ');
+  char *file = argv[0];
+
+  if (!is_string_all_spaces(buf)) {
+    // printf("getenv: %s\n", getenv("PATH"));
+    // execve(buf, NULL, (char *const *) getenv("PATH"));
+    execvp(file, argv);
+  }
+
+  free(buf);
+  free(argv);
+}
+```
 
