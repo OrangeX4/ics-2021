@@ -27,7 +27,7 @@ static void clean_line_break(char *buf) {
   if (*buf == '\n') *buf = '\0';
 }
 
-static bool isStringAllSpaces(const char *buf) {
+static bool is_string_all_spaces(const char *buf) {
   bool result = true;
   for (; *buf != '\n' && *buf != '\0'; ++buf) {
     if (*buf != ' ') result = false;
@@ -35,13 +35,18 @@ static bool isStringAllSpaces(const char *buf) {
   return result;
 }
 
+char *const nterm_empty_argv[] = { NULL };
+
 static void sh_handle_cmd(const char *cmd) {
   char *buf = (char *) malloc(strlen(cmd) + 1);
   strcpy(buf, cmd);
   clean_line_break(buf);
-  if (!isStringAllSpaces(buf)) {
-    execve(buf, NULL, (char *const *) getenv("PATH"));
+  if (!is_string_all_spaces(buf)) {
+    // printf("getenv: %s\n", getenv("PATH"));
+    // execve(buf, NULL, (char *const *) getenv("PATH"));
+    execvp(buf, nterm_empty_argv);
   }
+  free(buf);
 }
 
 void builtin_sh_run() {
