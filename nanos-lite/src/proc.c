@@ -32,12 +32,14 @@ void context_kload(PCB* pcb, void (*entry)(void *), void *arg) {
 // 返回字符串数组的元素个数
 static int strings_len(char *const *strings) {
   int count = 0;
+  assert(strings != NULL);
   for (; *strings != NULL; ++strings) ++count;
   return count;
 }
 
 // 返回字符串数组的对齐占用的空间大小
 static int strings_size(char *const *strings, int align) {
+  assert(strings != NULL);
   int size = 0;
   for (; *strings != NULL; ++strings) size += (strlen(*strings) / align + 1);
   return size;
@@ -55,12 +57,10 @@ static void strings_copy(char *const *strings, char **new_strings, char *buf, in
 
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
   Area kstack = { (void *) pcb, (void *) pcb + sizeof(PCB) };
-  pcb->cp = ucontext(&pcb->as, kstack, (void *) pcb_uload(pcb, filename));
   Context *c = (Context*)kstack.end - 1;
   
   // 初始默认栈顶为 heap.end, 后续不断分新页
   uintptr_t *ustack = (uintptr_t *) new_page(8) + 8 * (1 << 12);
-  // printf("ustack: %p\n", ustack);
 
   // 向下生成字符串区等栈区所需数据, 还要注意对齐
   int argc = strings_len(argv);
@@ -84,8 +84,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   strings_copy(argv, argv_p, arg_str, sizeof(uintptr_t));
   strings_copy(envp, envp_p, env_str, sizeof(uintptr_t));
 
-  // printf("ustack: %p\n", ustack);
-
+  pcb->cp = ucontext(&pcb->as, kstack, (void *) pcb_uload(pcb, filename));
   c->GPRx = (uintptr_t)ustack;
 }
 

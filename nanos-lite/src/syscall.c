@@ -106,7 +106,6 @@ void do_syscall(Context *c) {
 #ifdef ENABLE_STRACE
       printf("[strace] %s(file = %s, argv = %s, envp = %s)\n", syscall_names[a[0]], (char *) a[1], *(char **) a[2], *(char **) a[3]);
 #endif
-        printf("[strace] %s(file = %s, argv = %s, envp = %s)\n", syscall_names[a[0]], (char *) a[1], *(char **) a[2], *(char **) a[3]);
         context_uload(current, (char *) a[1], (char **) a[2], (char **) a[3]);
         switch_boot_pcb();
         yield();

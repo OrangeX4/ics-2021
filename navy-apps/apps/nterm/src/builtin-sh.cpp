@@ -35,18 +35,65 @@ static bool is_string_all_spaces(const char *buf) {
   return result;
 }
 
-char *const nterm_empty_argv[] = { NULL };
+char** str_split(char* a_str, const char a_delim) {
+  char** result = 0;
+  size_t count = 0;
+  char* tmp = a_str;
+  char* last_comma = 0;
+  char delim[2];
+  delim[0] = a_delim;
+  delim[1] = 0;
+
+  /* Count how many elements will be extracted. */
+  while (*tmp) {
+    if (a_delim == *tmp) {
+      count++;
+      last_comma = tmp;
+    }
+    tmp++;
+  }
+
+  /* Add space for trailing token. */
+  count += last_comma < (a_str + strlen(a_str) - 1);
+
+  /* Add space for terminating null string so caller
+      knows where the list of returned strings ends. */
+  count++;
+
+  result = (char**) malloc(sizeof(char*) * count);
+
+  if (result) {
+    size_t idx = 0;
+    char* token = strtok(a_str, delim);
+
+    while (token) {
+      assert(idx < count);
+      *(result + idx++) = strdup(token);
+      token = strtok(0, delim);
+    }
+    *(result + idx) = 0;
+  }
+
+  return result;
+}
 
 static void sh_handle_cmd(const char *cmd) {
+  char *const nterm_empty_argv[] = { NULL };
   char *buf = (char *) malloc(strlen(cmd) + 1);
   strcpy(buf, cmd);
   clean_line_break(buf);
+
+  char **argv = str_split(buf, ' ');
+  char *file = argv[0];
+
   if (!is_string_all_spaces(buf)) {
     // printf("getenv: %s\n", getenv("PATH"));
     // execve(buf, NULL, (char *const *) getenv("PATH"));
-    execvp(buf, nterm_empty_argv);
+    execvp(file, argv);
   }
+
   free(buf);
+  free(argv);
 }
 
 void builtin_sh_run() {
