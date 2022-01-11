@@ -2827,4 +2827,25 @@ static void sh_handle_cmd(const char *cmd) {
 
 #### 1.6 运行 Busybox
 
-使用 ``
+使用 `make menuconfig` 和 `make install` 安装完 Busybox 后, 简单修改了一下 `syscall.c` 和 `fs.c` 的代码:
+
+```c
+int fs_open(const char *pathname, int flags, int mode) {
+  int fd = 0;
+  for (; fd < LENGTH(file_table) && strcmp(pathname, file_table[fd].name); ++fd);
+  if (fd == LENGTH(file_table)) {
+    // panic("Invalid pathname: \"%s\"\n", pathname);
+    return -1;
+  }
+  file_table[fd].open_offset = 0;
+  return fd;
+}
+```
+
+```c
+case SYS_execve: {
+    if (fs_open((char *) a[1], 0, 0) < 0) {
+      c->GPRx = -2;
+      break;
+    }
+```
