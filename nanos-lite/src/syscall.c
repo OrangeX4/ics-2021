@@ -7,6 +7,8 @@
 
 char *getenv(const char *__name);
 void naive_uload(PCB *pcb, const char *filename);
+void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]);
+extern PCB *current;
 
 static char program_buf[64];
 
@@ -101,14 +103,15 @@ void do_syscall(Context *c) {
       printf("[strace] %s(file = %s)\n", syscall_names[a[0]], (char *) a[1]);
 #endif
       if (*((char *) a[1]) == '/') {
-        naive_uload(NULL, (char *) a[1]);
+        context_uload(current, (char *) a[1], (char **) a[2], (char **) a[3]);
       } else {
         int len = strlen((char *) a[3]);
         strcpy(program_buf, (char *) a[3]);
         *(program_buf + len) = '/';
         strcpy(program_buf + len + 1, (char *) a[1]);
         // printf("Program buf: [%s]\n", program_buf);
-        naive_uload(NULL, program_buf);
+        // naive_uload(NULL, program_buf);
+        context_uload(current, program_buf, (char **) a[2], (char **) a[3]);
       }
       break;
     }
