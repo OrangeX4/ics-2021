@@ -30,8 +30,11 @@ void do_syscall(Context *c) {
 #ifdef ENABLE_STRACE
       printf("[strace] %s(%d)\n", syscall_names[a[0]], a[1]);
 #endif
-      // halt(0);
-      naive_uload(NULL, ENTRY_PROGRAM);
+      printf("exit()\n");
+      halt(0);
+      // assert(0);
+      // naive_uload(NULL, ENTRY_PROGRAM);
+      // yield();
       break;
     }
     case SYS_yield: {
@@ -104,6 +107,7 @@ void do_syscall(Context *c) {
 #endif
       if (*((char *) a[1]) == '/') {
         context_uload(current, (char *) a[1], (char **) a[2], (char **) a[3]);
+        yield();
       } else {
         int len = strlen((char *) a[3]);
         strcpy(program_buf, (char *) a[3]);
