@@ -58,7 +58,8 @@ int fs_open(const char *pathname, int flags, int mode) {
   int fd = 0;
   for (; fd < LENGTH(file_table) && strcmp(pathname, file_table[fd].name); ++fd);
   if (fd == LENGTH(file_table)) {
-    panic("Invalid pathname: \"%s\"\n", pathname);
+    // panic("Invalid pathname: \"%s\"\n", pathname);
+    return -1;
   }
   file_table[fd].open_offset = 0;
   return fd;

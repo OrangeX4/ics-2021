@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
   font = new BDF_Font(font_fname);
 
   // Init PATH env
-  setenv("PATH", "/bin", 0);
+  setenv("PATH", "/bin:/usr/bin", 0);
 
   // setup display
   int win_w = font->w * W;

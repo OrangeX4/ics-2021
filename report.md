@@ -2825,3 +2825,6 @@ static void sh_handle_cmd(const char *cmd) {
 }
 ```
 
+#### 1.6 运行 Busybox
+
+使用 ``

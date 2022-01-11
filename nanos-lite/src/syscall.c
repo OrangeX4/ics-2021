@@ -31,8 +31,13 @@ void do_syscall(Context *c) {
 #ifdef ENABLE_STRACE
       printf("[strace] %s(%d)\n", syscall_names[a[0]], a[1]);
 #endif
-      printf("exit()\n");
-      halt(0);
+      // 恢复终端
+      char *empty[] = { NULL };
+      context_uload(current, ENTRY_PROGRAM, empty, empty);
+      switch_boot_pcb();
+      yield();
+      // halt(0);
+      // printf("exit()\n");
       // assert(0);
       // naive_uload(NULL, ENTRY_PROGRAM);
       // yield();
@@ -106,9 +111,14 @@ void do_syscall(Context *c) {
 #ifdef ENABLE_STRACE
       printf("[strace] %s(file = %s, argv = %s, envp = %s)\n", syscall_names[a[0]], (char *) a[1], *(char **) a[2], *(char **) a[3]);
 #endif
+        if (fs_open((char *) a[1], 0, 0) < 0) {
+          c->GPRx = -2;
+          break;
+        }
         context_uload(current, (char *) a[1], (char **) a[2], (char **) a[3]);
         switch_boot_pcb();
         yield();
+        c->GPRx = 0;
         // int len = strlen((char *) a[3]);
         // strcpy(program_buf, (char *) a[3]);
         // *(program_buf + len) = '/';
