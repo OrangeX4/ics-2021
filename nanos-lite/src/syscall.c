@@ -11,7 +11,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 void switch_boot_pcb();
 extern PCB *current;
 
-static char program_buf[64];
+// static char program_buf[64];
 
 const char *syscall_names[] = {
     "SYS_exit",  "SYS_yield",  "SYS_open",   "SYS_read",   "SYS_write",
@@ -104,21 +104,21 @@ void do_syscall(Context *c) {
     }
     case SYS_execve: {
 #ifdef ENABLE_STRACE
-      printf("[strace] %s(file = %s)\n", syscall_names[a[0]], (char *) a[1]);
+      printf("[strace] %s(file = %s, argv = %s, envp = %s)\n", syscall_names[a[0]], (char *) a[1], *(char **) a[2], *(char **) a[3]);
 #endif
-      if (*((char *) a[1]) == '/') {
+        printf("[strace] %s(file = %s, argv = %s, envp = %s)\n", syscall_names[a[0]], (char *) a[1], *(char **) a[2], *(char **) a[3]);
         context_uload(current, (char *) a[1], (char **) a[2], (char **) a[3]);
         switch_boot_pcb();
         yield();
-      } else {
-        int len = strlen((char *) a[3]);
-        strcpy(program_buf, (char *) a[3]);
-        *(program_buf + len) = '/';
-        strcpy(program_buf + len + 1, (char *) a[1]);
+        // int len = strlen((char *) a[3]);
+        // strcpy(program_buf, (char *) a[3]);
+        // *(program_buf + len) = '/';
+        // strcpy(program_buf + len + 1, (char *) a[1]);
         // printf("Program buf: [%s]\n", program_buf);
         // naive_uload(NULL, program_buf);
-        context_uload(current, program_buf, (char **) a[2], (char **) a[3]);
-      }
+        // context_uload(current, program_buf, (char **) a[2], (char **) a[3]);
+        // switch_boot_pcb();
+        // yield();
       break;
     }
     case SYS_gettimeofday: {
