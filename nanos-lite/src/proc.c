@@ -60,7 +60,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   
   // 初始默认栈顶为 heap.end, 后续不断分新页
   uintptr_t *ustack = (uintptr_t *) new_page(8) + 8 * (1 << 12);
-  printf("ustack: %p\n", ustack);
+  // printf("ustack: %p\n", ustack);
 
   // 向下生成字符串区等栈区所需数据, 还要注意对齐
   int argc = strings_len(argv);
