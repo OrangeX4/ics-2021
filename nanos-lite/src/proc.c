@@ -89,12 +89,16 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   c->GPRx = (uintptr_t)ustack;
 }
 
+#define DEF_TEST_ARGV(P) char *const P ## _argv[] = { "/bin/" #P "-test", NULL };
+#define DEF_ARGV(P) char *const P ## _argv[] = { "/bin/" #P, NULL };
+#define REF_ARGV(P) P ## _argv
+
 void init_proc() {
 
   char *const empty[] =  { NULL };
   // char *const pal_argv[] =  { "other", "--skip", NULL };
   // char *const two[] =  { "one", "two", NULL };
-  char *const exec_test_argv[] = { "/bin/exec-test", NULL };
+  DEF_TEST_ARGV(exec);
 
   Log("Initializing processes...");
 
@@ -102,7 +106,7 @@ void init_proc() {
   context_kload(&pcb[0], hello_fun, "&pcb[0]");
   // context_kload(&pcb[1], hello_fun, "&pcb[1]");
   // context_uload(&pcb[1], "/bin/pal", pal_argv, empty);
-  context_uload(&pcb[1], "/bin/exec-test", exec_test_argv, empty);
+  context_uload(&pcb[1], "/bin/exec-test", REF_ARGV(exec), empty);
   // context_uload(&pcb[1], "/bin/pal", empty, empty);
   // context_uload(&pcb[1], "/bin/hello", one, empty);
   // context_uload(&pcb[1], "/bin/hello", empty, one);
