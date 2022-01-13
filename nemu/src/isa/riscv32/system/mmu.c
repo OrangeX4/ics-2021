@@ -64,7 +64,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
 
   printf("paddr_index: 0x%x\n", (PPN(page_table_item) << 12) + (vaddr & 0xfff));
 
-  paddr_t paddr = paddr_read((PPN(page_table_item) << 12) + (vaddr & 0xfff), 4);
+  paddr_t paddr = (PPN(page_table_item) << 12) + (vaddr & 0xfff);
 
   printf("paddr: 0x%x\n", paddr);
   
