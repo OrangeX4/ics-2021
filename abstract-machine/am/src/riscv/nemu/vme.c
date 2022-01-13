@@ -2,6 +2,18 @@
 #include <nemu.h>
 #include <klib.h>
 
+typedef struct {
+  uintptr_t valid : 1;
+  uintptr_t read : 1;
+  uintptr_t write : 1;
+  uintptr_t execute : 1;
+  uintptr_t other : 6;
+  uintptr_t ppn : 22;
+} RISCV_PTE;
+
+#define VA_PPN1x4(va) (((uintptr_t)va >> 22) << 2)
+#define VA_PPN0(va) (((uintptr_t)va & 0x3fffff) >> 12)
+
 static AddrSpace kas = {};
 static void* (*pgalloc_usr)(int) = NULL;
 static void (*pgfree_usr)(void*) = NULL;
@@ -67,7 +79,32 @@ void __am_switch(Context *c) {
 }
 
 void map(AddrSpace *as, void *va, void *pa, int prot) {
-  
+
+  assert(sizeof(RISCV_PTE) == 4);
+
+  // 判断页表是否存在
+  RISCV_PTE *page_dir_item = (RISCV_PTE *)((uintptr_t)as->ptr + VA_PPN1x4(va)); 
+
+  RISCV_PTE *page_table;
+
+  // 不存在就创建
+  if (!page_dir_item->valid) {
+
+    // 创建新页, 用于存放页表
+    page_table = (RISCV_PTE *)pgalloc_usr(PGSIZE);
+
+    assert(((uintptr_t)page_table & 0xfff) == 0);
+
+    // 填入页目录项
+    *page_dir_item = (RISCV_PTE) { .valid = 1, .ppn = (uintptr_t)page_table >> 12, .read = 0, .write = 0, .execute = 0, .other = 0 };
+
+  } else {
+    // 不然就直接获取
+    page_table = (RISCV_PTE *)(page_dir_item->ppn << 12);
+  }
+
+  // 往插入页表内插入 PTE
+  *(page_table + VA_PPN0(va)) = (RISCV_PTE) { .valid = 1, .ppn = (uintptr_t)pa >> 12, .read = 1, .write = 1, .execute = 0, .other = 0 };
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {

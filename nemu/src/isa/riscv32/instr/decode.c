@@ -37,6 +37,9 @@ static def_DopHelper(csr) {
     case 0x341:
         op->preg = &csr(3); // mepc
         break;
+    case 0x180:
+        op->preg = &csr(4); // satp
+        break;
     default:
         break;
     }

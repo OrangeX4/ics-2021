@@ -11,7 +11,7 @@ typedef struct {
   // CSR
   struct {
     rtlreg_t _32;
-  } csr[4]; // mtvec, mcause, mstatus, mepc
+  } csr[5]; // mtvec, mcause, mstatus, mepc, satp
 } riscv32_CPU_state;
 
 // decode
@@ -73,6 +73,7 @@ typedef struct {
   } instr;
 } riscv32_ISADecodeInfo;
 
-#define isa_mmu_check(vaddr, len, type) (MMU_DIRECT)
+// #define isa_mmu_check(vaddr, len, type) (MMU_DIRECT)
+#define isa_mmu_check(vaddr, len, type) (MMU_TRANSLATE)
 
 #endif
