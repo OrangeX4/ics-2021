@@ -41,6 +41,7 @@ static def_DopHelper(csr) {
         op->preg = &csr(4); // satp
         break;
     default:
+        panic("Unsupport csr\n");
         break;
     }
 }
