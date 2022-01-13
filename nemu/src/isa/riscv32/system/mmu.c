@@ -41,6 +41,8 @@ int isa_mmu_check(vaddr_t vaddr, int len, int type) {
 
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
 
+  printf("translate: 0x%x", vaddr);
+
   RISCV_PTE *page_dir_item = (RISCV_PTE *)((uintptr_t)get_satp() + VA_PPN1x4(vaddr)); 
 
   assert(page_dir_item->valid);
