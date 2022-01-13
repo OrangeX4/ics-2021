@@ -94,6 +94,8 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     // 创建新页, 用于存放页表
     page_table = (RISCV_PTE *)pgalloc_usr(PGSIZE);
 
+    printf("new page: %p\n", page_table);
+
     assert(((uintptr_t)page_table & 0xfff) == 0);
 
     // 填入页目录项
