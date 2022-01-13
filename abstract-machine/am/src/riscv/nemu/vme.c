@@ -95,12 +95,14 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     page_table = (RISCV_PTE *)pgalloc_usr(PGSIZE);
 
     printf("index: %p\n", page_dir_item);
-    printf("item: %p\n", page_table);
+    printf("page: %p\n", page_table);
 
     assert(((uintptr_t)page_table & 0xfff) == 0);
 
     // 填入页目录项
     *page_dir_item = (RISCV_PTE) { .valid = 1, .ppn = (uintptr_t)page_table >> 12, .read = 0, .write = 0, .execute = 0, .other = 0 };
+
+    printf("item: %p\n", *page_dir_item);
 
   } else {
     // 不然就直接获取
