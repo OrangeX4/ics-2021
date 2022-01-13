@@ -59,7 +59,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   Area kstack = { (void *) pcb, (void *) pcb + sizeof(PCB) };
   Context *c = (Context*)kstack.end - 1;
   
-  // 初始默认栈顶为 heap.end, 后续不断分新页
+  // 不断分新页
   // uintptr_t *ustack = (uintptr_t *) new_page(8) + 8 * (1 << 12);
   uintptr_t *ustack = (uintptr_t *) new_page(8);
 
