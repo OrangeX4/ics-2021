@@ -102,7 +102,7 @@ void assert_fail_msg() {
 
 void fetch_decode(Decode *s, vaddr_t pc) {
     if (pc == 0x80001a08) {
-      assert(0);
+      printf("break\n");
     }
     s->pc = pc;
     s->snpc = pc;
