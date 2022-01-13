@@ -23,7 +23,7 @@ typedef struct {
 // }
 
 static inline uintptr_t get_satp() {
-  uintptr_t satp = cpu.csr[4]._32; // satp
+  uint32_t satp = cpu.csr[4]._32; // satp
   return satp << 12;
 }
 
@@ -43,7 +43,6 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
 
   printf("translate: 0x%x\n", vaddr);
   printf("get_satp(): 0x%lx\n", get_satp());
-  printf("size: %ld\n", sizeof(uintptr_t));
   printf("page_dir_item: 0x%lx\n", VA_PPN1x4(vaddr));
 
   RISCV_PTE *page_dir_item = (RISCV_PTE *)((uintptr_t)get_satp() + VA_PPN1x4(vaddr)); 
