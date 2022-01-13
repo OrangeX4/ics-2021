@@ -33,7 +33,6 @@ int isa_mmu_check(vaddr_t vaddr, int len, int type) {
   uintptr_t mode = 1ul << (32 - 1);
   
   if (satp & mode) {
-    printf("isa_mmu_check: 0x%x", vaddr);
     return MMU_TRANSLATE;
   } else {
     return MMU_DIRECT;
