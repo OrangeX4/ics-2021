@@ -28,6 +28,7 @@ static inline uintptr_t get_satp() {
 }
 
 int isa_mmu_check(vaddr_t vaddr, int len, int type) {
+  printf("isa_mmu_check: 0x%x", vaddr);
 
   uintptr_t satp = cpu.csr[4]._32; // satp
   uintptr_t mode = 1ul << (32 - 1);
