@@ -80,6 +80,8 @@ void __am_switch(Context *c) {
 
 void map(AddrSpace *as, void *va, void *pa, int prot) {
 
+  printf("map: %p\n", as);
+
   assert(sizeof(RISCV_PTE) == 4);
 
   // 判断页表是否存在
