@@ -82,8 +82,8 @@
             "environment": [], // 环境变量 
             "externalConsole": true, // 调试时是否显示控制台窗口, 一般设置为 true 显示控制台
             "MIMode": "gdb", // 指定连接的调试器, 可以为 gdb 或 lldb
-            "preLaunchTask": "make", // 调试会话开始前执行的任务, 一般为编译程序. 与 tasks.json 的 taskName 相对应，可根据需求选择是否使用
-            "postDebugTask": "kill", // 在退出之后, 执行 "killall -9 x-terminal-emulator" 杀死进程
+            // "preLaunchTask": "make", // 调试会话开始前执行的任务, 一般为编译程序. 与 tasks.json 的 taskName 相对应，可根据需求选择是否使用
+            // "postDebugTask": "kill", // 在退出之后, 执行 "killall -9 x-terminal-emulator" 杀死进程
         },
     ]
 }
