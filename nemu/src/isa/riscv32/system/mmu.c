@@ -43,7 +43,7 @@ int isa_mmu_check(vaddr_t vaddr, int len, int type) {
 
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
 
-  printf("translate: 0x%x\n", vaddr);
+  printf("vaddr: 0x%x\n", vaddr);
   printf("get_satp(): 0x%x\n", get_satp());
 
   word_t page_dir_item = paddr_read((word_t)get_satp() + VA_PPN1x4(vaddr), 4); 
@@ -54,10 +54,14 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
 
   word_t page_table_item = paddr_read((PPN(page_dir_item) << 12) + VA_PPN0x4(vaddr), 4);
 
+  printf("page_table_item: 0x%x\n", page_table_item);
+
   assert(VALID(page_table_item));
 
   paddr_t paddr = paddr_read((PPN(page_table_item) << 12) + (vaddr & 0xfff), 4);
 
+  printf("paddr: 0x%x\n", paddr);
+  
   assert(paddr == vaddr);
 
   return paddr;
