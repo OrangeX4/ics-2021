@@ -3,14 +3,15 @@
 static void *pf = NULL;
 
 void* new_page(size_t nr_page) {
-  if (pf == NULL) pf = heap.end;
-  pf -= nr_page * (1 << 12);
-  return pf;
+  if (pf == NULL) pf = heap.start;
+  pf += nr_page * PGSIZE;
+  return pf - nr_page * PGSIZE;
 }
 
 #ifdef HAS_VME
 static void* pg_alloc(int n) {
-  return NULL;
+  assert(n % PGSIZE == 0);
+  return new_page(n / PGSIZE);
 }
 #endif
 
