@@ -8,6 +8,8 @@ void init_fs(void);
 void init_proc(void);
 
 int main() {
+  assert(0);
+
   extern const char logo[];
   printf("%s", logo);
   Log("'Hello World!' from Nanos-lite");
