@@ -29,6 +29,8 @@ static inline uintptr_t get_satp() {
 
 paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
 
+  printf("translate: 0x%x\n", vaddr);
+
   RISCV_PTE *page_dir_item = (RISCV_PTE *)((uintptr_t)get_satp() + VA_PPN1x4(vaddr)); 
 
   assert(page_dir_item->valid);
