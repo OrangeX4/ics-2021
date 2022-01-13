@@ -101,6 +101,9 @@ void assert_fail_msg() {
 }
 
 void fetch_decode(Decode *s, vaddr_t pc) {
+    if (pc == 0x80001a08) {
+      assert(0);
+    }
     s->pc = pc;
     s->snpc = pc;
     int idx = isa_fetch_decode(s);
