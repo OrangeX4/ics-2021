@@ -31,7 +31,11 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
 
   RISCV_PTE *page_dir_item = (RISCV_PTE *)((uintptr_t)get_satp() + VA_PPN1x4(vaddr)); 
 
+  assert(page_dir_item->valid);
+
   RISCV_PTE *page_table_item = (RISCV_PTE *)((page_dir_item->ppn << 12) + VA_PPN0x4(vaddr));
+
+  assert(page_table_item->valid);
 
   paddr_t paddr = (paddr_t)((page_table_item->ppn << 12) + (vaddr & 0xfff));
 
