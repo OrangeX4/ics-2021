@@ -74,6 +74,6 @@ typedef struct {
 } riscv32_ISADecodeInfo;
 
 // #define isa_mmu_check(vaddr, len, type) (MMU_DIRECT)
-#define isa_mmu_check(vaddr, len, type) (MMU_TRANSLATE)
+// #define isa_mmu_check(vaddr, len, type) (MMU_TRANSLATE)
 
 #endif

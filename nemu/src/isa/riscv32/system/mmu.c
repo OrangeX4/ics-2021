@@ -27,9 +27,19 @@ static inline uintptr_t get_satp() {
   return satp << 12;
 }
 
-paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
+int isa_mmu_check(vaddr_t vaddr, int len, int type) {
 
-  printf("translate: 0x%x\n", vaddr);
+  uintptr_t satp = cpu.csr[4]._32; // satp
+  uintptr_t mode = 1ul << (32 - 1);
+  
+  if (satp & mode) {
+    return MMU_TRANSLATE;
+  } else {
+    return MMU_DIRECT;
+  }
+}
+
+paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
 
   RISCV_PTE *page_dir_item = (RISCV_PTE *)((uintptr_t)get_satp() + VA_PPN1x4(vaddr)); 
 
