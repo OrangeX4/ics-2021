@@ -52,6 +52,10 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
 
   // printf("page_dir_item: 0x%x\n", page_dir_item);
 
+  if (!VALID(page_dir_item)) {
+    printf("invalid vaddr: 0x%x\n", vaddr);
+  }
+
   assert(VALID(page_dir_item));
 
   // printf("page_table_index: 0x%x\n", (PPN(page_dir_item) << 12) + VA_PPN0x4(vaddr));
