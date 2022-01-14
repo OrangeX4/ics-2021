@@ -31,7 +31,7 @@ int mm_brk(uintptr_t brk) {
   printf("old brk: %p\n", current->max_brk);
   printf("new brk: %p\n", brk);
   void *cur = (void *)((current->max_brk & ~(PGSIZE - 1)) + PGSIZE);
-  while ((uintptr_t)cur < brk - PGSIZE) {
+  while ((uintptr_t)cur <= brk - PGSIZE) {
     // printf("new page\n");
     void *page = new_page(1);
     printf("map: %p => %p\n", cur, page);
