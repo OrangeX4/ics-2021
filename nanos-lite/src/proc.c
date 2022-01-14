@@ -70,6 +70,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   // printf("p_ustack: %p\n", p_ustack);
   // printf("as_ustack: %p\n", as_ustack);
   for (int i = 0; i < 8; ++i, as_ustack += PGSIZE, p_ustack += PGSIZE) {
+    printf("ustack: %p => %p\n", as_ustack, p_ustack);
     map(&pcb->as, as_ustack, p_ustack, MMAP_READ | MMAP_WRITE);
   }
 
