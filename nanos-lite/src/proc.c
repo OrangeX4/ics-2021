@@ -143,7 +143,7 @@ Context* schedule(Context *prev) {
   // current = &pcb[0];
   current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
-  printf("current: pcb[%d]\n", current == &pcb[1]);
+  // printf("current: pcb[%d]\n", current == &pcb[1]);
 
   // then return the new context
   return current->cp;
