@@ -46,6 +46,8 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             // 按页加载
             void *cur_addr = (void *)ph.p_vaddr;
             void *file_addr = (void *)ph.p_vaddr + ph.p_filesz;
+            void *end_addr = (void *)ph.p_vaddr + ph.p_memsz;
+            end_addr = (void *)(((uintptr_t)end_addr & ~(PGSIZE - 1)) + PGSIZE);
             // 前面不完整页
             if (((uintptr_t)cur_addr & (PGSIZE - 1))) {
               printf("cur_addr: %p\n", cur_addr);
@@ -54,7 +56,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
               fs_read(fd, page + ((uintptr_t)cur_addr & (PGSIZE - 1)), PGSIZE - ((uintptr_t)cur_addr & (PGSIZE - 1)));
               cur_addr = (void *)(((uintptr_t)cur_addr & ~(PGSIZE - 1)) + PGSIZE);
             }
-            assert(((uintptr_t)cur_addr & 0xfff) == 0);
+            assert(((uintptr_t)cur_addr & (PGSIZE - 1)) == 0);
             // void *end_addr = (void *)ph.p_vaddr + ph.p_memsz;
             // printf("cur_addr: %p\n", cur_addr);
             // printf("file_addr: %p\n", file_addr);
@@ -67,11 +69,21 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
               cur_addr += PGSIZE;
             }
             // 后面不完整页
-            void *page = new_page(1);
-            map(&pcb->as, cur_addr, page, MMAP_READ | MMAP_WRITE);
-            fs_read(fd, page, (size_t)(file_addr - cur_addr));
-            // Set [VirtAddr + FileSiz, VirtAddr + MenSiz) with zero
-            memset((void *)(page + (size_t)(file_addr - cur_addr)), 0, ph.p_memsz - ph.p_filesz);
+            if (cur_addr < file_addr) {
+              void *page = new_page(1);
+              map(&pcb->as, cur_addr, page, MMAP_READ | MMAP_WRITE);
+              fs_read(fd, page, (size_t)(file_addr - cur_addr));
+              // Set [VirtAddr + FileSiz, VirtAddr + MenSiz) with zero
+              memset((void *)(page + (size_t)(file_addr - cur_addr)), 0, PGSIZE - (ph.p_filesz & (PGSIZE - 1)));
+            }
+            // 如果还有未分配完的页
+            while (cur_addr < end_addr) {
+              void *page = new_page(1);
+              map(&pcb->as, cur_addr, page, MMAP_READ | MMAP_WRITE);
+              memset(page, 0, PGSIZE);
+              cur_addr += PGSIZE;
+            }
+
 #else
             fs_read(fd, (void *)ph.p_vaddr, ph.p_filesz);
             // Set [VirtAddr + FileSiz, VirtAddr + MenSiz) with zero
