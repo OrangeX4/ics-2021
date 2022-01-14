@@ -33,11 +33,13 @@ int mm_brk(uintptr_t brk) {
   while ((uintptr_t)cur < brk - PGSIZE) {
     // printf("new page\n");
     void *page = new_page(1);
+    printf("map: %p => %p\n", cur, page);
     map(&current->as, cur, page, MMAP_READ | MMAP_WRITE);
     cur += PGSIZE;
   }
   if ((uintptr_t)cur < brk) {
     void *page = new_page(1);
+    printf("map: %p => %p\n", cur, page);
     map(&current->as, cur, page, MMAP_READ | MMAP_WRITE);
   }
   current->max_brk = brk;
