@@ -48,7 +48,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
               void *page = new_page(1);
               map(&pcb->as, (void *)((uintptr_t)cur_addr & ~(PGSIZE - 1)), page, MMAP_READ | MMAP_WRITE);
               fs_read(fd, page + ((uintptr_t)cur_addr & (PGSIZE - 1)), PGSIZE - ((uintptr_t)cur_addr & (PGSIZE - 1)));
-              cur_addr = (void *)(((uintptr_t)cur_addr & (PGSIZE - 1)) + PGSIZE);
+              cur_addr = (void *)(((uintptr_t)cur_addr & ~(PGSIZE - 1)) + PGSIZE);
             }
             assert(((uintptr_t)cur_addr & 0xfff) == 0);
             // void *end_addr = (void *)ph.p_vaddr + ph.p_memsz;
