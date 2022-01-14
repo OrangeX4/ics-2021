@@ -60,6 +60,10 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
 
   // printf("page_table_item: 0x%x\n", page_table_item);
 
+  if (!VALID(page_table_item)) {
+    printf("vaddr: 0x%x\n", vaddr);
+  }
+
   assert(VALID(page_table_item));
 
   // printf("paddr_index: 0x%x\n", (PPN(page_table_item) << 12) + (vaddr & 0xfff));
