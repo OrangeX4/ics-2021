@@ -107,7 +107,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 void init_proc() {
 
   char *const empty[] =  { NULL };
-  // char *const pal_argv[] =  { "other", "--skip", NULL };
+  char *const pal_argv[] =  { "other", "--skip", NULL };
   // char *const two[] =  { "one", "two", NULL };
   // DEF_TEST_ARGV(exec);
   // DEF_ARGV(menu);
@@ -117,10 +117,10 @@ void init_proc() {
 
   // context_uload(&pcb[0], "/bin/dummy", empty, empty);
   // context_uload(&pcb[0], "/bin/event-test", empty, empty);
-  context_uload(&pcb[0], "/bin/hello", empty, empty);
+  // context_uload(&pcb[0], "/bin/hello", empty, empty);
   // context_kload(&pcb[0], hello_fun, "&pcb[0]");
   // context_kload(&pcb[1], hello_fun, "&pcb[1]");
-  // context_uload(&pcb[0], "/bin/pal", pal_argv, empty);
+  context_uload(&pcb[0], "/bin/pal", pal_argv, empty);
   // context_uload(&pcb[1], "/bin/pal", pal_argv, empty);
   // context_uload(&pcb[1], "/bin/exec-test", REF_ARGV(exec), empty);
   // context_uload(&pcb[1], "/bin/menu", REF_ARGV(menu), empty);
