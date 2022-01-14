@@ -44,14 +44,14 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             void *cur_addr = (void *)ph.p_vaddr;
             void *file_addr = (void *)ph.p_vaddr + ph.p_filesz;
             // 前面不完整页
-            if (((uintptr_t)cur_addr & (PGSIZE - 1))) {
-              printf("cur_addr: %p\n", cur_addr);
-              void *page = new_page(1);
-              map(&pcb->as, (void *)((uintptr_t)cur_addr & ~(PGSIZE - 1)), page, MMAP_READ | MMAP_WRITE);
-              fs_read(fd, page + ((uintptr_t)cur_addr & (PGSIZE - 1)), PGSIZE - ((uintptr_t)cur_addr & (PGSIZE - 1)));
-              cur_addr = (void *)(((uintptr_t)cur_addr & ~(PGSIZE - 1)) + PGSIZE);
-            }
-            assert(((uintptr_t)cur_addr & 0xfff) == 0);
+            // if (((uintptr_t)cur_addr & (PGSIZE - 1))) {
+            //   printf("cur_addr: %p\n", cur_addr);
+            //   void *page = new_page(1);
+            //   map(&pcb->as, (void *)((uintptr_t)cur_addr & ~(PGSIZE - 1)), page, MMAP_READ | MMAP_WRITE);
+            //   fs_read(fd, page + ((uintptr_t)cur_addr & (PGSIZE - 1)), PGSIZE - ((uintptr_t)cur_addr & (PGSIZE - 1)));
+            //   cur_addr = (void *)(((uintptr_t)cur_addr & ~(PGSIZE - 1)) + PGSIZE);
+            // }
+            // assert(((uintptr_t)cur_addr & 0xfff) == 0);
             // void *end_addr = (void *)ph.p_vaddr + ph.p_memsz;
             // printf("cur_addr: %p\n", cur_addr);
             // printf("file_addr: %p\n", file_addr);
