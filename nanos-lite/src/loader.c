@@ -50,7 +50,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             end_addr = (void *)(((uintptr_t)end_addr & ~(PGSIZE - 1)) + PGSIZE);
             // 前面不完整页
             if (((uintptr_t)cur_addr & (PGSIZE - 1))) {
-              printf("cur_addr: %p\n", cur_addr);
+              // printf("cur_addr: %p\n", cur_addr);
               void *page = new_page(1);
               map(&pcb->as, (void *)((uintptr_t)cur_addr & ~(PGSIZE - 1)), page, MMAP_READ | MMAP_WRITE);
               fs_read(fd, page + ((uintptr_t)cur_addr & (PGSIZE - 1)), PGSIZE - ((uintptr_t)cur_addr & (PGSIZE - 1)));
