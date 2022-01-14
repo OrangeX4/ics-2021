@@ -76,7 +76,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 #endif
         }
     }
-    printf("e_entry: %p\n", elf.e_entry);
+    // printf("e_entry: %p\n", elf.e_entry);
     return elf.e_entry;
 }
 
