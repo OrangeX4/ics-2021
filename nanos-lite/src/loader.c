@@ -75,6 +75,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
               fs_read(fd, page, (size_t)(file_addr - cur_addr));
               // Set [VirtAddr + FileSiz, VirtAddr + MenSiz) with zero
               memset((void *)(page + (size_t)(file_addr - cur_addr)), 0, PGSIZE - (ph.p_filesz & (PGSIZE - 1)));
+              cur_addr += PGSIZE;
             }
             // 如果还有未分配完的页
             while (cur_addr < end_addr) {
