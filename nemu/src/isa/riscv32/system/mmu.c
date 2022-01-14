@@ -68,7 +68,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
 
   // printf("paddr: 0x%x\n", paddr);
   
-  assert(paddr == vaddr);
+  // assert(paddr == vaddr);
 
   return paddr;
 }
