@@ -31,7 +31,7 @@ Context* __am_irq_handle(Context *c) {
   }
 
   __am_switch(c);
-  assert(0);
+  printf("switch\n");
   return c;
 }
 
