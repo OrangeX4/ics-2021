@@ -80,11 +80,14 @@ void __am_switch(Context *c) {
   }
 }
 
+static int count = 0;
+
 void map(AddrSpace *as, void *va, void *pa, int prot) {
   // assert(sizeof(RISCV_PTE) == 4);
 
-  if (va == pa) {
+  if (va == pa && count < 10) {
     printf("map: 0x%p => 0x%p\n", va, pa);
+    count++;
   }
 
   // 判断页表是否存在
