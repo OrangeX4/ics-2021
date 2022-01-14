@@ -29,9 +29,9 @@ Context* __am_irq_handle(Context *c) {
 
     assert(c != NULL);
   }
-  assert(0);
 
   __am_switch(c);
+  assert(0);
   return c;
 }
 
