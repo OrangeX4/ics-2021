@@ -27,21 +27,21 @@ void free_page(void *p) {
 
 /* The brk() system call handler. */
 int mm_brk(uintptr_t brk) {
-  printf("----------------------------\n");
-  printf("old brk: %p\n", current->max_brk);
-  printf("new brk: %p\n", brk);
+  // printf("----------------------------\n");
+  // printf("old brk: %p\n", current->max_brk);
+  // printf("new brk: %p\n", brk);
   void *cur = (void *)((current->max_brk & ~(PGSIZE - 1)) + PGSIZE);
   while ((uintptr_t)cur <= brk - PGSIZE) {
     // printf("new page\n");
     void *page = new_page(1);
-    printf("map: %p => %p\n", cur, page);
+    // printf("map: %p => %p\n", cur, page);
     map(&current->as, cur, page, MMAP_READ | MMAP_WRITE);
     cur += PGSIZE;
   }
   printf("middle, cur: %p\n", cur);
   if ((uintptr_t)cur <= brk) {
     void *page = new_page(1);
-    printf("map: %p => %p\n", cur, page);
+    // printf("map: %p => %p\n", cur, page);
     map(&current->as, cur, page, MMAP_READ | MMAP_WRITE);
   }
   current->max_brk = brk;
