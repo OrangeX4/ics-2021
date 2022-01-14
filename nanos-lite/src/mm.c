@@ -25,6 +25,7 @@ void free_page(void *p) {
 
 /* The brk() system call handler. */
 int mm_brk(uintptr_t brk) {
+  printf("brk: %p\n", brk);
   if (brk > current->max_brk) {
     if ((brk & (PGSIZE - 1)) > (current->max_brk & (PGSIZE - 1))) {
       // printf("new page\n");
