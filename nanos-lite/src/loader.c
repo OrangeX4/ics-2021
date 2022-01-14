@@ -47,6 +47,10 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             void *cur_addr = (void *)ph.p_vaddr;
             void *file_addr = (void *)ph.p_vaddr + ph.p_filesz;
             void *end_addr = (void *)ph.p_vaddr + ph.p_memsz;
+            // 更新 brk
+            if ((uintptr_t)end_addr > pcb->max_brk) {
+              pcb->max_brk = (uintptr_t)end_addr;
+            }
             end_addr = (void *)(((uintptr_t)end_addr & ~(PGSIZE - 1)) + PGSIZE);
             // 前面不完整页
             if (((uintptr_t)cur_addr & (PGSIZE - 1))) {

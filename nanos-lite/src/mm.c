@@ -28,12 +28,18 @@ void free_page(void *p) {
 /* The brk() system call handler. */
 int mm_brk(uintptr_t brk) {
   printf("brk: %p\n", brk);
-  if (brk > current->max_brk) {
+  void *cur = (void *)((current->max_brk & ~(PGSIZE - 1)) + PGSIZE);
+  while ((uintptr_t)cur < brk - PGSIZE) {
     // printf("new page\n");
     void *page = new_page(1);
-    map(&current->as, (void *)(brk & ~(PGSIZE - 1)), page, MMAP_READ | MMAP_WRITE);
-    current->max_brk += brk;
+    map(&current->as, cur, page, MMAP_READ | MMAP_WRITE);
+    cur += PGSIZE;
   }
+  if ((uintptr_t)cur < brk) {
+    void *page = new_page(1);
+    map(&current->as, cur, page, MMAP_READ | MMAP_WRITE);
+  }
+  current->max_brk = brk;
   return 0;
 }
 
