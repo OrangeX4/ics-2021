@@ -27,6 +27,7 @@ void free_page(void *p) {
 int mm_brk(uintptr_t brk) {
   if (brk > current->max_brk) {
     if ((brk & (PGSIZE - 1)) > (current->max_brk & (PGSIZE - 1))) {
+      printf("new page\n");
       void *page = new_page(1);
       map(&current->as, (void *)(brk & (PGSIZE - 1)), page, MMAP_READ | MMAP_WRITE);
     }
