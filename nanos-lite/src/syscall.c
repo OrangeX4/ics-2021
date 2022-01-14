@@ -32,12 +32,12 @@ void do_syscall(Context *c) {
       printf("[strace] %s(%d)\n", syscall_names[a[0]], a[1]);
 #endif
       // 恢复终端
-      char *empty[] = { NULL };
-      context_uload(current, ENTRY_PROGRAM, empty, empty);
-      switch_boot_pcb();
-      yield();
-      // halt(0);
-      // printf("exit()\n");
+      // char *empty[] = { NULL };
+      // context_uload(current, ENTRY_PROGRAM, empty, empty);
+      // switch_boot_pcb();
+      // yield();
+      printf("exit()\n");
+      halt(0);
       // assert(0);
       // naive_uload(NULL, ENTRY_PROGRAM);
       // yield();

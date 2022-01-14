@@ -1,6 +1,7 @@
 #include <proc.h>
 
 #define MAX_NR_PROC 4
+#define PGSIZE 4096
 
 void naive_uload(PCB *pcb, const char *filename);
 uintptr_t pcb_uload(PCB *pcb, const char *filename);
@@ -61,9 +62,14 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   Area kstack = { (void *) pcb, (void *) pcb + sizeof(PCB) };
   Context *c = (Context*)kstack.end - 1;
   
-  // 不断分新页
+  // 不断分新页, 进行映射
   // uintptr_t *ustack = (uintptr_t *) new_page(8) + 8 * (1 << 12);
-  uintptr_t *ustack = (uintptr_t *) new_page(8);
+  uintptr_t *ustack = (uintptr_t *)(new_page(8) + 8 * PGSIZE);
+  void *p_ustack = (void *)ustack - 8 * PGSIZE;
+  void *as_ustack = pcb->as.area.end - 8 * PGSIZE;
+  for (int i = 0; i < 8; ++i, as_ustack += PGSIZE, p_ustack += PGSIZE) {
+    map(&pcb->as, as_ustack, p_ustack, MMAP_READ | MMAP_WRITE);
+  }
 
   // 向下生成字符串区等栈区所需数据, 还要注意对齐
   int argc = strings_len(argv);
@@ -102,17 +108,17 @@ void init_proc() {
   // char *const two[] =  { "one", "two", NULL };
   // DEF_TEST_ARGV(exec);
   // DEF_ARGV(menu);
-  DEF_ARGV(nterm);
+  // DEF_ARGV(nterm);
 
   Log("Initializing processes...");
 
-  // context_uload(&pcb[0], "/bin/hello");
-  context_kload(&pcb[0], hello_fun, "&pcb[0]");
+  context_uload(&pcb[0], "/bin/dummy", empty, empty);
+  // context_kload(&pcb[0], hello_fun, "&pcb[0]");
   // context_kload(&pcb[1], hello_fun, "&pcb[1]");
   // context_uload(&pcb[1], "/bin/pal", pal_argv, empty);
   // context_uload(&pcb[1], "/bin/exec-test", REF_ARGV(exec), empty);
   // context_uload(&pcb[1], "/bin/menu", REF_ARGV(menu), empty);
-  context_uload(&pcb[1], "/bin/nterm", REF_ARGV(nterm), empty);
+  // context_uload(&pcb[1], "/bin/nterm", REF_ARGV(nterm), empty);
   // context_uload(&pcb[1], "/bin/pal", empty, empty);
   // context_uload(&pcb[1], "/bin/hello", one, empty);
   // context_uload(&pcb[1], "/bin/hello", empty, one);
@@ -128,8 +134,8 @@ Context* schedule(Context *prev) {
   // save the context pointer
   current->cp = prev;
 
-  // current = &pcb[0];
-  current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+  current = &pcb[0];
+  // current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
   // then return the new context
   return current->cp;
