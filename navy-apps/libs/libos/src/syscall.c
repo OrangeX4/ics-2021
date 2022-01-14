@@ -67,10 +67,10 @@ extern char end;
 void *program_break = &end;
 
 void *_sbrk(intptr_t increment) {
-  if (increment == 0) {
-      return program_break;
-  }
-  if (_syscall_(SYS_brk, increment, 0, 0)) {
+  // if (increment == 0) {
+  //     return program_break;
+  // }
+  if (_syscall_(SYS_brk, program_break + increment, 0, 0)) {
     return -1;
   } else {
     program_break += increment;
