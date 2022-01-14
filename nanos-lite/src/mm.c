@@ -14,9 +14,9 @@ static void* pg_alloc(int n) {
   assert(n % PGSIZE == 0);
   void *page = new_page(n / PGSIZE);
   // 清零
-  printf("before page alloc: %p\n", page);
+  // printf("before page alloc: %p\n", page);
   memset(page, 0, n);
-  printf("after page alloc: %p\n", page);
+  // printf("after page alloc: %p\n", page);
   return page;
 }
 #endif
