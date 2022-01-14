@@ -39,7 +39,7 @@ int mm_brk(uintptr_t brk) {
     cur += PGSIZE;
   }
   printf("middle, cur: %p\n", cur);
-  if ((uintptr_t)cur < brk) {
+  if ((uintptr_t)cur <= brk) {
     void *page = new_page(1);
     printf("map: %p => %p\n", cur, page);
     map(&current->as, cur, page, MMAP_READ | MMAP_WRITE);
