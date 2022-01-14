@@ -9,7 +9,7 @@ char *getenv(const char *__name);
 void naive_uload(PCB *pcb, const char *filename);
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]);
 void switch_boot_pcb();
-extern PCB *current;
+int mm_brk(uintptr_t brk);
 
 // static char program_buf[64];
 
@@ -100,7 +100,7 @@ void do_syscall(Context *c) {
       break;
     }
     case SYS_brk: {
-      c->GPRx = 0;
+      c->GPRx = mm_brk((uintptr_t)a[1]);
 #ifdef ENABLE_STRACE
       printf("[strace] %s(increment = %d) = %d\n", syscall_names[a[0]], a[1],
              c->GPRx);

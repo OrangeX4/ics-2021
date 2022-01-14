@@ -43,7 +43,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             // 按页加载
             void *cur_addr = (void *)ph.p_vaddr;
             void *file_addr = (void *)ph.p_vaddr + ph.p_filesz;
-            // 前面部分
+            // 前面不完整页
             if (((uintptr_t)cur_addr & (PGSIZE - 1))) {
               void *page = new_page(1);
               map(&pcb->as, (void *)((uintptr_t)cur_addr & ~(PGSIZE - 1)), page, MMAP_READ | MMAP_WRITE);
@@ -62,6 +62,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
               fs_read(fd, page, PGSIZE);
               cur_addr += PGSIZE;
             }
+            // 后面不完整页
             void *page = new_page(1);
             map(&pcb->as, cur_addr, page, MMAP_READ | MMAP_WRITE);
             fs_read(fd, page, (size_t)(file_addr - cur_addr));
