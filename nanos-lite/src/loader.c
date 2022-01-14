@@ -44,7 +44,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             void *cur_addr = (void *)ph.p_vaddr;
             void *file_addr = (void *)ph.p_vaddr + ph.p_filesz;
             // void *end_addr = (void *)ph.p_vaddr + ph.p_memsz;
-            // printf("cur_addr: %p\n", cur_addr);
+            printf("cur_addr: %p\n", cur_addr);
             // printf("file_addr: %p\n", file_addr);
             // printf("end_addr: %p\n", end_addr);
             assert(((uintptr_t)cur_addr & (PGSIZE - 1)) == 0);
