@@ -67,8 +67,8 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   uintptr_t *ustack = (uintptr_t *)(new_page(8) + 8 * PGSIZE);
   void *p_ustack = (void *)ustack - 8 * PGSIZE;
   void *as_ustack = pcb->as.area.end - 8 * PGSIZE;
-  printf("p_ustack: %p\n", p_ustack);
-  printf("as_ustack: %p\n", as_ustack);
+  // printf("p_ustack: %p\n", p_ustack);
+  // printf("as_ustack: %p\n", as_ustack);
   for (int i = 0; i < 8; ++i, as_ustack += PGSIZE, p_ustack += PGSIZE) {
     map(&pcb->as, as_ustack, p_ustack, MMAP_READ | MMAP_WRITE);
   }
@@ -97,7 +97,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
 
   pcb->cp = ucontext(&pcb->as, kstack, (void *) pcb_uload(pcb, filename));
   c->GPRx = (uintptr_t)(as_ustack + ((void *)ustack - p_ustack));
-  printf("stack addr: %p\n", c->GPRx);
+  // printf("stack addr: %p\n", c->GPRx);
 }
 
 #define DEF_TEST_ARGV(P) char *const P ## _argv[] = { "/bin/" #P "-test", NULL };
