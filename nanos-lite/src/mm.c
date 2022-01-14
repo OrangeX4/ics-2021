@@ -32,7 +32,7 @@ int mm_brk(uintptr_t brk) {
     if ((brk & (PGSIZE - 1)) > (current->max_brk & (PGSIZE - 1))) {
       // printf("new page\n");
       void *page = new_page(1);
-      map(&current->as, (void *)(brk & (PGSIZE - 1)), page, MMAP_READ | MMAP_WRITE);
+      map(&current->as, (void *)brk, page, MMAP_READ | MMAP_WRITE);
     }
     current->max_brk = brk;
   }
