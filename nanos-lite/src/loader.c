@@ -72,19 +72,6 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             fs_read(fd, page, (size_t)(file_addr - cur_addr));
             // Set [VirtAddr + FileSiz, VirtAddr + MenSiz) with zero
             memset((void *)(page + (size_t)(file_addr - cur_addr)), 0, ph.p_memsz - ph.p_filesz);
-
-            // 迫不得已, 额外映射 errno (0x400657d8)
-            page = new_page(1);
-            map(&pcb->as, (void *)0x404f9000, page, MMAP_READ | MMAP_WRITE);
-            page = new_page(1);
-            map(&pcb->as, (void *)0x404fe000, page, MMAP_READ | MMAP_WRITE);
-            page = new_page(1);
-            map(&pcb->as, (void *)0x40063000, page, MMAP_READ | MMAP_WRITE);
-            page = new_page(1);
-            map(&pcb->as, (void *)0x40064000, page, MMAP_READ | MMAP_WRITE);
-            page = new_page(1);
-            map(&pcb->as, (void *)0x40065000, page, MMAP_READ | MMAP_WRITE);
-            
 #else
             fs_read(fd, (void *)ph.p_vaddr, ph.p_filesz);
             // Set [VirtAddr + FileSiz, VirtAddr + MenSiz) with zero
