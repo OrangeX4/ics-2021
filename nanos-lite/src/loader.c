@@ -10,6 +10,8 @@
 #define Elf_Phdr Elf32_Phdr
 #endif
 
+#define PGSIZE    4096
+
 #define ELF_MAGIC 0x464c457f
 
 extern uint8_t ramdisk_start;
@@ -45,13 +47,13 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             // printf("cur_addr: %p\n", cur_addr);
             // printf("file_addr: %p\n", file_addr);
             // printf("end_addr: %p\n", end_addr);
-            assert(((uintptr_t)cur_addr & 0xfff) == 0);
+            assert(((uintptr_t)cur_addr & (PGSIZE - 1)) == 0);
             // assert(((uintptr_t)end_addr & 0xfff) == 0);
-            while (cur_addr < file_addr - 0xfff) {
+            while (cur_addr < file_addr - PGSIZE) {
               void *page = new_page(1);
               map(&pcb->as, cur_addr, page, MMAP_READ | MMAP_WRITE);
-              fs_read(fd, page, 0xfff);
-              cur_addr += 0xfff;
+              fs_read(fd, page, PGSIZE);
+              cur_addr += PGSIZE;
             }
             void *page = new_page(1);
             map(&pcb->as, cur_addr, page, MMAP_READ | MMAP_WRITE);
