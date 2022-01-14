@@ -75,7 +75,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 
             // 迫不得已, 额外映射 errno (0x400657d8)
             page = new_page(1);
-            map(&pcb->as, (void *)0x4004f000, page, MMAP_READ | MMAP_WRITE);
+            map(&pcb->as, (void *)0x404f9000, page, MMAP_READ | MMAP_WRITE);
             page = new_page(1);
             map(&pcb->as, (void *)0x40064000, page, MMAP_READ | MMAP_WRITE);
             page = new_page(1);
