@@ -77,6 +77,8 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             page = new_page(1);
             map(&pcb->as, (void *)0x404f9000, page, MMAP_READ | MMAP_WRITE);
             page = new_page(1);
+            map(&pcb->as, (void *)0x40063000, page, MMAP_READ | MMAP_WRITE);
+            page = new_page(1);
             map(&pcb->as, (void *)0x40064000, page, MMAP_READ | MMAP_WRITE);
             page = new_page(1);
             map(&pcb->as, (void *)0x40065000, page, MMAP_READ | MMAP_WRITE);
