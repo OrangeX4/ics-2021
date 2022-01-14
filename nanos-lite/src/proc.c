@@ -139,7 +139,7 @@ void init_proc() {
 
 Context* schedule(Context *prev) {
 
-  printf("before pdir: %p\n", prev->pdir);
+  // printf("before pdir: %p\n", prev->pdir);
   
   // save the context pointer
   current->cp = prev;
@@ -147,9 +147,9 @@ Context* schedule(Context *prev) {
   // current = &pcb[0];
   current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
-  printf("after pdir: %p\n", current->cp->pdir);
+  // printf("after pdir: %p\n", current->cp->pdir);
 
-  printf("current: pcb[%d]\n", current == &pcb[1]);
+  // printf("current: pcb[%d]\n", current == &pcb[1]);
 
   // then return the new context
   return current->cp;
