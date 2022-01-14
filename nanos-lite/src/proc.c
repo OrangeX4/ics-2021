@@ -137,11 +137,16 @@ void init_proc() {
 }
 
 Context* schedule(Context *prev) {
+
+  printf("before pdir: %p\n", prev->pdir);
+  
   // save the context pointer
   current->cp = prev;
 
   // current = &pcb[0];
   current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+
+  printf("after pdir: %p\n", current->cp->pdir);
 
   printf("current: pcb[%d]\n", current == &pcb[1]);
 
