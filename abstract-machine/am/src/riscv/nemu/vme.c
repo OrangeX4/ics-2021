@@ -83,9 +83,9 @@ void __am_switch(Context *c) {
 void map(AddrSpace *as, void *va, void *pa, int prot) {
   // assert(sizeof(RISCV_PTE) == 4);
 
-  // if (va != pa) {
-  //   printf("map: 0x%p => 0x%p\n", va, pa);
-  // }
+  if (va != pa) {
+    printf("map: 0x%p => 0x%p\n", va, pa);
+  }
 
   // 判断页表是否存在
   RISCV_PTE *page_dir_item = (RISCV_PTE *)((uintptr_t)as->ptr + VA_PPN1x4(va)); 
