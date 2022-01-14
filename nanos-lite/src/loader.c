@@ -44,6 +44,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             void *end_addr = (void *)ph.p_vaddr + ph.p_memsz;
             assert(((uintptr_t)cur_addr & 0xfff) == 0);
             assert(((uintptr_t)end_addr & 0xfff) == 0);
+            printf("end_addr: %p\n", end_addr);
             while (cur_addr < file_addr - 0xfff) {
               void *page = new_page(1);
               map(&pcb->as, cur_addr, page, MMAP_READ | MMAP_WRITE);
