@@ -34,9 +34,9 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
         // ramdisk_read(&ph, elf.e_phoff + i * sizeof(Elf_Phdr), sizeof(Elf_Phdr));
         fs_lseek(fd, elf.e_phoff + i * sizeof(Elf_Phdr), SEEK_SET);
         fs_read(fd, &ph, sizeof(Elf_Phdr));
-        printf("p_vaddr: %p\n", ph.p_vaddr);
-        printf("+p_memsz: %p\n", ph.p_vaddr + ph.p_memsz);
-        printf("p_type: %p\n", ph.p_type);
+        // printf("p_vaddr: %p\n", ph.p_vaddr);
+        // printf("+p_memsz: %p\n", ph.p_vaddr + ph.p_memsz);
+        // printf("p_type: %p\n", ph.p_type);
         if (ph.p_type == PT_LOAD) {
             // Copy to [VirtAddr, VirtAddr + FileSiz)
             // memcpy((void *)ph.p_vaddr, &ramdisk_start + ph.p_offset, ph.p_filesz);
