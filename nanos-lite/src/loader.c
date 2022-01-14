@@ -36,9 +36,30 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             // Copy to [VirtAddr, VirtAddr + FileSiz)
             // memcpy((void *)ph.p_vaddr, &ramdisk_start + ph.p_offset, ph.p_filesz);
             fs_lseek(fd, ph.p_offset, SEEK_SET);
+
+#ifdef HAS_VME
+            // 按页加载
+            void *cur_addr = (void *)ph.p_vaddr;
+            void *file_addr = (void *)ph.p_vaddr + ph.p_filesz;
+            void *end_addr = (void *)ph.p_vaddr + ph.p_memsz;
+            assert(((uintptr_t)cur_addr & 0xfff) == 0);
+            assert(((uintptr_t)end_addr & 0xfff) == 0);
+            while (cur_addr < file_addr - 0xfff) {
+              void *page = new_page(1);
+              map(&pcb->as, cur_addr, page, MMAP_READ | MMAP_WRITE);
+              fs_read(fd, page, 0xfff);
+              cur_addr += 0xfff;
+            }
+            void *page = new_page(1);
+            map(&pcb->as, cur_addr, page, MMAP_READ | MMAP_WRITE);
+            fs_read(fd, page, (size_t)(file_addr - cur_addr));
+            // Set [VirtAddr + FileSiz, VirtAddr + MenSiz) with zero
+            memset((void *)(page + (size_t)(file_addr - cur_addr)), 0, ph.p_memsz - ph.p_filesz);
+#else
             fs_read(fd, (void *)ph.p_vaddr, ph.p_filesz);
             // Set [VirtAddr + FileSiz, VirtAddr + MenSiz) with zero
             memset((void *)(ph.p_vaddr + ph.p_filesz), 0, ph.p_memsz - ph.p_filesz);
+#endif
         }
     }
     // printf("e_entry: %p\n", elf.e_entry);

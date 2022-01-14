@@ -56,6 +56,8 @@ static void strings_copy(char *const *strings, char **new_strings, char *buf, in
 }
 
 void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]) {
+  protect(&pcb->as);
+
   Area kstack = { (void *) pcb, (void *) pcb + sizeof(PCB) };
   Context *c = (Context*)kstack.end - 1;
   
