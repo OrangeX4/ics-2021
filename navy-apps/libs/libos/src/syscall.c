@@ -70,6 +70,7 @@ void *_sbrk(intptr_t increment) {
   if (increment == 0) {
       return program_break;
   }
+  assert(0);
   if (_syscall_(SYS_brk, increment, 0, 0)) {
     return -1;
   } else {
