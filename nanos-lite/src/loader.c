@@ -35,7 +35,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
         fs_lseek(fd, elf.e_phoff + i * sizeof(Elf_Phdr), SEEK_SET);
         fs_read(fd, &ph, sizeof(Elf_Phdr));
         printf("p_vaddr: %p\n", ph.p_vaddr);
-        printf("+p_filesz: %p\n", ph.p_vaddr + ph.p_filesz);
+        printf("+p_memsz: %p\n", ph.p_vaddr + ph.p_memsz);
         printf("p_type: %p\n", ph.p_type);
         if (ph.p_type == PT_LOAD) {
             // Copy to [VirtAddr, VirtAddr + FileSiz)
