@@ -93,7 +93,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   strings_copy(argv, argv_p, arg_str, sizeof(uintptr_t));
   strings_copy(envp, envp_p, env_str, sizeof(uintptr_t));
 
-  pcb->cp = ucontext(&pcb->as, kstack, (void *) pcb_uload(pcb, filename));
+  pcb->cp = ucontext(&pcb->as, kstack, (void *) pcb_uload(pcb, filename) - 4);
   c->GPRx = (uintptr_t)ustack;
 }
 
