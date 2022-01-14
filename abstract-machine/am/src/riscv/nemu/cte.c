@@ -31,9 +31,9 @@ Context* __am_irq_handle(Context *c) {
   }
 
   __am_switch(c);
-  uintptr_t _sp;
-  asm volatile("mv %0, sp" : "=r"(_sp));
-  printf("sp: %x\n", _sp);
+  // uintptr_t _sp;
+  // asm volatile("mv %0, sp" : "=r"(_sp));
+  // printf("sp: %x\n", _sp);
   return c;
 }
 
