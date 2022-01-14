@@ -94,7 +94,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   strings_copy(envp, envp_p, env_str, sizeof(uintptr_t));
 
   pcb->cp = ucontext(&pcb->as, kstack, (void *) pcb_uload(pcb, filename));
-  c->GPRx = (uintptr_t)ustack;
+  c->GPRx = (uintptr_t)(as_ustack + ((void *)ustack - p_ustack));
 }
 
 #define DEF_TEST_ARGV(P) char *const P ## _argv[] = { "/bin/" #P "-test", NULL };
