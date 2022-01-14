@@ -88,10 +88,10 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   // assert(sizeof(RISCV_PTE) == 4);
 
   // if (va == pa && count < 10) {
-  if (0x70000000 <= (uintptr_t)va && (uintptr_t)va <= 0x80000000) {
-    printf("map: 0x%p => 0x%p\n", va, pa);
-    // count++;
-  }
+  // if (0x70000000 <= (uintptr_t)va && (uintptr_t)va <= 0x80000000) {
+  //   printf("map: 0x%p => 0x%p\n", va, pa);
+  //   // count++;
+  // }
 
   // 判断页表是否存在
   RISCV_PTE *page_dir_item = (RISCV_PTE *)((uintptr_t)as->ptr + VA_PPN1x4(va)); 
