@@ -50,6 +50,7 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   Context *c = (Context*)kstack.end - 1;
   
+  c->pdir = NULL;
   // 给 a0 即第一个参数传参
   c->GPR2 = (uintptr_t) arg;
   // 给 sp 设值
