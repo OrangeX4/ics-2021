@@ -13,7 +13,6 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
       printf("isa_raise_intr\n");
     }
 
-
     // 将 mstatus.MIE 保存到 mstatus.MPIE 中,
     // 然后将 mstatus.MIE 位置为 0
     // printf("mstatus before: 0x%x", cpu.csr[2]._32);
@@ -31,7 +30,7 @@ log_write("[etrace] mcause: %d, mstatus: %x, mepc: %x\n", cpu.csr[1]._32, cpu.cs
 
 word_t isa_query_intr() { 
   if (cpu.INTR && cpu.gpr[0]._32 != 0) {
-    // printf("isa_query_intr\n");
+    printf("isa_query_intr\n");
     cpu.INTR = false;
     return IRQ_TIMER;
   }
