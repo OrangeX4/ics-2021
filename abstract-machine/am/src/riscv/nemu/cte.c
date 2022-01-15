@@ -25,8 +25,6 @@ Context* __am_irq_handle(Context *c) {
       }
       case IRQ_TIMER: {
         ev.event = EVENT_IRQ_TIMER;
-        // 通过软件进行 +4 操作
-        c->mepc += 4;
         break;
       }
       default: ev.event = EVENT_ERROR; break;
