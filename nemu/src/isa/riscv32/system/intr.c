@@ -29,7 +29,7 @@ log_write("[etrace] mcause: %d, mstatus: %x, mepc: %x\n", cpu.csr[1]._32, cpu.cs
 }
 
 word_t isa_query_intr() { 
-  if (cpu.INTR && cpu.csr[0]._32 != 0) {
+  if (cpu.INTR && cpu.csr[0]._32 != 0 && (cpu.csr[2]._32 & (1 << 3))) {
     cpu.INTR = false;
     return IRQ_TIMER;
   }
