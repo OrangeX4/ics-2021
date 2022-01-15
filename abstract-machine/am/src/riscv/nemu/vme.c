@@ -127,7 +127,7 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
   Context *c = (Context*)kstack.end - 1;
 
   c->pdir = (void *) as->ptr;
-  c->mstatus = (uintptr_t) 0x1800;
+  c->mstatus = (uintptr_t) (0x1800 & (1 << 3));
   c->mcause = (uintptr_t) 11;
   c->mepc = (uintptr_t) entry;
   return c;

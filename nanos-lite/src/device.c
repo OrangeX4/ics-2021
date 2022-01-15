@@ -16,7 +16,7 @@ static const char *keyname[256] __attribute__((used)) = {
 };
 
 size_t serial_write(const void *buf, size_t offset, size_t len) {
-  yield();
+  // yield();
   for (size_t i = 0; i < len; ++i) putch(((char *) buf)[i]);
   return len;
 }
@@ -34,7 +34,7 @@ int my_gettimeofday(struct timeval *tv, struct timezone *tz) {
 }
 
 size_t events_read(void *buf, size_t offset, size_t len) {
-  yield();
+  // yield();
   AM_INPUT_KEYBRD_T ev = io_read(AM_INPUT_KEYBRD);
   if (ev.keycode == AM_KEY_NONE) return 0;
   return snprintf(buf, len, "%s %s\n", ev.keydown ? "kd" : "ku", keyname[ev.keycode]);
@@ -56,7 +56,7 @@ size_t get_fb_size() {
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  yield();
+  // yield();
   assert(offset + len <= 4 * screen_w * screen_h);
   int x = (offset / 4) % screen_w;
   int y = (offset / 4) / screen_w;

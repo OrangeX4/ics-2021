@@ -15,5 +15,9 @@ def_EHelper(ecall) {
 }
 
 def_EHelper(mret) {
+  // 将 mstatus.MPIE 还原到 mstatus.MIE 中,
+  // 然后将 mstatus.MPIE 位置为 1
+  cpu.csr[2]._32 = (cpu.csr[2]._32 & ~(1 << 3)) & ((cpu.csr[2]._32 & (1 << 7)) >> 4); 
+  cpu.csr[2]._32 = cpu.csr[2]._32 | ~(1 << 7);
   rtl_j(s, csr(3));
 }

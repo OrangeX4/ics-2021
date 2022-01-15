@@ -6,6 +6,8 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 void __am_get_cur_as(Context *c);
 void __am_switch(Context *c);
 
+#define IRQ_TIMER 0x80000007  // for riscv32
+
 Context* __am_irq_handle(Context *c) {
   __am_get_cur_as(c);
   if (user_handler) {
@@ -17,13 +19,16 @@ Context* __am_irq_handle(Context *c) {
         } else {
           ev.event = EVENT_SYSCALL;
         }
+        // 通过软件进行 +4 操作
+        c->mepc += 4;
+        break;
+      }
+      case IRQ_TIMER: {
+        ev.event = EVENT_IRQ_TIMER;
         break;
       }
       default: ev.event = EVENT_ERROR; break;
     }
-
-    // 通过软件进行 +4 操作
-    c->mepc += 4;
 
     c = user_handler(ev, c);
 
@@ -41,7 +46,8 @@ extern void __am_asm_trap(void);
 
 bool cte_init(Context*(*handler)(Event, Context*)) {
   // initialize exception entry
-  asm volatile("li t0, 0x1800; csrw mstatus, t0; csrw mtvec, %0" : : "r"(__am_asm_trap) : "t0");
+  // asm volatile("li t0, 0x1800; csrw mstatus, t0; csrw mtvec, %0" : : "r"(__am_asm_trap) : "t0");
+  asm volatile("csrw mtvec, %0" : : "r"(__am_asm_trap));
 //   asm volatile("csrw mtvec, %0" : : "r"(__am_asm_trap));
 
   // register event handler
@@ -58,7 +64,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   c->GPR2 = (uintptr_t) arg;
   // 给 sp 设值
   // c->gpr[2] = (uintptr_t) kstack.end;
-  c->mstatus = (uintptr_t) 0x1800;
+  c->mstatus = (uintptr_t) (0x1800 & (1 << 3));
   c->mcause = (uintptr_t) 11;
   c->mepc = (uintptr_t)entry;
   return c;
