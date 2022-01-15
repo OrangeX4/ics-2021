@@ -153,7 +153,7 @@ Context* schedule(Context *prev) {
 
   // printf("after pdir: %p\n", current->cp->pdir);
 
-  // printf("current: pcb[%d]\n", current == &pcb[1]);
+  printf("current: pcb[%d]\n", current == &pcb[1]);
 
   // then return the new context
   return current->cp;
