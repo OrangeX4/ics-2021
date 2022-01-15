@@ -6,7 +6,6 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
     /* Trigger an interrupt/exception with ``NO''.
      * Then return the address of the interrupt/exception vector.
      */
-    printf("isa_raise_intr\n");
     cpu.csr[3]._32 = epc;    // mepc
     cpu.csr[1]._32 = NO;     // mcause
 
