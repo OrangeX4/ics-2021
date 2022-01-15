@@ -139,6 +139,10 @@ void init_proc() {
 
 Context* schedule(Context *prev) {
 
+  if (current == NULL) {
+    return prev;
+  }
+
   // printf("before pdir: %p\n", prev->pdir);
   
   // save the context pointer
