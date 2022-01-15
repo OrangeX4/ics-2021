@@ -21,12 +21,12 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
 log_write("[etrace] mcause: %d, mstatus: %x, mepc: %x\n", cpu.csr[1]._32, cpu.csr[2]._32, cpu.csr[3]._32);
 #endif
 
-    printf("mtvec: 0x%x", cpu.csr[0]._32);
+    // printf("mtvec: 0x%x", cpu.csr[0]._32);
     return cpu.csr[0]._32;          // mtvec
 }
 
 word_t isa_query_intr() { 
-  if (cpu.INTR) {
+  if (cpu.INTR && cpu.gpr[0]._32 != 0) {
     // printf("isa_query_intr\n");
     cpu.INTR = false;
     return IRQ_TIMER;

@@ -13,17 +13,15 @@ int main() {
   Log("'Hello World!' from Nanos-lite");
   Log("Build time: %s, %s", __TIME__, __DATE__);
 
-#ifdef HAS_CTE
-  init_irq();
-#endif
-
   init_mm();
 
   init_device();
 
   init_ramdisk();
 
-
+#ifdef HAS_CTE
+  init_irq();
+#endif
 
   init_fs();
 
