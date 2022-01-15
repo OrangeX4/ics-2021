@@ -17,9 +17,9 @@ int main() {
   init_irq();
 #endif
 
-assert(0);
 
   init_mm();
+assert(0);
 
   init_device();
 
