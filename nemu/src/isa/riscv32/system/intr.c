@@ -3,6 +3,7 @@
 #define IRQ_TIMER 0x80000007  // for riscv32
 
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
+    printf("mtvec: 0x%x", cpu.csr[0]._32);
     /* Trigger an interrupt/exception with ``NO''.
      * Then return the address of the interrupt/exception vector.
      */
@@ -21,7 +22,6 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
 log_write("[etrace] mcause: %d, mstatus: %x, mepc: %x\n", cpu.csr[1]._32, cpu.csr[2]._32, cpu.csr[3]._32);
 #endif
 
-    printf("mtvec: 0x%x", cpu.csr[0]._32);
     return cpu.csr[0]._32;          // mtvec
 }
 
