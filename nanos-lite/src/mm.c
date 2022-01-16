@@ -6,6 +6,7 @@ static void *pf = NULL;
 void* new_page(size_t nr_page) {
   if (pf == NULL) pf = heap.start;
   pf += nr_page * PGSIZE;
+  assert(pf <= heap.end);
   return pf - nr_page * PGSIZE;
 }
 
@@ -30,6 +31,10 @@ int mm_brk(uintptr_t brk) {
   // printf("----------------------------\n");
   // printf("old brk: %p\n", current->max_brk);
   // printf("new brk: %p\n", brk);
+  if ((pf + (brk - current->max_brk) > heap.end)) {
+    // 超过堆区上限, 失败
+    return 1;
+  }
   void *cur = (void *)((current->max_brk & ~(PGSIZE - 1)) + PGSIZE);
   while ((uintptr_t)cur <= brk - PGSIZE) {
     // printf("new page\n");
