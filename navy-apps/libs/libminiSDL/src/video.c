@@ -87,7 +87,9 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   // printf("y: %d\n", y);
   // printf("w: %d\n", w);
   // printf("h: %d\n", h);
-  if (s->format->palette) {
+  if (w == 0 || w > s->w) w = s->w;
+  if (h == 0 || h > s->h) h = s->h;
+  if (s->format->BitsPerPixel == 8) {
     for (int i = 0; i < h; ++i) {
       for (int j = 0; j < w; ++j) {
         pixels_buf[i * w + j] =
