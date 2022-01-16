@@ -2465,8 +2465,7 @@ static inline void update_screen() {
 ```
 
 
-
-## PA 0
+## PA 4
 
 ### 1. 阶段一: 多道程序
 
@@ -2849,3 +2848,293 @@ case SYS_execve: {
       break;
     }
 ```
+
+### 2. 阶段二: 超越容量的界限
+
+#### 2.1 实现 pg_alloc
+
+只需要使用 `new_page()` 函数分配一个新页即可.
+
+```c
+void* new_page(size_t nr_page) {
+  if (pf == NULL) pf = heap.start;
+  pf += nr_page * PGSIZE;
+  assert(pf <= heap.end);
+  return pf - nr_page * PGSIZE;
+}
+
+#ifdef HAS_VME
+static void* pg_alloc(int n) {
+  assert(n % PGSIZE == 0);
+  void *page = new_page(n / PGSIZE);
+  // 清零
+  // printf("before page alloc: %p\n", page);
+  memset(page, 0, n);
+  // printf("after page alloc: %p\n", page);
+  return page;
+}
+#endif
+```
+
+#### 2.2 实现 map
+
+`map()` 函数是分页机制的关键, 用于将一个虚拟页映射到物理页上.  `map` 函数里我们要做的就是完成页目录和页表, 具体代码如下:
+
+```c
+void map(AddrSpace *as, void *va, void *pa, int prot) {
+
+  // 判断页表是否存在
+  RISCV_PTE *page_dir_item = (RISCV_PTE *)((uintptr_t)as->ptr + VA_PPN1x4(va)); 
+
+  RISCV_PTE *page_table;
+
+  // 不存在就创建
+  if (!page_dir_item->valid) {
+
+    // 创建新页, 用于存放页表
+    page_table = (RISCV_PTE *)pgalloc_usr(PGSIZE);
+
+    assert(((uintptr_t)page_table & 0xfff) == 0);
+
+    // 填入页目录项
+    *page_dir_item = (RISCV_PTE) { .valid = 1, .ppn = (uintptr_t)page_table >> 12, .read = 0, .write = 0, .execute = 0, .other = 0 };
+
+  } else {
+    // 不然就直接获取
+    page_table = (RISCV_PTE *)(page_dir_item->ppn << 12);
+  }
+
+  // 往插入页表内插入 PTE
+  *(page_table + VA_PPN0(va)) = (RISCV_PTE) { .valid = 1, .ppn = (uintptr_t)pa >> 12, .read = 1, .write = 1, .execute = 0, .other = 0 };
+}
+```
+
+#### 2.3 在 NEMU 中实现分页机制
+
+首先我们要实现 `isa_mmu_check()`, 用于判断是否应该使用虚拟地址了:
+
+```c
+int isa_mmu_check(vaddr_t vaddr, int len, int type) {
+
+  word_t satp = cpu.csr[4]._32; // satp
+  word_t mode = 1ul << (32 - 1);
+  
+  if (satp & mode) {
+    return MMU_TRANSLATE;
+  } else {
+    return MMU_DIRECT;
+  }
+}
+```
+
+然后再实现 `isa_mmu_translate()`, 这个函数是虚拟地址转换到物理地址的核心:
+
+```c
+paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
+
+  word_t page_dir_item = paddr_read((word_t)get_satp() + VA_PPN1x4(vaddr), 4); 
+
+  assert(VALID(page_dir_item));
+
+  word_t page_table_item = paddr_read((PPN(page_dir_item) << 12) + VA_PPN0x4(vaddr), 4);
+
+  assert(VALID(page_table_item));
+  paddr_t paddr = (PPN(page_table_item) << 12) + (vaddr & 0xfff);
+
+  // assert(paddr == vaddr);
+
+  return paddr;
+}
+```
+
+再完善相应的 `vaddr` 相关函数即可.
+
+#### 2.4 支持虚存管理的多道程序
+
+我们要完善 `mm_brk()` 函数, 这里我踩了很多坑. 因为 `hello` 程序要分配的地址空间超过了 128 MB, 而我又忘了写 `assert`, 最后导致 `hello` 程序运行失败. 修了一天多的 bug 之后, 最终完善如下:
+
+```c
+int mm_brk(uintptr_t brk) {
+  if ((pf + (brk - current->max_brk) > heap.end)) {
+    // 超过堆区上限, 失败
+    return 1;
+  }
+  void *cur = (void *)((current->max_brk & ~(PGSIZE - 1)) + PGSIZE);
+  while ((uintptr_t)cur <= brk - PGSIZE) {
+    void *page = new_page(1);
+    // printf("map: %p => %p\n", cur, page);
+    map(&current->as, cur, page, MMAP_READ | MMAP_WRITE);
+    cur += PGSIZE;
+  }
+  // printf("middle, cur: %p\n", cur);
+  if ((uintptr_t)cur <= brk) {
+    void *page = new_page(1);
+    // printf("map: %p => %p\n", cur, page);
+    map(&current->as, cur, page, MMAP_READ | MMAP_WRITE);
+  }
+  current->max_brk = brk;
+  return 0;
+}
+```
+
+
+### 3. 阶段三: 来自外部的声音
+
+#### 2.1 实现抢占多任务
+
+大部分步骤都很清晰, 也不多说了, 大概就是:
+
+- 在 `cpu` 结构体中添加一个 `bool` 成员 `INTR`
+- 在 `dev_raise_intr()` 中将 `INTR` 引脚设置为高电平
+- 在 `cpu_exec()` 中 `for` 循环的末尾添加轮询INTR引脚的代码, 每次执行完一条指令就查看是否有硬件中断到来
+- 实现 `isa_query_intr()` 函数 (这一步最为关键)
+- 修改 `isa_raise_intr()` 中的代码, 让处理器进入关中断状态
+- 将 `mstatus.MIE` 保存到 `mstatus.MPIE` 中, 然后将 `mstatus.MIE` 位置为 `0`
+- 修改 `mret` 指令的实现, 将 `mstatus.MPIE` 还原到 `mstatus.MIE` 中, 然后将 `mstatus.MPIE` 位置为 `1`
+
+实现 `isa_query_intr()` 函数最为关键, 关键在于 `if` 语句中的内容, 特意写如下:
+
+```c
+word_t isa_query_intr() { 
+  if (cpu.INTR && cpu.csr[0]._32 != 0 && (cpu.csr[2]._32 & (1 << 3))) {
+    cpu.INTR = false;
+    return IRQ_TIMER;
+  }
+  return INTR_EMPTY;
+}
+```
+
+#### 2.2 实现内核栈和用户栈之间的切换
+
+为了支持内核栈和用户栈之间的切换, 需要大幅修改 `trap.S` 中的内容.
+
+根据讲义上的内容, 我翻译出为代码如下 ( `ms` 代表 `mscratch`):
+
+```c
+void __am_asm_trap() {
+  swap($sp, ms)     // swap $sp, ksp
+  if ($sp) {
+    $sp = ms        // $sp = ksp
+  }
+
+  // 以下, ms 就是 usp, $sp 是 ksp (!0)
+
+  c->sp = ms;
+  c->np = 1;        // np: is it user
+  if ($sp == ms) {
+    c->np = 0;
+  }
+  ms = 0;           // support re-entry of CTE
+
+  // save context
+
+  __am_irq_handle(c);
+
+  // restore context
+
+  if (c->np) {
+    ms = $sp;
+  }
+  $sp = c->sp;
+
+  return_from_trap();
+}
+```
+
+<!-- $ -->
+
+于是就有了修改版的 `trap.S`:
+
+```asm
+__am_asm_trap:
+  csrrw sp, mscratch, sp   // (1) atomically exchange sp and mscratch
+  bnez sp, save_context    // (2) take the branch if we trapped from user
+  csrr sp, mscratch        // (3) if we trapped from kernel, restore the original sp
+
+save_context:
+
+  addi sp, sp, -CONTEXT_SIZE
+
+  MAP(REGS, PUSH)
+
+  csrr t0, mcause
+  csrr t1, mstatus
+  csrr t2, mepc
+
+  STORE t0, OFFSET_CAUSE(sp)
+  STORE t1, OFFSET_STATUS(sp)
+  STORE t2, OFFSET_EPC(sp)
+
+  ## set mstatus.MPRV to pass difftest
+  li a0, (1 << 17)
+  or t1, t1, a0
+  csrw mstatus, t1
+
+  csrr t0, mscratch
+  STORE t0, OFFSET_SP(sp)
+
+  li t1, 1
+  addi t0, t0, -CONTEXT_SIZE
+  bne t0, sp, jump_for_user
+  li t1, 0
+jump_for_user:
+  STORE t1, OFFSET_NP(sp)
+
+  csrw mscratch, zero
+
+  mv a0, sp
+  jal __am_irq_handle
+
+  // 切换到新的栈
+  mv sp, a0
+  LOAD t1, OFFSET_STATUS(sp)
+  LOAD t2, OFFSET_EPC(sp)
+  csrw mstatus, t1
+  csrw mepc, t2
+
+  LOAD t1, OFFSET_NP(sp)
+  beqz t1, jump_for_kernel
+  addi t1, sp, CONTEXT_SIZE
+  csrw mscratch, t1
+jump_for_kernel:
+
+  MAP(REGS, POP)
+
+  // addi sp, sp, CONTEXT_SIZE
+  LOAD sp, OFFSET_SP(sp)
+
+  mret
+```
+
+最后还需要在 `kcontext` 和 `ucontext` 中初始化 `c->sp` 和 `c->np` 的内容, 这也就不算什么困难的事情了 (虽然依然 de 了一天的 bug...)
+
+
+#### 2.3 展示你的计算机系统
+
+实现了上面的内容之后, 这就显得非常简单了.
+
+过一个变量 `fg_pcb` 来维护当前的前台程序, 让前台程序和 `hello` 程序分时运行. 在 Nanos-lite 的 `events_read()` 函数中让 `F1`, `F2`, `F3` 这 3 个按键来和 `3` 个前台程序绑定.
+
+最后展示效果如下:
+
+![](images/2022-01-16-14-17-41.png)
+
+
+
+### 4. 必答题
+
+#### 4.1 分时多任务的具体过程
+
+#### 4.2 理解计算机系统
+
+尝试在Linux中编写并运行以下程序:
+
+```c
+int main() {
+  char *p = "abc";
+  p[0] = 'A';
+  return 0;
+}
+```
+
+会看到程序因为往只读字符串进行写入而触发了段错误.
