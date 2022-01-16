@@ -11,7 +11,7 @@ typedef struct {
   // CSR
   struct {
     rtlreg_t _32;
-  } csr[5]; // mtvec, mcause, mstatus, mepc, satp
+  } csr[6]; // mtvec, mcause, mstatus, mepc, satp, mscratch
   // INTR
   bool INTR;
 } riscv32_CPU_state;

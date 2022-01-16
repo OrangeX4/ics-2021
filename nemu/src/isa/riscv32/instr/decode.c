@@ -40,6 +40,10 @@ static def_DopHelper(csr) {
     case 0x180:
         op->preg = &csr(4); // satp
         break;
+    case 0x340:
+        // printf("mscratch: %x\n", csr(5));
+        op->preg = &csr(5); // mscratch
+        break;
     default:
         // panic("Unsupport csr: 0x%x\n", val);
         break;

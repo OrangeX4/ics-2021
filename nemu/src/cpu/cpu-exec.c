@@ -77,6 +77,17 @@ static const void *g_exec_table[TOTAL_INSTR] = {
 
 void fetch_decode(Decode *s, vaddr_t pc);
 static void fetch_decode_exec_updatepc(Decode *s) {
+    // vaddr_t base = 0x80001a68;
+    // if ((0x80001b18 <= cpu.pc && cpu.pc <= base + 0x10) || (base + 0x88 <= cpu.pc && cpu.pc <= base + 0xf8) || (base + 0x170 <= cpu.pc && cpu.pc <= base + 0x174)) {
+    //   printf("------------------------\n");
+    //   printf("pc: 0x%x\n", cpu.pc);
+    //   printf("ms: 0x%x\n", csr(5));
+    //   printf("sp: 0x%x\n", gpr(2));
+    //   printf("t0: 0x%x\n", gpr(5));
+    //   printf("t1: 0x%x\n", gpr(6));
+    //   printf("t2: 0x%x\n", gpr(7));
+    //   printf("a0: 0x%x\n", gpr(10));
+    // }
     fetch_decode(s, cpu.pc);
     s->EHelper(s);
     cpu.pc = s->dnpc;

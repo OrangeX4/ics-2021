@@ -5,6 +5,7 @@ struct Context {
   // fix the order of these members to match trap.S
   uintptr_t gpr[32], mcause, mstatus, mepc;
   void *pdir;
+  bool np; // is it user
 };
 
 // ARGS_ARRAY ("ecall", "a7", "a0", "a1", "a2", "a0")

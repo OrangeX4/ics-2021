@@ -64,10 +64,12 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   // 给 a0 即第一个参数传参
   c->GPR2 = (uintptr_t) arg;
   // 给 sp 设值
-  // c->gpr[2] = (uintptr_t) kstack.end;
-  c->mstatus = (uintptr_t) (0x1800 & (1 << 3));
+  c->gpr[2] = (uintptr_t) kstack.end;
+  // c->mstatus = (uintptr_t) (0x1800 & (1 << 3));
+  c->mstatus = (uintptr_t) 0x1880;
   c->mcause = (uintptr_t) 11;
   c->mepc = (uintptr_t)entry;
+  c->np = false;
   return c;
 }
 
