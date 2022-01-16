@@ -91,7 +91,7 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     for (int i = 0; i < s->h; ++i) {
       for (int j = 0; j < s->w; ++j) {
         pixels_buf[i * w + j] =
-          convert_RGBA_ARGB(s->format->palette->colors[s->pixels[i * (s->w) + j]]);
+          convert_RGBA_ARGB(s->format->palette->colors[s->pixels[(i + y) * (s->w) + j + x]]);
       }
     }
     if (w == 0 && h == 0) {
